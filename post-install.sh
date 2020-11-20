@@ -24,7 +24,6 @@ curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixe
 curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
 curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
 curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
-feh --bg-scale ~/pictures/walls/night.png
 
 
 # ----- git ----------------------
@@ -65,3 +64,8 @@ chmod +x ~/.config/bspwmrc
 chmod +x ~/.config/sxhkdrc
 sed -i 's/urxvt/st/' ~/.config/sxhkdrc
 sed -i 's/super + @space/super + p/' ~/.config/sxhkdrc
+echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwmrc
+
+
+# ----- xinit -------------------
+echo "exec bspwm" >> ~/.xinitrc
