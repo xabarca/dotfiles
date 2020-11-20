@@ -1,8 +1,8 @@
-#! /usr/bin/sh
+#! /bin/sh
 
 # ----- default packages ---------
 sudo apt update
-sudo apt install -y git vim xorg xserver-xorg gcc make
+sudo apt install -y git vim xorg xserver-xorg gcc make xdo
 sudo apt install -y libx11-dev lifxft-dev libxinerama-dev 
 sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev
@@ -61,14 +61,28 @@ sudo make install
 
 # ----- configure default bspwm -------------------
 mkdir ~/.config ~/.config/bspwm ~/.config/sxhkd
-cp ~/git/bspwm/examples/bspwmrc ~/.config/bspwm
-cp ~/git/bspwm/examples/sxhkdrc ~/.config/sxhkd
-chmod +x ~/.config/bspwmrc
-chmod +x ~/.config/sxhkdrc
+cp ~/git/bspwm/examples/bspwmrc ~/.config/bspwm/
+cp ~/git/bspwm/examples/sxhkdrc ~/.config/sxhkd/
+chmod +x ~/.config/bspwm/bspwmrc
+chmod +x ~/.config/sxhkd/sxhkdrc
 sed -i 's/urxvt/st/' ~/.config/sxhkdrc
 sed -i 's/super + @space/super + p/' ~/.config/sxhkdrc
 echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwm/bspwmrc
 
 
+# ----- lemonbar panel ----------------------------
+cp ~/git/dotfiles/panel ~/bin
+cp ~/git/dotfiles/panel_bar ~/bin
+cp ~/git/dotfiles/panel_colors ~/bin
+cp ~/bin/launch-bar.sh ~/bin
+chmod +x ~/bin/panel
+chmod +x ~/bin/panel_bar
+chmod +x ~/bin/panel_colors
+chmod +x ~/bin/launch-bar.sh
+echo "~/bin/launch-bar.sh &" >> ~/.config/bspwm/bspwmrc
+
+
 # ----- xinit -------------------
 echo "exec bspwm" >> ~/.xinitrc
+
+

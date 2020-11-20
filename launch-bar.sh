@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+BAR=$1
+echo "bar $BAR"
+
+if [ "$BAR" == "polybar" ]; then
+
+    # Check if any lemonbar is running and kill it
+    if pgrep -xo lemonbar > /dev/null; then
+        pkill -xo lemonbar
+    fi
+
+    killall -q polybar
+
+    echo "---" | tee -a /tmp/polybar1.log /tmp/polybar2.log
+    #polybar example >>/tmp/polybar1.log 2>$1 &
+    #polybar bar2 >>/tmp/polybar2.log 2>$1 &
+
+    for m in $(polybar --list-monitors | cut -d":" -f1); do
+        #MONITOR=$m polybar --reload example --config=~/.config/polybar/config_ermanno 2>$1
+        MONITOR=$m polybar --reload example &
+    done
+    echo "Polybar launched ..."
+    exit 0
+fi
+
+# PANEL with lemonbar (FIFO default)
+killall -q polybar
+~/bin/panel &
+echo "Lemonbar launched ..."
+
