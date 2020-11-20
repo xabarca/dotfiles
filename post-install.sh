@@ -1,13 +1,14 @@
 #! /usr/bin/sh
 
 # ----- default packages ---------
+sudo apt update
 sudo apt install -y git vim xorg xserver-xorg gcc make
 sudo apt install -y libx11-dev lifxft-dev libxinerama-dev 
 sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
-sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev
+sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev
 sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 sudo apt install -y compton feh fonts-font-awesome curl vifm
-sudo apt install -y pcmanfm lxappearance mpv cmus
+#sudo apt install -y pcmanfm lxappearance mpv cmus
 
 
 # ----- folders in HOME ---------
@@ -51,8 +52,10 @@ sudo make install
 cd ~/git/linuxdabbler/suckless/dmenu
 sudo make install
 cd ~/git/bspwm
+make
 sudo make install
 cd ~/git/sxhkd
+make
 sudo make install
 
 
@@ -64,7 +67,7 @@ chmod +x ~/.config/bspwmrc
 chmod +x ~/.config/sxhkdrc
 sed -i 's/urxvt/st/' ~/.config/sxhkdrc
 sed -i 's/super + @space/super + p/' ~/.config/sxhkdrc
-echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwmrc
+echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwm/bspwmrc
 
 
 # ----- xinit -------------------
