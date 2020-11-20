@@ -68,6 +68,7 @@ chmod +x ~/.config/sxhkd/sxhkdrc
 sed -i 's/urxvt/st/' ~/.config/sxhkdrc
 sed -i 's/super + @space/super + p/' ~/.config/sxhkdrc
 echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwm/bspwmrc
+echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
 
 
 # ----- lemonbar panel ----------------------------
@@ -75,10 +76,7 @@ cp ~/git/dotfiles/panel ~/bin
 cp ~/git/dotfiles/panel_bar ~/bin
 cp ~/git/dotfiles/panel_colors ~/bin
 cp ~/bin/launch-bar.sh ~/bin
-chmod +x ~/bin/panel
-chmod +x ~/bin/panel_bar
-chmod +x ~/bin/panel_colors
-chmod +x ~/bin/launch-bar.sh
+chmod +x ~/bin/panel  ~/bin/panel_bar ~/bin/panel_colors ~/bin/launch-bar.sh
 echo "~/bin/launch-bar.sh &" >> ~/.config/bspwm/bspwmrc
 
 
