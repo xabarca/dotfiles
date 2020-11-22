@@ -7,7 +7,7 @@ sudo apt install -y libx11-dev lifxft-dev libxinerama-dev
 sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev
 sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-sudo apt install -y compton feh fonts-font-awesome curl vifm
+sudo apt install -y compton feh fonts-font-awesome curl vifm dunst libnotify-bin
 #sudo apt install -y pcmanfm lxappearance mpv cmus
 
 
@@ -45,18 +45,34 @@ git clone https://github.com/xabarca/dotfiles
 
 
 # ----- git compile+installs ----------------------
-cd ~/git/protesilaos/lemonbar-xft
-sudo make install
-cd ~/git/lukesmith/st
-sudo make install
-cd ~/git/linuxdabbler/suckless/dmenu
-sudo make install
+#cd ~/git/protesilaos/lemonbar-xft
+#sudo make install
+#cd ~/git/lukesmith/st
+#sudo make install
+#cd ~/git/linuxdabbler/suckless/dmenu
+#sudo make install
+#cd ~/git/bspwm
+#make
+#sudo make install
+#cd ~/git/sxhkd
+#make
+#sudo make install
 cd ~/git/bspwm
 make
 sudo make install
 cd ~/git/sxhkd
 make
 sudo make install
+cd ~/git/protesilaos/lemonbar-xft
+sudo make install
+cd ~/git/lukesmith/st
+make
+cd ~/git/linuxdabbler/suckless/dmenu
+make
+sudo ln -fs ~/git/lukesmith/st/st /usr/local/bin
+sudo ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu /usr/local/bin
+sudo ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_path /usr/local/bin
+sudo ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_run /usr/local/bin
 
 
 # ----- configure default bspwm -------------------
@@ -69,18 +85,18 @@ sed -i 's/urxvt/st/' ~/.config/sxhkdrc
 sed -i 's/super + @space/super + p/' ~/.config/sxhkdrc
 echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwm/bspwmrc
 echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
+echo "compton &" >> ~/.config/bspwm/bspwmrc
 
 
 # ----- lemonbar panel ----------------------------
 cp ~/git/dotfiles/panel ~/bin
 cp ~/git/dotfiles/panel_bar ~/bin
 cp ~/git/dotfiles/panel_colors ~/bin
-cp ~/bin/launch-bar.sh ~/bin
+cp ~/git/dotfiles/launch-bar.sh ~/bin
 chmod +x ~/bin/panel  ~/bin/panel_bar ~/bin/panel_colors ~/bin/launch-bar.sh
-echo "~/bin/launch-bar.sh &" >> ~/.config/bspwm/bspwmrc
+echo "launch-bar.sh &" >> ~/.config/bspwm/bspwmrc
 
 
-# ----- xinit -------------------
+# ----- xinit & bash ------------------------------
+sed -i 's/#alias ll=/alias ll=/' ~/.bashrc
 echo "exec bspwm" >> ~/.xinitrc
-
-
