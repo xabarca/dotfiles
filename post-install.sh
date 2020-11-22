@@ -81,11 +81,12 @@ cp ~/git/bspwm/examples/bspwmrc ~/.config/bspwm/
 cp ~/git/bspwm/examples/sxhkdrc ~/.config/sxhkd/
 chmod +x ~/.config/bspwm/bspwmrc
 chmod +x ~/.config/sxhkd/sxhkdrc
-sed -i 's/urxvt/st/' ~/.config/sxhkdrc
-sed -i 's/super + @space/super + p/' ~/.config/sxhkdrc
+sed -i 's/urxvt/st/' ~/.config/sxhkd/sxhkdrc
+sed -i 's/super + @space/super + p/' ~/.config/sxhkd/sxhkdrc
 echo "feh --bg-scale ~/pictures/walls/night.png &" >> ~/.config/bspwm/bspwmrc
 echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
 echo "compton &" >> ~/.config/bspwm/bspwmrc
+echo "dunst &" >> ~/.config/bspwm/bspwmrc
 
 
 # ----- lemonbar panel ----------------------------
