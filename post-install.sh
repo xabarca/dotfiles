@@ -7,12 +7,12 @@ sudo apt install -y libx11-dev lifxft-dev libxinerama-dev
 sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev
 sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-sudo apt install -y compton feh fonts-font-awesome curl vifm dunst libnotify-bin
+sudo apt install -y compton feh fonts-font-awesome curl vifm dunst libnotify-bin yad
 #sudo apt install -y pcmanfm lxappearance mpv cmus
 
 
 # ----- folders in HOME ---------
-mkdir downloads music bin pictures pictures/walls tmp videos
+mkdir ~/downloads ~/music ~/bin ~/pictures ~/pictures/walls ~/tmp ~/videos
 
 
 # ----- wallpapers --------------
@@ -69,11 +69,11 @@ sudo make install
 cd ~/git/sxhkd
 make
 sudo make install
-ln -fs ~/git/lukesmith/st/st ~/bin/
-ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu ~/bin/
-ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_path ~/bin/
-ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_run ~/bin/
-ln -fs ~/git/linuxdabbler/suckless/dmenu/stest ~/bin/
+ln -fs ~/git/lukesmith/st/st ~/bin
+ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu ~/bin
+ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_path ~/bin
+ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_run ~/bin
+ln -fs ~/git/linuxdabbler/suckless/dmenu/stest ~/bin
 
 
 # ----- configure default bspwm -------------------
