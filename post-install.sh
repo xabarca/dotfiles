@@ -57,22 +57,23 @@ git clone https://github.com/xabarca/dotfiles
 #cd ~/git/sxhkd
 #make
 #sudo make install
-cd ~/git/bspwm
-make
-sudo make install
-cd ~/git/sxhkd
-make
-sudo make install
 cd ~/git/protesilaos/lemonbar-xft
 sudo make install
 cd ~/git/lukesmith/st
 make
 cd ~/git/linuxdabbler/suckless/dmenu
 make
-sudo ln -fs ~/git/lukesmith/st/st /usr/local/bin
-sudo ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu /usr/local/bin
-sudo ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_path /usr/local/bin
-sudo ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_run /usr/local/bin
+cd ~/git/bspwm
+make
+sudo make install
+cd ~/git/sxhkd
+make
+sudo make install
+ln -fs ~/git/lukesmith/st/st ~/bin/
+ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu ~/bin/
+ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_path ~/bin/
+ln -fs ~/git/linuxdabbler/suckless/dmenu/dmenu_run ~/bin/
+ln -fs ~/git/linuxdabbler/suckless/dmenu/stest ~/bin/
 
 
 # ----- configure default bspwm -------------------
