@@ -1,0 +1,19 @@
+#!/bin/bash
+
+N_MONITORS=$( xrandr --query | grep ' connected' | wc -l )
+# num_mon=$(bspc query -M | wc -l)
+
+DIR1="$HOME/pictures/walls"
+DIR2="$HOME/Imatges/wallpapers"
+
+[ -d $DIR1 ] && WALLPAPERS="$DIR1"
+[ -d $DIR2 ] && WALLPAPERS="$DIR2"
+
+if [ $N_MONITORS -gt 1 ]; then
+	WALLPAPERS="$WALLPAPERS $WALLPAPERS"
+fi
+
+# FFF=$(ls $WALLPAPERS | sort -R | head -1)
+#feh --bg-scale $WALLPAPERS/$FFF $WALLPAPERS/$FFF
+
+feh --randomize --bg-scale $WALLPAPERS
