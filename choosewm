@@ -1,0 +1,25 @@
+#!/bin/sh
+
+WM_SELECTION_FILE=~/.selected_wm
+
+msg1="Choose your WM to start X session with:   "
+opcions="bspwm\\ndwm\\ndk"
+
+#selection=$( printf "$opcions" | dmenu -i -p "$msg1" -nb darkred -sb red -sf white -nf gray)
+selection=$( printf "$opcions" | dmenu -i  -p "$msg1" -nb black -sb darkblue -sf lightblue -nf lightblue)
+
+echo "$selection"
+
+case "$selection" in
+    bspwm)
+        echo "bspwm" > $WM_SELECTION_FILE
+        ;;
+    dwm)
+        echo "dwm" > $WM_SELECTION_FILE
+        ;;
+    dk)
+        echo "dk" > $WM_SELECTION_FILE
+        ;;
+esac
+
+exit 0

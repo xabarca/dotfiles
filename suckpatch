@@ -1,0 +1,23 @@
+#! /bin/sh
+
+current=${PWD##*/}
+if [ ! -d "$HOME/.config/dotfiles/suckless/${current}_diffs/" ];then
+	echo "No patches"
+	exit 1
+fi
+
+for i in $HOME.config/dotfiles/suckless/${current}_diffs/*.diff;do
+	name=$(echo $i | sed -e 's/\/.*\///' -e 's/\.diff//' -e "s/${current}_//")
+	echo -e "\nchecking out master\n"
+	git checkout master &&
+	echo -e "\ncreating branch $name\n"
+	git branch $name &&
+	echo -e "\nchecking out $name\n"
+	git checkout $name &&
+	echo -e "\napplying patch: $i\n"
+	git apply "$i" &&
+	echo -e "\naddding and committing\n"
+	git add -A && git commit -m "$name"
+done
+
+git checkout master
