@@ -41,6 +41,8 @@ packages_void () {
 	sudo xbps-install -Sy xbps
 	sudo xbps-install -Su
 	sudo xbps-install -Sy gcc make pkg-config libX11-devel libXft-devel libXinerama-devel
+	sudo xbps-install -Sy xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel  xcb-util-keysyms-devel 
+	
 	
 	sudo xbps-install -Sy git vim xorg xserver-xorg gcc make xdo
 	sudo xbps-install -Sy libx11-dev lifxft-dev libxinerama-dev 
@@ -48,7 +50,7 @@ packages_void () {
 	sudo xbps-install -Sy libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo xbps-install -Sy libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 	sudo xbps-install -Sy compton feh fonts-font-awesome curl vifm dunst libnotify-bin
-	#sudo apt install -y pcmanfm lxappearance mpv cmus
+	#sudo apt install -y spacefm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -73,9 +75,10 @@ gitrepos () {
 	#git clone https://github.com/baskerville/sxhkd	sudo mkdir /opt/git
 	#git clone https://git.suckless.org/dwm
 	#git clone https://bitbucket.org/natemaia/dk.git
+	#git clone https://gitlab.com/dwt1/st-distrotube.git
 	#https://github.com/ronasimi/bar
 	if [ -z $1 ]; then
-		# st - Luke Smith' suckless st
+		# st - Luke Smith's suckless fork (patched)
 		git clone https://github.com/LukeSmithxyz/st /opt/git/st
 		cd /opt/git/st
 		make
@@ -89,12 +92,13 @@ gitrepos () {
 		sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu_run /usr/local/bin
 		sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/stest /usr/local/bin
 		# Protesilaos' compile of lemonbar with xft support
-		git clone https://gitlab.com/protesilaos/lemonbar-xft.git /opt/git/lemonbar-xft
+		#git clone https://gitlab.com/protesilaos/lemonbar-xft.git /opt/git/lemonbar-xft
+		git clone https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
 		cd /opt/git/lemonbar-xft
 		make
 		sudo ln -fs /opt/git/lemonbar-xft/lemonbar /usr/local/bin
 		# sxhkd
-		git clone https://github.com/baskerville/ /opt/git/sxhkd
+		git clone https://github.com/baskerville/sxhkd /opt/git/sxhkd
 		cd /opt/git/sxhkd
 		make
 		sudo make install
@@ -232,7 +236,8 @@ configdwm () {
 
 # ----- configure dk -----------------------------
 configdk () {
-	mkdir ~/.config/dk
+	mkdir -p ~/.config/dk
+	mkdir -p ~/.config/sxhkd
 	cp /opt/git/dk/doc/scripts/bar.sh ~/bin/bar-dk.sh
 	cp /opt/git/dk/doc/dkrc ~/.config/dk/
 	cp /opt/git/dk/doc/sxhkdrc ~/.config/sxhkd/sxhkdrc.dk
