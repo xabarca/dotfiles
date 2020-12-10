@@ -118,6 +118,7 @@ gitrepos () {
 		cd /opt/git/dk
 		make
 		sudo ln -fs /opt/git/dk/dk /usr/local/bin
+		sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
 }
@@ -238,7 +239,7 @@ configdwm () {
 configdk () {
 	mkdir -p ~/.config/dk
 	mkdir -p ~/.config/sxhkd
-	cp /opt/git/dk/doc/scripts/bar.sh ~/bin/bar-dk.sh
+	cp /opt/git/dk/doc/scripts/bar.sh ~/bin/dk-bar.sh
 	cp /opt/git/dk/doc/dkrc ~/.config/dk/
 	cp /opt/git/dk/doc/sxhkdrc ~/.config/sxhkd/sxhkdrc.dk
 	chmod +x ~/.config/dk/dkrc
