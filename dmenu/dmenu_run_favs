@@ -1,0 +1,9 @@
+#! /bin/sh
+
+COLOR=$(xrdb -query | grep  color7  | awk '{print $2}')
+COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+LOG_OPTIONS=~/.dmenu_run_log
+OPTIONS_DMENU=$( cat ~/.dmenu_run_log | sort -u )
+
+exe=$( printf "$OPTIONS_DMENU" | dmenu -i  $COLOR_OPTIONS ) && exec sh -c "$exe"

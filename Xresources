@@ -24,6 +24,6 @@
 *.termName:	rxvt-unicode
 *.scrollBar:	false
 *.font:	xft:Hack:pixelsize=13:antialias=true
-*.boldFont:	xft:Inconsolata:pixelsize=15:weight=bold
+!*.boldFont:	xft:Inconsolata:pixelsize=15:weight=bold
 *.letterSpace:	-1
 *.saveLines:	1000000

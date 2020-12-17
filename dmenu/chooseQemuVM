@@ -1,0 +1,56 @@
+#!/bin/sh
+
+PATH_VMs=~/qemuVMs
+PATH_ISOs=~/altres/ISO
+COLOR=$(xrdb -query | grep  color4  | awk '{print $2}')
+COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+
+echo "$COLOR_OPTIONS"
+
+msg1="Choose your VM:  "
+msg2="Choose the name of the new VM:  "
+msg3="Choose an ISO to boot into:  "
+
+# ----------------------------------------------------------------
+# ---- CHOOSE WICH VM WE WANNA START (OR CREATE A NEW ONE) -------
+# ----------------------------------------------------------------
+opcions="NEW VM\\n$(ls $PATH_VMs)"
+selection=$( printf "$opcions" | dmenu -i  -p "$msg1" $COLOR_OPTIONS)
+
+[ "$selection" = "" ] && exit 0
+if [ "$selection" != "NEW VM" ]; then
+	echo "~/bin/vm.sh -n $selection -p $PATH_VMs &"
+	~/bin/vm.sh -n $selection -p $PATH_VMs &
+	exit 0
+fi
+
+
+# ----------------------------------------------------------------
+# ------- CHOOSE A NAME FOR THE NEW VM ---------------------------
+# ----------------------------------------------------------------
+vmName=$( printf "" | dmenu -i  -p "$msg2" $COLOR_OPTIONS)
+
+[ "$vmName" = "" ] && exit 0
+if [ -d "$PATH_VMs/$vmName" ]; then
+	notify-send "VM name already exists"
+	exit 0
+fi
+
+
+# ----------------------------------------------------------------
+# ------ CHOOSE AN ISO TO BOOT THE NEW VM WITH -------------------
+# ----------------------------------------------------------------
+opcions="$(ls $PATH_ISOs | grep iso)"
+vmISO=$( printf "$opcions" | dmenu -i -l 15 -p "$msg3" $COLOR_OPTIONS)
+
+[ "$vmISO" = "" ] && exit 0
+if [ ! -f "$PATH_ISOs/$vmISO" ]; then
+	notify-send "Select a valid ISO"
+	exit 0
+fi
+
+echo "~/bin/vm.sh -n $vmName -d $vmISO -p $PATH_VMs &"
+~/bin/vm.sh -n $vmName -d $vmISO -p $PATH_VMs  &
+
+exit 0

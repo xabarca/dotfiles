@@ -1,16 +1,12 @@
 #!/bin/bash
-#
-#  documentation:
-#  - http://www.azertech.net/content/kvm-qemu-qcow2-qemu-img-and-snapshots
-#  - https://wiki.qemu.org/Documentation/CreateSnapshot
-#
 
-GENERAL_PATH_VM=~/qemuVMs
+FULL_PATH_VM=~/qemuVMs
 MEM_VM=2048
 HD_VM_SIZE="8G"
 
 # if set to 1 -> no qemu executed (testing purposes)
 DEVELOPMENT_MODE=0
+
 
 usage()
 {
@@ -24,6 +20,7 @@ usage()
   echo "   -s : name of the new snapshot to be created"
   echo "   -r : name of the snapshot to be restored"
   echo "   -i : hard disk info (size, snapshots...)"
+  echo "   -p : full path where VM disks are stored"
   echo "   -e : examples of use"
   echo " "	
   exit 2
@@ -38,8 +35,8 @@ examples()
   echo "- create a new VM named 'devuanLAB' using 4GB of RAM with a cdrom with devuan.iso attached to boot into"
   echo "     vm -n devuanLAB -d /path/to/devuan.iso -m 4096"
   echo " "	
-  echo "- start the VM named 'voidlinuxtest'"
-  echo "     vm -n voidlinuxtest"
+  echo "- start the VM named 'voidlinuxtest' having the VM path on /media/usb/vms"
+  echo "     vm -n voidlinuxtest -p /media/usb/vms"
   echo " "	
   echo "- take a new snapshot named 'basesnap' to the VM named 'voidlinuxtest'"
   echo "     vm -n voidlinuxtest -s basesnap"
@@ -55,13 +52,13 @@ examples()
 
 deleteEmptyFolders() {
 	# delete all empty folders (unsuccessful tests)
-	if [ -d "$GENERAL_PATH_VM" ]; then
-		find $GENERAL_PATH_VM  -empty  -type d  -delete
+	if [ -d "$FULL_PATH_VM" ]; then
+		find $FULL_PATH_VM  -empty  -type d  -delete
 	fi
 }
 
 createFolder() {
-  PATH_TO_VM="$GENERAL_PATH_VM/$VMNAME"
+  PATH_TO_VM="$FULL_PATH_VM/$VMNAME"
   if [ ! -d "$PATH_TO_VM" ]; then
 	  mkdir -p $PATH_TO_VM
 	  echo "$PATH_TO_VM created."
@@ -69,8 +66,8 @@ createFolder() {
 }
 
 diskInfo() {
-   PATH_TO_VM="$GENERAL_PATH_VM/$VMNAME"
-   HD_VM="$GENERAL_PATH_VM/$VMNAME/$VMNAME.qcow2"
+   PATH_TO_VM="$FULL_PATH_VM/$VMNAME"
+   HD_VM="$FULL_PATH_VM/$VMNAME/$VMNAME.qcow2"
    [ ! -f "$HD_VM" ] && echo "HD info selected for VM '$VMNAME', but not disk was found." && exit 2
    if [ "$DEVELOPMENT_MODE" == "0" ]; then
 	  qemu-img info $HD_VM
@@ -82,8 +79,26 @@ diskInfo() {
 #   fi
 }
 
+
+function internet_found_qemu {
+	# https://forum.archlabslinux.com/t/bash-functions/3422/7
+   qemu-system-x86_64 -enable-kvm -m 4G -cpu host -soundhw hda -vga virtio -display gtk,gl=on -drive file="$1",format=raw,cache=none,if=virtio
+}
+function internet_found_qemu-iso {
+	# https://forum.archlabslinux.com/t/bash-functions/3422/7
+   qemu-system-x86_64 -enable-kvm -m 4G -cpu host -soundhw hda -vga virtio -display gtk,gl=on -cdrom "$1" -boot order=d -drive file="$2",format=raw,cache=none,if=virtio
+}
+function internet_found_qemu-live {
+	# https://forum.archlabslinux.com/t/bash-functions/3422/7
+   qemu-system-x86_64 -enable-kvm -m 4G -cpu host -soundhw hda -vga virtio -display gtk,gl=on -cdrom "$1"
+}
+
+
 startWM() {
-	HD_VM="$GENERAL_PATH_VM/$VMNAME/$VMNAME.qcow2"
+	# TODO  explore the possibilities of shared folders:
+	#       https://wiki.archlinux.org/index.php/QEMU#QEMU's_built-in_SMB_server
+	
+	HD_VM="$FULL_PATH_VM/$VMNAME/$VMNAME.qcow2"
 	if [ ! -f "$HD_VM" ]; then
 		[ -z "$ISO" ] &&  echo "No HD to boot into. ISO is mandatory." && exit 2
 		createHD
@@ -93,14 +108,14 @@ startWM() {
 	    echo "Run VM in HD mode..."
 	    if [ "$DEVELOPMENT_MODE" == "0" ]; then
 			qemu-system-x86_64 \
-			  --enable-kvm \
-			  -m $MEM_VM \
-			  -cpu host,kvm=off \
-			  -M q35 \
-			  -smp cores=2,threads=2 \
-			  -rtc base=localtime \
-			  -hda $HD_VM \
-			  -usb -device usb-tablet
+			   --enable-kvm \
+			   -m $MEM_VM \
+			   -cpu host,kvm=off \
+			   -M q35 \
+			   -smp cores=2,threads=2 \
+			   -rtc base=localtime \
+			   -hda $HD_VM \
+			   -usb -device usb-tablet
 		fi
 	else
 	   if [ ! -f "$ISO" ]; then
@@ -109,16 +124,16 @@ startWM() {
 	   echo "Run VM in cdrom mode..."
 	   if [ "$DEVELOPMENT_MODE" == "0" ]; then
 		   qemu-system-x86_64 \
-			 --enable-kvm \
-			 -m $MEM_VM \
-			 -cpu host,kvm=off \
-			 -M q35 \
-			 -smp cores=2,threads=2 \
-			 -rtc base=localtime \
-			 -hda $HD_VM \
-			 -cdrom $ISO \
-			 -boot d \
-			 -usb -device usb-tablet
+			  --enable-kvm \
+			  -m $MEM_VM \
+			  -cpu host,kvm=off \
+			  -M q35 \
+			  -smp cores=2,threads=2 \
+			  -rtc base=localtime \
+			  -hda $HD_VM \
+			  -cdrom $ISO \
+			  -boot d \
+			  -usb -device usb-tablet
 		fi
 	fi
 }
@@ -141,7 +156,7 @@ craeteSnapshot() {
     #
     # EXAMPLE:  qemu-img snapshot  -c snapname  myHD.qcow2	
     #    
-    HD_VM="$GENERAL_PATH_VM/$VMNAME/$VMNAME.qcow2"
+    HD_VM="$FULL_PATH_VM/$VMNAME/$VMNAME.qcow2"
     [ ! -f "$HD_VM" ] && echo "No existing image named $VMNAME.qcow2." && exit 2
 	if [ "$DEVELOPMENT_MODE" == "0" ]; then
 		qemu-img snapshot  -c $SNAPSHOT_NEW_NAME  $HD_VM
@@ -157,7 +172,7 @@ restoreSnapshot() {
     #  '-c' creates a snapshot
     #  '-d' deletes a snapshot
     #  '-l' lists all snapshots in the given image  
-    HD_VM="$GENERAL_PATH_VM/$VMNAME/$VMNAME.qcow2"
+    HD_VM="$FULL_PATH_VM/$VMNAME/$VMNAME.qcow2"
     [ ! -f "$HD_VM" ] && echo "No existing image named $VMNAME.qcow2." && exit 2
 	if [ "$DEVELOPMENT_MODE" == "0" ]; then
 		qemu-img snapshot  -a $SNAPSHOT_RESTORE_NAME  $HD_VM
@@ -170,7 +185,7 @@ restoreSnapshot() {
 # ---------------------------------------------------------
 # ---------------------------------------------------------
 
-while getopts ':n:d:m:s:r:ie' c
+while getopts ':n:d:m:s:r:p:ie' c
 do
   case $c in
     n) VMNAME=$OPTARG ;;
@@ -178,6 +193,7 @@ do
     m) MEM_VM=$OPTARG ;;
     s) SNAPSHOT_NEW_NAME=$OPTARG ;;
     r) SNAPSHOT_RESTORE_NAME=$OPTARG ;;
+    p) FULL_PATH_VM=$OPTARG ;;
     i) INFO_HD="y" ;;
     e) EXAMPLES="y" ;;
     :) usage ;;

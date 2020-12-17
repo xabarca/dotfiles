@@ -1,0 +1,15 @@
+#! /bin/sh
+
+COLOR=$(xrdb -query | grep  color7  | awk '{print $2}')
+COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+LOG_OPTIONS=~/.dmenu_run_log
+
+CACHE=${XDG_CACHE_HOME:-"$HOME/.cache"}/dmenu_run
+(
+        IFS=:
+        if test "`ls -dt $PATH "$CACHE" 2> /dev/null | sed 1q`" != "$CACHE"; then
+                mkdir -p "`dirname "$CACHE"`" && lsx $PATH | sort -u > "$CACHE"
+        fi
+)
+exe=`dmenu $COLOR_OPTIONS  "$@"< "$CACHE"` && echo $exe >> $LOG_OPTIONS; exec sh -c "$exe"

@@ -4,11 +4,12 @@ ACTUAL_DIR="$(dirname $(readlink -f $0))"
 LOG_FILE=~/.post-install.log
 WM_SELECTION_FILE=~/.selected_wm
 OPTION=$1
+DISTRO="devuan"
 
 # ----- usage ---------
 usage()
 {
-  echo "Configures a bspwm/dwm default desktop from scratch on a devuan/debian base system."	
+  echo "Configures a default bspwm / dwm desktop from scratch after a minimal netinst system installation. Valid for devuan or void linux."	
   echo " "	
   echo "Usage:  post-install.sh [ option ]"
   echo " "	
@@ -27,30 +28,67 @@ usage()
 packages () {
 	sudo apt update 
 	sudo apt install -y git vim xorg xserver-xorg gcc make xdo
-	sudo apt install -y libx11-dev lifxft-dev libxinerama-dev 
+	sudo apt install -y libx11-dev lifxft-dev
 	sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo apt install -y compton feh fonts-font-awesome curl vifm dunst libnotify-bin
+	sudo apt install -y compton feh fonts-font-awesome fonts-hack-ttf curl vifm dunst libnotify-bin
+	sudo apt install -y libxinerama-dev 
 	#sudo apt install -y pcmanfm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
 # ----- default packages (void) --------
 packages_void () {
-	sudo xbps-install -Sy xbps
-	sudo xbps-install -Su
-	sudo xbps-install -Sy gcc make pkg-config libX11-devel libXft-devel libXinerama-devel
-	sudo xbps-install -Sy xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel  xcb-util-keysyms-devel 
+	sudo xbps-install -Suy xbps
+	sudo xbps-install -Suy
+	sudo xbps-install -Suy xorg-minimal xinit vim git   
+# <<<<<<< basesystem 
+	sudo xbps-install -Suy gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
+	sudo xbps-install -Suy xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
+	sudo xbps-install -Suy sxhkd lemonbar-xft bspwm 
+	sudo xbps-install -Suy dejavu-fonts-ttf	font-awesome5 font-hack-ttf rxvt-unicode
+	sudo xbps-install -Suy xdo bash-completion setxkbmap curl feh xrdb picom dunst libnotify xclip 
+	cd
+	mkdir downloads music bin pictures pictures/walls videos
+	sudo mkdir /opt/git
+	sudo chown $USER:$USER /opt/git
+	git clone https://git.suckless.org/wmname /opt/git/wmname
+	cd /opt/git/wmname
+	make
+	git clone https://git.suckless.org/dmenu /opt/git/dmenu
+	cd /opt/git/dmenu
+	make
+	git clone https://git.suckless.org/dwm /opt/git/dwm
+	sed -i 's/\"st\"/\"urxvt\"/' /opt/git/dwm/config.def.h
+	cd /opt/git/dwm
+	make
+	git clone https://git.disroot.org/lumaro/dotfiles.git /tmp/lumaro_dots
+	cp -r /tmp/lumaro_dots/suckless/st /opt/git
+	cd /opt/git/st
+	make
+	cd
+	sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
+	sudo ln -fs /opt/git/wmname/wmname /usr/local/bin
+	sudo ln -fs /opt/git/st/st /usr/local/bin
+	sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
+	sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
+	sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
+	sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
+	cd ~/pictures/walls
+	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
+	echo "feh --bg-scale ~/home/$USER/pictures/walls/zentree_1.png &" >> ~/.xinitrc
+	echo "setxkbmap es &" >> ~/.xinitrc
+	echo "exec dwm" >> ~/.xinitrc
 	
 	
-	sudo xbps-install -Sy git vim xorg xserver-xorg gcc make xdo
-	sudo xbps-install -Sy libx11-dev lifxft-dev libxinerama-dev 
-	sudo xbps-install -Sy libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
-	sudo xbps-install -Sy libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
-	sudo xbps-install -Sy libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo xbps-install -Sy compton feh fonts-font-awesome curl vifm dunst libnotify-bin
-	#sudo apt install -y spacefm lxappearance mpv cmus
+	#  sudo xbps-install -Sy git vim xorg xserver-xorg gcc make xdo
+	#  sudo xbps-install -Sy libx11-dev lifxft-dev libxinerama-dev 
+	#  sudo xbps-install -Sy libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
+	#  sudo xbps-install -Sy libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
+	#  sudo xbps-install -Sy libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
+	#  sudo xbps-install -Sy compton feh fonts-font-awesome curl vifm dunst libnotify-bin
+	#  #sudo apt install -y spacefm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -64,18 +102,24 @@ basicfolders () {
 
 # ----- git repos  ----------------------------
 gitrepos () {
+	# users dotfiles :::::
+	#
+	# https://git.disroot.org/lumaro/dotfiles.git
+	# https://git.disroot.org/tuxliban/scripts.git
 	#git clone https://gitlab.com/protesilaos/st
 	#git clone https://gitlab.com/protesilaos/cpdfd
 	#git clone https://gitlab.com/protesilaos/lemonbar-xft.git
 	#git clone https://github.com/linuxdabbler/suckless
+	#git clone https://github.com/LukeSmithxyz/st
+	#git clone https://gitlab.com/dwt1/st-distrotube.git
+	
 	#git clone https://github.com/drscream/lemonbar-xft
 	#git clone https://github.com/xabarca/dotfiles
-	#git clone https://github.com/LukeSmithxyz/st
 	#git clone https://github.com/baskerville/bspwm
 	#git clone https://github.com/baskerville/sxhkd	sudo mkdir /opt/git
+	#git clone https://git.suckless.org/wmname
 	#git clone https://git.suckless.org/dwm
 	#git clone https://bitbucket.org/natemaia/dk.git
-	#git clone https://gitlab.com/dwt1/st-distrotube.git
 	#https://github.com/ronasimi/bar
 	if [ -z $1 ]; then
 		# st - Luke Smith's suckless fork (patched)
@@ -100,6 +144,11 @@ gitrepos () {
 		# sxhkd
 		git clone https://github.com/baskerville/sxhkd /opt/git/sxhkd
 		cd /opt/git/sxhkd
+		make
+		sudo make install
+		# wmname (to be able to start JDK swing applications)
+		git clone https://git.suckless.org/wmname /opt/git/wmname
+		cd /opt/git/wmname
 		make
 		sudo make install
 	fi
@@ -177,11 +226,13 @@ defaultbspwm () {
 	echo "super + a" >> ~/.config/sxhkd/sxhkdrc
     echo "    /home/$USER/bin/scratchpad.sh" >> ~/.config/sxhkd/sxhkdrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] bspwm & sxhkd installed and configured" >> $LOG_FILE
+	lemonbarpanelbsp	
 }
 
 # ----- configure dwm -----------------------------
 configdwm () {
 	cp $ACTUAL_DIR/dwm* ~/bin
+	chmod +x ~/bin/dwm*
 	echo "dwm-start" >> .xinitrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dwm configured" >> $LOG_FILE
 #
@@ -207,7 +258,7 @@ configdwm () {
 #
 # -- let's patch pertag: first we want a clean original code again ---
 # git checkout master
-# make clean && rm -f config.h && git reset -hard origin/master
+# make clean && rm -f config.h && git reset --hard origin/master
 # git branch pertag
 # git checkout pertag
 # git apply /location/of/pertag-patch.diff	
@@ -221,7 +272,7 @@ configdwm () {
 # 
 # -- let's noborder now ---
 # git checkout master
-# make clean && rm -f config.h && git reset -hard origin/master
+# make clean && rm -f config.h && git reset --hard origin/master
 # git branch noborder
 # git checkout noborder
 # git apply /location/of/noborder-patch.diff	
@@ -321,24 +372,46 @@ finalsetup () {
 # ||||||||||||||||||||||||||||||||||||||||
 # ||||||||||||||||||||||||||||||||||||||||
 
-
 [ -z $OPTION ] && usage
+
+# check if we are in Void Linux
+case "$( uname -a )" in 
+   *oid*)
+      DISTRO="voidlinux"
+      ;;
+esac
 
 if [ "$OPTION" = "0" ]; then
 	WM_SELECTION="all"
-	packages && basicfolders && gitrepos && gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && lemonbarpanelbsp && configdwm && configdk && walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
+	if [ "$DISTRO" = "devuan" ]; then
+		packages && basicfolders && gitrepos && gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && configdwm && configdk && walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
+	else
+		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
+	fi
 	echo "bspwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "1" ]; then
 	WM_SELECTION="bspwm"
-	packages && basicfolders && gitrepos && gitrepos bspwm && defaultbspwm && lemonbarpanelbsp && walls && finalsetup && echo "bspwm configured. Please, reboot system."
+	if [ "$DISTRO" = "devuan" ]; then
+		packages && basicfolders && gitrepos && gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
+	else
+		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
+	fi
 	echo "bspwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "2" ]; then
 	WM_SELECTION="dwm"
-	packages && basicfolders && gitrepos && gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
+	if [ "$DISTRO" = "devuan" ]; then
+		packages && basicfolders && gitrepos && gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
+	else
+		packages_void && echo "dwm configured. Please, reboot system for the moment."
+	fi
 	echo "dwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "3" ]; then
 	WM_SELECTION="dk"
-	packages && basicfolders && gitrepos && gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
+	if [ "$DISTRO" = "devuan" ]; then
+		packages && basicfolders && gitrepos && gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
+	else
+		echo "dk not available on Void Linux. Only dwm available for the moment."
+	fi
 	echo "dk" > $WM_SELECTION_FILE
 else
 	usage
