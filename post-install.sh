@@ -47,8 +47,9 @@ packages_void () {
 	sudo xbps-install -Suy gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
 	sudo xbps-install -Suy xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	sudo xbps-install -Suy sxhkd lemonbar-xft bspwm 
-	sudo xbps-install -Suy dejavu-fonts-ttf	font-awesome5 font-hack-ttf rxvt-unicode
-	sudo xbps-install -Suy xdo bash-completion setxkbmap curl feh xrdb picom dunst libnotify xclip 
+	sudo xbps-install -Suy dejavu-fonts-ttf	font-awesome5 font-hack-ttf rxvt-unicode xrandr
+	sudo xbps-install -Suy xdo bash-completion setxkbmap curl hsetroot feh xrdb picom dunst libnotify xclip jq
+	# sudo xbps-install -Suy pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid scid_vs_pc
 	cd
 	mkdir downloads music bin pictures pictures/walls videos
 	sudo mkdir /opt/git
@@ -59,8 +60,12 @@ packages_void () {
 	git clone https://git.suckless.org/dmenu /opt/git/dmenu
 	cd /opt/git/dmenu
 	make
+	git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
+	cd /opt/git/dk
+	make
 	git clone https://git.suckless.org/dwm /opt/git/dwm
-	sed -i 's/\"st\"/\"urxvt\"/' /opt/git/dwm/config.def.h
+	sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
+	sed -i 's/define MODKEY Mod1Mask/define MODKEY Mod4Mask/' /opt/git/dwm/config.def.h
 	cd /opt/git/dwm
 	make
 	git clone https://git.disroot.org/lumaro/dotfiles.git /tmp/lumaro_dots
@@ -68,6 +73,9 @@ packages_void () {
 	cd /opt/git/st
 	make
 	cd
+	sudo ln -fs /opt/git/dk/dk /usr/local/bin
+	sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
+	sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
 	sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
 	sudo ln -fs /opt/git/wmname/wmname /usr/local/bin
 	sudo ln -fs /opt/git/st/st /usr/local/bin
@@ -75,11 +83,27 @@ packages_void () {
 	sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
 	sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
 	sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
+	cd $ACTUAL_DIR
+	cp Xresources ~/.Xresources
+	cp scratchpad.sh vm.sh ytp wall* ~/bin
+	cp -r dmenu ~/bin
+	chmod +x ~/bin/* ~/bin/dmenu/*
 	cd ~/pictures/walls
+	curl -O http://static.simpledesktops.com/uploads/desktops/2012/01/25/enso3.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2014/09/02/pulsarmap.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2014/10/15/tetons-at-night.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixels.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
-	echo "feh --bg-scale ~/home/$USER/pictures/walls/zentree_1.png &" >> ~/.xinitrc
+	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
+	echo "hsetroot -fill /home/$USER/pictures/walls/zentree_1.png &" >> ~/.xinitrc
+	echo "bin/wallpaper-loop.sh &" >> ~/.xinitrc
 	echo "setxkbmap es &" >> ~/.xinitrc
-	echo "exec dwm" >> ~/.xinitrc
+	echo "urxvtd -q -o -f &" >> ~/.xinitrc
+	echo "xrdb ~/.Xresources" >> ~/.xinitrc
+	echo "exec bspwm" >> ~/.xinitrc
+	echo "PS1'\e[1;34m\w\e[m\e[1;35m$ \e[m'" >> ~.bashrc
 	
 	
 	#  sudo xbps-install -Sy git vim xorg xserver-xorg gcc make xdo
@@ -243,7 +267,7 @@ configdwm () {
 # git branch              -- list existing branches
 # git checkout config     -- changes to this branch
 # git branch -D config    -- deletes non-active config branch
-# make clean && rm -f config.h && git reset -hard origin/master  -- goes to initial state (no make done), throwing away any potential not commited change
+# make clean && rm -f config.h && git reset --hard origin/master  -- goes to initial state (no make done), throwing away any potential not commited change
 # git merge config -m config  -- merge the contents of config branch into actual branch 
 #
 # -- starting ---

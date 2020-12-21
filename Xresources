@@ -27,3 +27,8 @@
 !*.boldFont:	xft:Inconsolata:pixelsize=15:weight=bold
 *.letterSpace:	-1
 *.saveLines:	1000000
+
+! fake transparency (enough for me)
+urxvt*transparent: true
+urxvt*shading: 35
+urxvt*tintColor: #232323

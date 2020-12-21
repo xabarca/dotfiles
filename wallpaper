@@ -1,19 +1,26 @@
-#!/bin/bash
+#!/bin/sh
+
+# if set to 1, it uses feh and not hsetroot
+FEH_MODE=0
 
 N_MONITORS=$( xrandr --query | grep ' connected' | wc -l )
-# num_mon=$(bspc query -M | wc -l)
-
 DIR1="$HOME/pictures/walls"
 DIR2="$HOME/Imatges/wallpapers"
 
 [ -d $DIR1 ] && WALLPAPERS="$DIR1"
 [ -d $DIR2 ] && WALLPAPERS="$DIR2"
 
+if [ "$FEH_MODE" = "0" ]; then
+	FFF=$(ls $WALLPAPERS | sort -R | head -1)
+	WALLPAPERS="$WALLPAPERS/$FFF"
+fi
+
 if [ $N_MONITORS -gt 1 ]; then
 	WALLPAPERS="$WALLPAPERS $WALLPAPERS"
 fi
 
-# FFF=$(ls $WALLPAPERS | sort -R | head -1)
-#feh --bg-scale $WALLPAPERS/$FFF $WALLPAPERS/$FFF
-
-feh --randomize --bg-scale $WALLPAPERS
+if [ "$FEH_MODE" = "0" ]; then
+	hsetroot -fill $WALLPAPERS
+else
+	feh --randomize --bg-scale $WALLPAPERS
+fi
