@@ -1,0 +1,125 @@
+#!/usr/bin/bash
+# Outputs the BSPWM configuration to be used as a dunst notifycation
+
+background="#2D2D2D"
+
+Format() {
+	#echo "%{+u}%{B$background} $1 %{B}%{-u}"
+	echo "$1"
+}
+
+Workspaces() {
+	desktops=$(bspc query -D --names)
+    focused=$(bspc query -D --names -d focused)
+
+	for desktop in $desktops; do
+		desktop=$(echo "$desktop")
+		nodes=$(bspc query -N -d $desktop)
+
+		if [ ! -z "$nodes" ]; then
+			desktops=$(echo $desktops | sed "s/$desktop/ [ $desktop ] /")
+			
+    fi
+
+  done
+  # desktops=$(echo $desktops | sed "s/$focused/$focused/")
+
+  #echo $desktops | sed "s/_/ /g"
+  echo $desktops
+}
+
+CpuTemp() {
+	temp=$(sensors | grep "Tdie" | sed "s/Tdie: *+//;s/°C *//")
+	if [ 1 -eq "$(echo "$temp > 80" | bc)" ]; then
+			printf "%%{F#ed0b0b}"
+	elif [ 1 -eq "$(echo "$temp > 60" | bc)" ]; then
+			printf "%%{F#f2e421}";
+	fi
+	Format ""$temp"°C%{F-}"
+}
+
+Cpu() {
+	usage=$(mpstat | sed '1,3d;s/.* //')
+	output="$(calc 100 - $usage)"
+	Format "$output"
+}
+
+Clock(){
+	DATE=$(date "+%d/%m/%y")
+	TIME=$(date "+%I:%M:%S")
+
+	Format "${DATE}  ${TIME}"
+}
+
+ActiveWindow(){
+	printf "$(xdotool getwindowfocus getwindowname)"
+}
+
+Packages() {
+	Format "$(sudo pacman -Qu | wc -l)"
+}
+
+Subs() {
+	#Format "$(polysubs)"
+	Format "7.42k 116"
+}
+
+
+Memory() {
+	echo "%{A:$TERMINAL -e htop:}$(Format "$(i3memory)")%{A}"
+}
+
+getMem () {
+	usedmem=$(free -m | grep Mem | awk '{print $3}')
+	totalmem=$(free -m | grep Mem | awk '{print $2}')
+	freemem=$(($totalmem-$usedmem))
+	usedpercent=$((100-($freemem*100)/$totalmem))
+
+	Format " $usedpercent%"
+}
+
+Sound(){
+	device=$(pulsedevices | grep "pci-0000_0b" -A 2)
+	mute=$(echo "$device" | grep "Mute" | awk '{ print $2 }')
+	vol=$(echo "$device" | grep "front-left" | awk '{ print $5 }')
+	output=""
+
+	if [ "$mute" = "yes" ]; then
+	  output="🔇 mute"
+	elif [ "$(echo "$vol" | tr -d "%")" -gt 70 ]; then
+	  output="🔊 $vol"
+	elif [ "$(echo "$vol" | tr -d "%")" -gt 35 ]; then
+	  output="奔 $vol"
+	else
+	  output="🔈 $vol"
+	fi
+
+	Format "$output"
+}
+
+VpnActive() {
+    command=$(ip link show | grep tunsnx | wc -l)
+    if [[ "$command" == "1" ]]
+    then
+        #echo "[VPN]"
+        Format "[$(tail -n 1 /tmp/svn_log)]"
+    elseº
+        echo ""
+    fi
+}
+
+Weather() {
+	Format $(cat ~/.cache/weather)
+}
+
+NewModule() {
+	echo "%{B#aef4e3}%{+u}Hello World%{-u}%{B}"
+}
+
+Update() {
+	#echo -e "%{l}$(Workspaces) $(ActiveWindow) %{r} $(Packages) $(Subs) $(Cpu) $(CpuTemp) $(Memory) $(Sound) $(Weather) $(Clock)"
+	echo -e "%{l}$(Workspaces) $(ActiveWindow) %{r} $(VpnActive) $(getMem) $(Clock)"
+	#echo -e "%{r} $(NewModule)"
+}
+
+notify-send -u normal "BSPWM params" "$(Workspaces) \n$(Clock) \n$(ActiveWindow) \n$(Sound)"

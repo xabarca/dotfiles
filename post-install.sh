@@ -32,8 +32,8 @@ packages () {
 	sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo apt install -y compton feh fonts-font-awesome fonts-hack-ttf curl vifm dunst libnotify-bin
-	sudo apt install -y libxinerama-dev 
+	sudo apt install -y compton feh fonts-font-awesome fonts-hack-ttf curl dunst libnotify-bin
+	sudo apt install -y libxinerama-dev libreadline-dev 
 	#sudo apt install -y pcmanfm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
@@ -44,14 +44,17 @@ packages_void () {
 	sudo xbps-install -Suy
 	sudo xbps-install -Suy xorg-minimal xinit vim git   
 # <<<<<<< basesystem 
-	sudo xbps-install -Suy gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
-	sudo xbps-install -Suy xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
-	sudo xbps-install -Suy sxhkd lemonbar-xft bspwm 
-	sudo xbps-install -Suy dejavu-fonts-ttf	font-awesome5 font-hack-ttf rxvt-unicode xrandr
-	sudo xbps-install -Suy xdo bash-completion setxkbmap curl hsetroot feh xrdb picom dunst libnotify xclip jq
-	# sudo xbps-install -Suy pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid scid_vs_pc
+	sudo xbps-install -y nnn bash-completion setxkbmap rxvt-unicode dbus
+	sudo xbps-install -y gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
+	sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
+	sudo xbps-install -y sxhkd lemonbar-xft bspwm 
+	sudo xbps-install -y dejavu-fonts-ttf font-awesome5 font-hack-ttf xrandr
+	sudo xbps-install -y xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq youtube-dl
+	sudo xbps-install -y pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid_vs_pc
+	sudo ln -s /etc/sv/dbus /var/service
 	cd
 	mkdir downloads music bin pictures pictures/walls videos
+	mkdir -p .config/bspwm -p .config/sxhkd  -p .config/dunst
 	sudo mkdir /opt/git
 	sudo chown $USER:$USER /opt/git
 	git clone https://git.suckless.org/wmname /opt/git/wmname
@@ -91,19 +94,27 @@ packages_void () {
 	cd ~/pictures/walls
 	curl -O http://static.simpledesktops.com/uploads/desktops/2012/01/25/enso3.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2014/09/02/pulsarmap.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2018/03/29/ESTRES.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2016/07/19/Path.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2013/02/22/Desktop_Squares.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2014/10/15/tetons-at-night.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixels.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
-	echo "hsetroot -fill /home/$USER/pictures/walls/zentree_1.png &" >> ~/.xinitrc
+	cp /usr/share/doc/bspwm/examples/bspwmrc ~/.config/bspwm/
+	cp /usr/share/doc/bspwm/examples/sxhkdrc ~/.config/sxhkdrc/
+	cp /opt/git/bspwm/examples/sxhkdrc ~/.config/sxhkd/
+	chmod +x ~/.config/bspwm/bspwmrc
+	chmod +x ~/.config/sxhkd/sxhkdrc
+	echo "xwallpaper --stretch /home/$USER/pictures/walls/zentree_1.png &" >> ~/.xinitrc
 	echo "bin/wallpaper-loop.sh &" >> ~/.xinitrc
 	echo "setxkbmap es &" >> ~/.xinitrc
 	echo "urxvtd -q -o -f &" >> ~/.xinitrc
-	echo "xrdb ~/.Xresources" >> ~/.xinitrc
+	echo "dunst &" >> ~/.xinitrc
+	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
 	echo "exec bspwm" >> ~/.xinitrc
-	echo "PS1'\e[1;34m\w\e[m\e[1;35m$ \e[m'" >> ~.bashrc
+	echo "PS1='\e[1;33m$(date '+%H:%M.%S')\e[m \e[1;34m\w\e[m\e[1;35m\$\e[m '" >> ~.bashrc
 	
 	
 	#  sudo xbps-install -Sy git vim xorg xserver-xorg gcc make xdo
@@ -145,20 +156,21 @@ gitrepos () {
 	#git clone https://git.suckless.org/dwm
 	#git clone https://bitbucket.org/natemaia/dk.git
 	#https://github.com/ronasimi/bar
+	#git clone https://github.com/jarun/nnn
 	if [ -z $1 ]; then
 		# st - Luke Smith's suckless fork (patched)
 		git clone https://github.com/LukeSmithxyz/st /opt/git/st
 		cd /opt/git/st
 		make
 		sudo ln -fs /opt/git/st/st /usr/local/bin
-		# pack of LinuxDabbler suckless utils (we want dmenu)
-		git clone https://github.com/linuxdabbler/suckless /opt/git/suckless_linuxdabbler
-		cd /opt/git/suckless_linuxdabbler/dmenu
+		# dmenu from suckless
+		git clone https://git.suckless.org/dmenu /opt/git/dmenu 
+		cd /opt/git/dmenu 
 		make
-		sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu /usr/local/bin
-		sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu_path /usr/local/bin
-		sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu_run /usr/local/bin
-		sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/stest /usr/local/bin
+		sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
+		sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
+		sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
+		sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
 		# Protesilaos' compile of lemonbar with xft support
 		#git clone https://gitlab.com/protesilaos/lemonbar-xft.git /opt/git/lemonbar-xft
 		git clone https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
@@ -175,6 +187,12 @@ gitrepos () {
 		cd /opt/git/wmname
 		make
 		sudo make install
+		if [ "$DISTRO" = "devuan" ]; then
+			git clone https://github.com/jarun/nnn /opt/git/nnn
+			cd /opt/git/nnn
+			make
+			sudo make install
+		fi
 	fi
 	if [ "$1" = "bspwm" ]; then
 		git clone https://github.com/baskerville/bspwm /opt/git/bspwm
@@ -345,7 +363,9 @@ walls () {
 	cd ~/pictures/walls
 	curl -O http://static.simpledesktops.com/uploads/desktops/2012/01/25/enso3.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2014/09/02/pulsarmap.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2018/03/29/ESTRES.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2016/07/19/Path.png
+	curl -O http://static.simpledesktops.com/uploads/desktops/2013/02/22/Desktop_Squares.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2014/10/15/tetons-at-night.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixels.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
@@ -362,6 +382,7 @@ walls () {
 # ----- xinit & bashrc ----------------------------
 finalsetup () {
 	sed -i 's/#alias ll=/alias ll=/' ~/.bashrc
+	echo "alias q='exit'" >> ~/.bashrc
 	cp $ACTUAL_DIR/choosewm ~/bin
 	chmod +x ~/bin/choosewm
 	if [ "$WM_SELECTION" = "dwm" ]; then

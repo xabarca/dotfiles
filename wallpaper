@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# if set to 1, it uses feh and not hsetroot
+# if set to 1, it uses feh and not xwallpaper
 FEH_MODE=0
 
 N_MONITORS=$( xrandr --query | grep ' connected' | wc -l )
@@ -20,7 +20,7 @@ if [ $N_MONITORS -gt 1 ]; then
 fi
 
 if [ "$FEH_MODE" = "0" ]; then
-	hsetroot -fill $WALLPAPERS
+	xwallpaper --stretch $WALLPAPERS
 else
 	feh --randomize --bg-scale $WALLPAPERS
 fi
