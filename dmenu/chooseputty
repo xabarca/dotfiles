@@ -1,0 +1,18 @@
+#!/bin/bash
+
+COLOR=$(xrdb -query | grep  color6  | awk '{print $2}')
+COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+DMENU="dmenu -i -l 7 -p Choose $COLOR_OPTIONS"
+
+COMMAND="ls | grep -v Default"
+cd $HOME/.putty/sessions
+
+target=$( ls | grep -v Default | $DMENU) 
+echo "$target"
+
+
+if [[ "$target" != "Default%20Settings" && "$target" != "" ]]; then
+putty -load "$target"
+fi
+

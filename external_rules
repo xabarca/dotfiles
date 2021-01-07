@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+LOG_EXTERNAL_RULES=/tmp/temp_bspc_external_rule
+wid=$1
+class=$2
+instance=$3
+consequences=$4
+
+#mytitle = "$(xprop -id $wid WM_NAME)" # | cut -d\" -f2)"
+#timeeee="$(date '+%H:%M:%S')"
+#echo "$1 - $2 - $3 - $4 - $timeeee - $mytitle" >> $LOG_EXTERNAL_RULES
+
+if xprop -id $wid | grep "_NET_WM_WINDOW_TYPE_DIALOG";then
+	echo "state=floating"
+elif [ "$instance" = Steam ] ; then
+	title=$(xprop -id $wid | grep "^WM_NAME" | awk -F " = " '{print $2}')
+	case "$title" in
+		*" - Steam"*|*"Product Activation"*|*Settings*)
+			echo "state=floating"
+			echo "center=on"
+			;;
+		*)
+			echo "state=tiled"
+	esac
+elif [ "$instance" = gimp ]; then
+	title=$(xprop -id $wid | grep "^WM_NAME" | awk -F " = " '{print $2}')
+	case "$title" in
+		*"GIMP Startup"*)
+			echo "state=floating"
+			echo "center=on"
+			;;
+		*)
+			echo "state=tiled"
+	esac
+fi
+
+#  bspc node $(xdo id -m -p $!) -k
+
+
+# bspc query -N -d 2   ->>  nodes on monitor 2
+# wmctrl -l -x     ->>> list all windows

@@ -8,7 +8,9 @@ dunst &
 #manage-monitors &
 #xautolock -time 20 -locker "$HOME/bin/i3/lock" &
 wallpaper-loop &
-dwm-bar &
+
+#dwm-bar &
+dwmblocks &
 #sxhkd -c ~/.config/sxhkd/sxhkdrc.dwm &
 
 exec dwm

@@ -9,7 +9,7 @@ DISTRO="devuan"
 # ----- usage ---------
 usage()
 {
-  echo "Configures a default bspwm / dwm desktop from scratch after a minimal netinst system installation. Valid for devuan or void linux."	
+  echo "Configures a default bspwm / dwm desktop from scratch after a minimal netinst system installation. Valid for devuan and void linux."	
   echo " "	
   echo "Usage:  post-install.sh [ option ]"
   echo " "	
@@ -27,12 +27,12 @@ usage()
 # ----- default packages ---------
 packages () {
 	sudo apt update 
-	sudo apt install -y git vim xorg xserver-xorg gcc make xdo
+	sudo apt install -y git vim xorg xserver-xorg gcc make xdo xdotool
 	sudo apt install -y libx11-dev lifxft-dev
 	sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo apt install -y compton feh fonts-font-awesome fonts-hack-ttf curl dunst libnotify-bin
+	sudo apt install -y compton feh curl dunst libnotify-bin zip unzip
 	sudo apt install -y libxinerama-dev libreadline-dev 
 	#sudo apt install -y pcmanfm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
@@ -135,6 +135,26 @@ basicfolders () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
 }
 
+# ----- download and install youtube-dl from github ---------
+youtube_dl () {
+	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+	sudo chmod a+rx /usr/local/bin/youtube-dl
+}
+
+# ----- nerd fonts ---------
+fonts() {
+	mkdir /tmp/nerdfonts
+	cd /tmp/nerdfonts
+	curl -L -o ubuntu.zip curl -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
+	curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
+	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.1/fontawesome-free-5.15.1-web.zip 
+	curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
+	unzip *.zip
+	sudo mkdir -p /usr/share/fonts/truetype/newfonts
+	sudo mv $(find . -name '*.ttf') /usr/share/fonts/truetype/newfonts	
+	sudo fc-cache -f -v
+}
+
 # ----- git repos  ----------------------------
 gitrepos () {
 	# users dotfiles :::::
@@ -146,6 +166,7 @@ gitrepos () {
 	#git clone https://gitlab.com/protesilaos/lemonbar-xft.git
 	#git clone https://github.com/linuxdabbler/suckless
 	#git clone https://github.com/LukeSmithxyz/st
+	#git clone https://github.com/torrinfail/dwmblocks
 	#git clone https://gitlab.com/dwt1/st-distrotube.git
 	
 	#git clone https://github.com/drscream/lemonbar-xft
@@ -157,8 +178,12 @@ gitrepos () {
 	#git clone https://bitbucket.org/natemaia/dk.git
 	#https://github.com/ronasimi/bar
 	#git clone https://github.com/jarun/nnn
+	# https://gitlab.com/souperdoupe/thom-utils/-/tree/master/wefe
+	#git clone https://git.torproject.org/torsocks.git
+	#git clone https://github.com/LukeSmithxyz/dwmblocks
+	
 	if [ -z $1 ]; then
-		# st - Luke Smith's suckless fork (patched)
+		# st - Luke Smith's suckless st fork (patched)
 		git clone https://github.com/LukeSmithxyz/st /opt/git/st
 		cd /opt/git/st
 		make
@@ -203,7 +228,10 @@ gitrepos () {
 		git clone https://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
 		make
-		sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
+		git clone https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
+		cd /opt/git/dwmblocks
+		make
+		sudo ln -fs /opt/git/dwmblocks/dwmblocks /usr/local/bin
 	elif [ "$1" = "dk" ]; then
 		git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
 		cd /opt/git/dk
@@ -214,40 +242,6 @@ gitrepos () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
 }
 
-# ----- git compiling + install -------------------
-gitinstalls () {
-	cd /opt/git/lemonbar-xft
-	make
-	cd /opt/git/st
-	make
-	cd /opt/git/suckless_linuxdabbler/dmenu
-	make
-	cd /opt/git/suckless_linuxdabbler/dwm
-	make
-	cd /opt/git/dk
-	make
-	cd /opt/git/bspwm
-	make
-	sudo make install
-	cd /opt/git/sxhkd
-	make
-	sudo make install
-	
-	sudo ln -fs /opt/git/lemonbar-xft/lemonbar /usr/local/bin
-	sudo ln -fs /opt/git/st/st /usr/local/bin
-	sudo ln -fs /opt/git/suckless_linuxdabbler/dwm/dwm /usr/local/bin
-	sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu /usr/local/bin
-	sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu_path /usr/local/bin
-	sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/dmenu_run /usr/local/bin
-	sudo ln -fs /opt/git/suckless_linuxdabbler/dmenu/stest /usr/local/bin
-	sudo ln -fs /opt/git/dk/dk /usr/local/bin
-	sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
-	chmod +x /opt/git/suckless_linuxdabbler/dmenu/dmenu
-	chmod +x /opt/git/suckless_linuxdabbler/dmenu/dmenu_path
-	chmod +x /opt/git/suckless_linuxdabbler/dmenu/dmenu_run
-	chmod +x /opt/git/suckless_linuxdabbler/dmenu/stest
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] compiled and installed git packages" >> $LOG_FILE
-}
 
 # ----- configure default bspwm -------------------
 defaultbspwm () {
@@ -277,6 +271,20 @@ configdwm () {
 	chmod +x ~/bin/dwm*
 	echo "dwm-start" >> .xinitrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dwm configured" >> $LOG_FILE
+
+# From Luke Smith dwmblocks repo (https://github.com/LukeSmithxyz/dwmblocks):
+# Most statusbars constantly rerun every script every several seconds to update. This is an option here, but a superior 
+# choice is giving your module a signal that you can signal to it to update on a relevant event, rather than having it rerun idly.
+# For example, the audio module has the update signal 10 by default. Thus, running 
+#       pkill -RTMIN+10 dwmblocks 
+# will update it.
+# You can also run 
+#       kill -44 $(pidof dwmblocks)
+# which will have the same effect, but is faster. Just add 34 to your typical signal number.
+# My volume module never updates on its own, instead I have this command run along side my volume shortcuts in dwm to only update it when relevant.
+# Note that if you signal an unexpected signal to dwmblocks, it will probably crash. So if you disable a module, 
+# remember to also disable any cronjobs or other scripts that might signal to that module.	
+	
 #
 #  ==== patching guide + plus ====
 # 
@@ -338,9 +346,9 @@ configdk () {
 	chmod +x ~/.config/dk/dkrc
 	chmod +x ~/.config/sxhkd/sxhkdrc.dk
 	chmod +x ~/bin/dk-bar.sh
-	sed -i 's/sxhkd &/sxhkd -c ~\/\.config\/sxhkd\/sxhkdrc\.dk/' ~/.config/dk/dkrc
 	sed -i 's/alt/super/' ~/.config/sxhkd/sxhkdrc.dk
-	sed -i 's/exit 0/compton &/' ~/.config/dk/dkrc
+	sed -i 's/sxhkd \&/sxhkd -c ~\/\.config\/sxhkd\/sxhkdrc\.dk/' ~/.config/dk/dkrc
+	sed -i 's/exit 0/compton \&/' ~/.config/dk/dkrc
 	echo "dunst &" >> ~/.config/dk/dkrc
 	echo "~/bin/dk-bar.sh &" >> ~/.config/dk/dkrc	
 	echo "exit 0" >> ~/.config/dk/dkrc
@@ -373,7 +381,7 @@ walls () {
 	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
 	[ -f ~/.config/bspwm/bspwmrc ] && echo "wallpaper-loop &" >> ~/.config/bspwm/bspwmrc
 	if [ -f ~/.config/dk/dkrc ]; then
-		sed -i 's/exit 0/wallpaper-loop &/' ~/.config/dk/dkrc
+		sed -i 's/exit 0/wallpaper-loop \&/' ~/.config/dk/dkrc
 		echo "exit 0" >> ~/.config/dk/dkrc
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
@@ -383,7 +391,7 @@ walls () {
 finalsetup () {
 	sed -i 's/#alias ll=/alias ll=/' ~/.bashrc
 	echo "alias q='exit'" >> ~/.bashrc
-	cp $ACTUAL_DIR/choosewm ~/bin
+	cp $ACTUAL_DIR/dmenu/choosewm ~/bin
 	chmod +x ~/bin/choosewm
 	if [ "$WM_SELECTION" = "dwm" ]; then
 		echo "dwm-start" >> ~/.xinitrc
@@ -429,7 +437,7 @@ esac
 if [ "$OPTION" = "0" ]; then
 	WM_SELECTION="all"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && gitrepos && gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && configdwm && configdk && walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos && gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && configdwm && configdk && walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
 	else
 		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
 	fi
@@ -437,7 +445,7 @@ if [ "$OPTION" = "0" ]; then
 elif [ "$OPTION" = "1" ]; then
 	WM_SELECTION="bspwm"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && gitrepos && gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos && gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
 	else
 		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
 	fi
@@ -445,7 +453,7 @@ elif [ "$OPTION" = "1" ]; then
 elif [ "$OPTION" = "2" ]; then
 	WM_SELECTION="dwm"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && gitrepos && gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos && gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
 	else
 		packages_void && echo "dwm configured. Please, reboot system for the moment."
 	fi
@@ -453,7 +461,7 @@ elif [ "$OPTION" = "2" ]; then
 elif [ "$OPTION" = "3" ]; then
 	WM_SELECTION="dk"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && gitrepos && gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos && gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
 	else
 		echo "dk not available on Void Linux. Only dwm available for the moment."
 	fi

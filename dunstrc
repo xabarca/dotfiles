@@ -5,7 +5,7 @@
     monitor = 1
     follow = none
 
-    geometry = "400x50+100+50"
+    geometry = "300x50-20+20"
 
     indicate_hidden = yes
 
@@ -38,7 +38,7 @@
 
     ### Text ###
 
-    font = San Francisco Text 9
+    font = San Francisco Text 8
 
 
     # The spacing between lines.  If the height is smaller than the
@@ -207,7 +207,7 @@
     # Otherwise the "#" and following would be interpreted as a comment.
     background = "#252525"
     foreground = "#c0c0c0"
-    timeout = 10
+    timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
     #icon = /path/to/icon
 
@@ -215,7 +215,7 @@
     background = "#252525"
     foreground = "#c0c0c0"
     frame_color = "#c0c0c0"
-    timeout = 10
+    timeout = 7
     # Icon for notifications with normal urgency, uncomment to enable
     #icon = /path/to/icon
 

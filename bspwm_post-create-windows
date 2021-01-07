@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+LOG_FILE=/tmp/temp_bspw_kill_timeouts
+
+# subscribe to events on which the window title list will get updated
+bspc subscribe node_add node_remove | while read -r _; do
+	
+	#echo "$(date '+%H:%M:%S') - event fired !! " >> $LOG_FILE
+	
+	# get windows ids
+	winids_on_desktop=$( bspc query -N  )
+
+	# get a list of all windows
+	winlist=$( wmctrl -l -x )
+
+	for window_id in $winids_on_desktop; do
+	
+		window_str=$( echo "$winlist" | grep -i "$window_id" )
+
+		if [[ "$window_str" == *"Session Timeout"* ]]; then
+			bspc node $window_id -c
+			notify-send "Session Timeout window closed"
+			echo "$(date '+%H:%M:%S') -  closed window: $window_str" >> $LOG_FILE
+		fi
+	done
+
+done

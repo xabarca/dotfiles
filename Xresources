@@ -21,12 +21,12 @@
 *.colorBD:	#d2813d
 *.colorUL:	#6e9cb0
 *.colorIT:	#8c9e3d
-*.termName:	rxvt-unicode
 *.scrollBar:	false
 *.font:	xft:Hack:pixelsize=13:antialias=true
-!*.boldFont:	xft:Inconsolata:pixelsize=15:weight=bold
+*.boldFont:	xft:Hack:pixelsize=14:weight=bold
 *.letterSpace:	-1
 *.saveLines:	1000000
+urxvt.termName:	rxvt-unicode
 
 ! fake transparency (enough for me)
 urxvt*transparent: true

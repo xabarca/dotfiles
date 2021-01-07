@@ -1,0 +1,14 @@
+#!/bin/bash
+
+COLOR=$(xrdb -query | grep  color12  | awk '{print $2}')
+COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+DMENU="dmenu -i -l 15 -p Choose $COLOR_OPTIONS"
+CHESS_RESOURCES_DIR="$HOME/altres/chess/_BOOKS_REPOSITORY"
+
+cd "$CHESS_RESOURCES_DIR"
+target=$(ls -R -p | grep -v / | $DMENU) 
+#echo "$target"
+ruta=$(find $PWD -type f -name "*$target*")
+echo "$ruta"
+zathura "$ruta"
