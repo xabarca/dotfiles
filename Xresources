@@ -32,3 +32,8 @@ urxvt.termName:	rxvt-unicode
 urxvt*transparent: true
 urxvt*shading: 35
 urxvt*tintColor: #232323
+
+dwm.selfgcolor: #232323
+dwm.selbgcolor: #b1942b
+dwm.selbordercolor: #b1942b
+dwm.normbordercolor: #232323 

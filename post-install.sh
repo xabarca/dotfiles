@@ -32,7 +32,7 @@ packages () {
 	sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo apt install -y compton feh curl dunst libnotify-bin zip unzip
+	sudo apt install -y compton feh curl dunst libnotify-bin zip unzip xwallpaper
 	sudo apt install -y libxinerama-dev libreadline-dev 
 	#sudo apt install -y pcmanfm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
@@ -139,20 +139,35 @@ basicfolders () {
 youtube_dl () {
 	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 	sudo chmod a+rx /usr/local/bin/youtube-dl
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-del ready" >> $LOG_FILE
 }
 
 # ----- nerd fonts ---------
 fonts() {
 	mkdir /tmp/nerdfonts
 	cd /tmp/nerdfonts
-	curl -L -o ubuntu.zip curl -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
+	curl -L -o ubuntu.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
 	curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
 	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.1/fontawesome-free-5.15.1-web.zip 
 	curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
-	unzip *.zip
+	unzip "*.zip"
 	sudo mkdir -p /usr/share/fonts/truetype/newfonts
-	sudo mv $(find . -name '*.ttf') /usr/share/fonts/truetype/newfonts	
+	#OLDIFS=$IFS
+	#IFS=$'\n'
+	#fileArray=($(find . -name '*.ttf*'))
+	#tLen=${#fileArray[@]}
+	#IFS=$OLDIFS
+	#for (( i=0; i<${tLen}; i++ ));
+	#do
+	#	sudo mv "${fileArray[$i]}" /usr/share/fonts/truetype/newfonts
+	#done
+	find . -name '*.ttf' >tmp
+	while read file
+	do
+		sudo cp "$file" /usr/share/fonts/truetype/newfonts
+	done<tmp
 	sudo fc-cache -f -v
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] fonts added" >> $LOG_FILE
 }
 
 # ----- git repos  ----------------------------
@@ -270,6 +285,7 @@ configdwm () {
 	cp $ACTUAL_DIR/dwm* ~/bin
 	chmod +x ~/bin/dwm*
 	echo "dwm-start" >> .xinitrc
+	patchdwm
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dwm configured" >> $LOG_FILE
 
 # From Luke Smith dwmblocks repo (https://github.com/LukeSmithxyz/dwmblocks):
@@ -284,6 +300,62 @@ configdwm () {
 # My volume module never updates on its own, instead I have this command run along side my volume shortcuts in dwm to only update it when relevant.
 # Note that if you signal an unexpected signal to dwmblocks, it will probably crash. So if you disable a module, 
 # remember to also disable any cronjobs or other scripts that might signal to that module.	
+}
+
+
+# ----- configure dwm -----------------------------
+patchdwm () {
+	alias suckClean='make clean && rm -f config.h && git reset --hard origin/master'
+	cd /opt/git/dwm
+	
+	git checkout master
+	suckClean
+	git branch config
+	git checkout config
+	sed -i 's/define MODKEY Mod1Mask/define MODKEY Mod4Mask/' /opt/git/dwm/config.def.h
+	git add .
+	git commit -m config
+	
+	git checkout master
+	suckClean
+	git branch pertag
+	git checkout pertag
+	git apply /opt/git/dotfiles/dwm_patches/dwm-pertag-20200914-61bb8b2.diff
+	git add .
+	git commit -m pertag
+	
+	git checkout master
+	suckClean
+	git branch noborder
+	git checkout noborder
+	git apply /opt/git/dotfiles/dwm_patches/dwm-noborderfloatingfix-6.2.diff
+	git add .
+	git commit -m noborder
+
+	git checkout master
+	suckClean
+	git branch dwmc
+	git checkout dwmc
+	git apply /opt/git/dotfiles/dwm_patches/dwm-dwmc-6.2.diff
+	git add . 
+	git commit -m dwmc
+	
+	git checkout master
+	suckClean
+	git branch scratchpad
+	git checkout scratchpad
+	git apply /opt/git/dotfiles/dwm_patches/dwm-scratchpad-6.2.diff
+	git add . 
+	git commit -m scratchpad
+	
+	git checkout master
+	git merge config -m config
+	git merge pertag -m pertag
+	git merge noborder -m noborder
+	git merge dwmc -m dwmc
+	git merge scratchpad -m scratchpad
+	make
+	
 	
 #
 #  ==== patching guide + plus ====
@@ -295,6 +367,7 @@ configdwm () {
 # git branch -D config    -- deletes non-active config branch
 # make clean && rm -f config.h && git reset --hard origin/master  -- goes to initial state (no make done), throwing away any potential not commited change
 # git merge config -m config  -- merge the contents of config branch into actual branch 
+#
 #
 # -- starting ---
 # git branch config
@@ -389,8 +462,10 @@ walls () {
 
 # ----- xinit & bashrc ----------------------------
 finalsetup () {
-	sed -i 's/#alias ll=/alias ll=/' ~/.bashrc
-	echo "alias q='exit'" >> ~/.bashrc
+	cd $ACTUAL_DIR
+	cp Xresources ~/.Xresources
+	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
+	cat bashrc >> ~/.bashrc
 	cp $ACTUAL_DIR/dmenu/choosewm ~/bin
 	chmod +x ~/bin/choosewm
 	if [ "$WM_SELECTION" = "dwm" ]; then

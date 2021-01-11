@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+if [[ ! -f "$1" ]];then
+	exit
+fi
+
+mime=$(file -b --mime-type "$1")
+echo $mime
+# m3u files report as text/plain for some reason
+if [[ "${1#*.}" = "m3u" ]];then
+	mpv "$1"
+# text/*
+elif [[ "${mime%/*}" = "text" ]];then
+    # external script to open text files
+    TERMCMD="urxvtc"
+    $TERMCMD -e vim "$1" > /dev/null 2>&1 &
+# djvu documents
+elif [[ "$mime" = "image/vnd.djvu" ]];then 
+	zathura "$1"
+# image/*
+elif [[ "${mime%/*}" = "image" ]];then
+	# eye of mate (eom). Usually it's used sxiv
+	eom "$1"
+# video/*
+elif [[ "${mime%/*}" = "video" || "${mime%/*}" = "audio" ]];then
+	mpv "$1"
+# ebooks 
+elif [[ "$mime" = "application/epub+zip" ]];then
+	zathura "$1"
+# pdfs 
+elif [[ "$mime" = "application/pdf" ]];then
+	zathura "$1"
+# exe 
+elif [[ "$mime" = "application/x-dosexec" ]];then
+	wine "$1"
+fi
