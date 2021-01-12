@@ -40,6 +40,9 @@ createSingleBranch() {
 
 makeBranches() {
     gotoDir    
+    git config user.name "xavi"
+	git config user.email "xavi@devuanfans.org"
+	
     createSingleBranch config
     createSingleBranch pertag
     createSingleBranch noborder

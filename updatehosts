@@ -1,0 +1,70 @@
+#!/bin/sh
+
+HOSTS_BACKUP=/tmp/hosts.backup
+NEW_HOSTS_GENERATED=/tmp/new.hosts
+
+# temp stuff
+TMP_DIR=/tmp/temp_hostsssss
+TMP_FILE1=$TMP_DIR/__tpm_file_1
+TMP_ALL_HOSTS=$TMP_DIR/__all_hosts
+
+
+gethostfilesFromAnywhere() {
+	# https://github.com/hectorm/hblock
+	# https://github.com/notracking/hosts-blocklists
+	# https://github.com/StevenBlack/hosts
+	
+	#wget https://easylist-downloads.adblockplus.org/easylist.txt
+	#curl -s  https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts  -o steven_black.txt
+	#wget https://easylist-downloads.adblockplus.org/easyprivacy.txt
+	#wget https://easylist-downloads.adblockplus.org/antiadblockfilters.txt
+	#wget https://easylist-downloads.adblockplus.org/fanboy-annoyance.txt
+	#wget https://easylist-downloads.adblockplus.org/fanboy-social.txt
+	#wget http://hosts-file.net/ad_servers.asp
+	#wget http://someonewhocares.org/hosts/hosts
+	#wget https://easylist-downloads.adblockplus.org/malwaredomains_full.txt
+
+	curl -s -o hosts_mvps.txt      https://winhelp2002.mvps.org/hosts.txt
+	curl -s -o hosts_adaway_1.txt  https://www.adawayapk.net/downloads/hostfiles/official/1_hosts.txt
+	curl -s -o hosts_adaway_2.txt  https://www.adawayapk.net/downloads/hostfiles/official/2_ad_servers.txt
+	curl -s -o hosts_adaway_3.txt  https://www.adawayapk.net/downloads/hostfiles/official/3_yoyohost.txt
+	curl -s -o hosts_steveblack    https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+}
+
+
+# This is going to backup our hosts file.
+if [ ! -f $HOSTS_BACKUP ]; then
+	cp /etc/hosts $HOSTS_BACKUP
+fi
+
+[ -d $TMP_DIR ] && rm -r $TMP_DIR
+mkdir -p $TMP_DIR
+cd $TMP_DIR
+
+# download the files with the sites to be blocked
+gethostfilesFromAnywhere
+
+# path all the entries in an single file (the awk part delete duplicated lines)
+cat $TMP_DIR/* | tr -d '\r' | sed 's/127.0.0.1/0.0.0.0/gi' | awk '!a[$0]++' > $TMP_ALL_HOSTS
+
+# delete localhosts entries in the generated hostfile
+sed -i '/localhost/d' $TMP_ALL_HOSTS
+sed -i '/localhost/d' $TMP_ALL_HOSTS
+sed -i '/::0/d' $TMP_ALL_HOSTS
+sed -i '/::1/d' $TMP_ALL_HOSTS
+sed -i '/::2/d' $TMP_ALL_HOSTS
+sed -i '/::3/d' $TMP_ALL_HOSTS
+sed -i '/255.255.255.255/d' $TMP_ALL_HOSTS
+
+    
+#Create a master hosts file.
+echo "\n\n# --- ===== START OF THE BLOCKED HOSTSLIST ===== --- \n\n" > /tmp/separator_lines_file
+cat $HOSTS_BACKUP /tmp/separator_lines_file $TMP_ALL_HOSTS > $NEW_HOSTS_GENERATED
+echo "\n#Hostslist created on "$(date '+%Y-%m-%d %H:%M') >> $NEW_HOSTS_GENERATED
+
+# Replace current /etc/hosts with our new one.
+echo ">> $NEW_HOSTS_GENERATED generated. "
+echo "Now you can use it to update your /etc/hosts. Please update your current /etc/hosts file first."
+echo " use:  sudo cp -b $NEW_HOSTS_GENERATED /etc/hosts" 
+#head -n 25 $NEW_HOSTS_GENERATED
+

@@ -16,8 +16,10 @@ usage()
   echo "   available values for 'option' parameter:"
   echo "     0 : install and configure all wm available"
   echo "     1 : install and configure bspwm"
-  echo "     2 : install and configure dwm"
+  echo "     2 : install and configure basic dwm"
   echo "     3 : install and configure dk"
+  echo "     4 : patch dwm"
+  echo "     5 : configure hosts file to block trackers"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
@@ -28,13 +30,13 @@ usage()
 packages () {
 	sudo apt update 
 	sudo apt install -y git vim xorg xserver-xorg gcc make xdo xdotool
-	sudo apt install -y libx11-dev lifxft-dev
+	sudo apt install -y libx11-dev libxft-dev libharfbuzz-dev
 	sudo apt install -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo apt install -y compton feh curl dunst libnotify-bin zip unzip xwallpaper
 	sudo apt install -y libxinerama-dev libreadline-dev 
-	#sudo apt install -y pcmanfm lxappearance mpv cmus
+	sudo apt install --no-install-recommends -y compton curl dunst libnotify-bin zip unzip xwallpaper feh
+	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -127,11 +129,16 @@ packages_void () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
-# ----- folders in HOME ---------
+# ----- folders: HOME and /opt/git ---------
 basicfolders () {
 	mkdir ~/downloads ~/music ~/bin ~/pictures ~/pictures/walls ~/videos
 	sudo mkdir /opt/git
 	sudo chown $USER /opt/git
+	cp $ACTUAL_DIR /opt/git
+	cp $ACTUAL_DIR
+	cp colors.sh nnnopen pirokit scratchpad.sh updatehosts vm.sh ytp wallpaper* ~/bin
+	cp dmenu ~/bin
+	chmod +x ~/bin/* ~/bin/dmenu/* 
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
 }
 
@@ -212,7 +219,6 @@ gitrepos () {
 		sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
 		sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
 		# Protesilaos' compile of lemonbar with xft support
-		#git clone https://gitlab.com/protesilaos/lemonbar-xft.git /opt/git/lemonbar-xft
 		git clone https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
 		cd /opt/git/lemonbar-xft
 		make
@@ -246,6 +252,7 @@ gitrepos () {
 		git clone https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
 		cd /opt/git/dwmblocks
 		make
+		sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
 		sudo ln -fs /opt/git/dwmblocks/dwmblocks /usr/local/bin
 	elif [ "$1" = "dk" ]; then
 		git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
@@ -271,8 +278,6 @@ defaultbspwm () {
 	echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
 	echo "compton &" >> ~/.config/bspwm/bspwmrc
 	echo "dunst &" >> ~/.config/bspwm/bspwmrc
-	cp $ACTUAL_DIR/scratchpad.sh ~/bin
-	chmod +x ~/bin/scratchpad.sh
 	echo " " >> ~/.config/sxhkd/sxhkdrc
 	echo "super + a" >> ~/.config/sxhkd/sxhkdrc
     echo "    /home/$USER/bin/scratchpad.sh" >> ~/.config/sxhkd/sxhkdrc
@@ -285,7 +290,7 @@ configdwm () {
 	cp $ACTUAL_DIR/dwm* ~/bin
 	chmod +x ~/bin/dwm*
 	echo "dwm-start" >> .xinitrc
-	patchdwm
+	# patchdwm
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dwm configured" >> $LOG_FILE
 
 # From Luke Smith dwmblocks repo (https://github.com/LukeSmithxyz/dwmblocks):
@@ -303,110 +308,9 @@ configdwm () {
 }
 
 
-# ----- configure dwm -----------------------------
+# ----- patch dwm -----------------------------
 patchdwm () {
-	alias suckClean='make clean && rm -f config.h && git reset --hard origin/master'
-	cd /opt/git/dwm
-	
-	git checkout master
-	suckClean
-	git branch config
-	git checkout config
-	sed -i 's/define MODKEY Mod1Mask/define MODKEY Mod4Mask/' /opt/git/dwm/config.def.h
-	git add .
-	git commit -m config
-	
-	git checkout master
-	suckClean
-	git branch pertag
-	git checkout pertag
-	git apply /opt/git/dotfiles/dwm_patches/dwm-pertag-20200914-61bb8b2.diff
-	git add .
-	git commit -m pertag
-	
-	git checkout master
-	suckClean
-	git branch noborder
-	git checkout noborder
-	git apply /opt/git/dotfiles/dwm_patches/dwm-noborderfloatingfix-6.2.diff
-	git add .
-	git commit -m noborder
-
-	git checkout master
-	suckClean
-	git branch dwmc
-	git checkout dwmc
-	git apply /opt/git/dotfiles/dwm_patches/dwm-dwmc-6.2.diff
-	git add . 
-	git commit -m dwmc
-	
-	git checkout master
-	suckClean
-	git branch scratchpad
-	git checkout scratchpad
-	git apply /opt/git/dotfiles/dwm_patches/dwm-scratchpad-6.2.diff
-	git add . 
-	git commit -m scratchpad
-	
-	git checkout master
-	git merge config -m config
-	git merge pertag -m pertag
-	git merge noborder -m noborder
-	git merge dwmc -m dwmc
-	git merge scratchpad -m scratchpad
-	make
-	
-	
-#
-#  ==== patching guide + plus ====
-# 
-# -- ::notes:: ----
-# git branch config       -- this makes a new branch
-# git branch              -- list existing branches
-# git checkout config     -- changes to this branch
-# git branch -D config    -- deletes non-active config branch
-# make clean && rm -f config.h && git reset --hard origin/master  -- goes to initial state (no make done), throwing away any potential not commited change
-# git merge config -m config  -- merge the contents of config branch into actual branch 
-#
-#
-# -- starting ---
-# git branch config
-# git checkout config
-# change wethever you want (example: Mod1 -> Mod4)	
-# git add config.def.h
-# git commit -m config   -- author note (easy way): name of the commentary = name of branch
-# git checkout master
-# git merge config -m config
-#	.. and now we can test if the changes are OK (make & restarting dwm)
-#
-# -- let's patch pertag: first we want a clean original code again ---
-# git checkout master
-# make clean && rm -f config.h && git reset --hard origin/master
-# git branch pertag
-# git checkout pertag
-# git apply /location/of/pertag-patch.diff	
-#   .. we can see if the changes are applied in the code ...	
-# git add .	
-# git commit -m pertag	
-# git checkout master	
-# git merge config -m config	
-# git merge pertag -m pertag	-- we merged all changes we did (one by one)
-#  ... now we can make and see if the canghes are OK ...	
-# 
-# -- let's noborder now ---
-# git checkout master
-# make clean && rm -f config.h && git reset --hard origin/master
-# git branch noborder
-# git checkout noborder
-# git apply /location/of/noborder-patch.diff	
-#   .. we can see if the changes are applied in the code ...	
-# git add .	
-# git commit -m noborder	
-# git checkout master	
-# git merge config -m config	
-# git merge pertag -m pertag
-# git merge noborder -m noborder
-#	
+	echo "for patching dwm, use ~/bin/dwm_git_lab.sh script."
 }
 
 # ----- configure dk -----------------------------
@@ -439,8 +343,6 @@ lemonbarpanelbsp () {
 
 # ----- wallpaper ----------------------------------
 walls () {
-	cp $ACTUAL_DIR/wallpaper* ~/bin
-	chmod +x ~/bin/wallpaper*
 	cd ~/pictures/walls
 	curl -O http://static.simpledesktops.com/uploads/desktops/2012/01/25/enso3.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
@@ -464,6 +366,8 @@ walls () {
 finalsetup () {
 	cd $ACTUAL_DIR
 	cp Xresources ~/.Xresources
+	cp colors ~/bin/
+	chmod +x ~/bin/colors
 	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
 	cat bashrc >> ~/.bashrc
 	cp $ACTUAL_DIR/dmenu/choosewm ~/bin
@@ -493,6 +397,15 @@ finalsetup () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] xinitrc & bash alias setups done" >> $LOG_FILE
 }
 
+# ----- update /etc/hosts --------------------------
+updatehosts() {
+	cd $ACTUAL_DIR
+	cp updatehosts ~/bin/updatehosts
+	chmod +x updatehosts
+	~/bin/updatehosts
+}
+
+
 
 # ||||||||||||||||||||||||||||||||||||||||
 # ||||||||||||||||||||||||||||||||||||||||
@@ -512,7 +425,9 @@ esac
 if [ "$OPTION" = "0" ]; then
 	WM_SELECTION="all"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && fonts && gitrepos && gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && configdwm && configdk && walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos \
+			&& gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && configdwm && configdk \
+			&& walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
 	else
 		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
 	fi
@@ -520,7 +435,8 @@ if [ "$OPTION" = "0" ]; then
 elif [ "$OPTION" = "1" ]; then
 	WM_SELECTION="bspwm"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && fonts && gitrepos && gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos \
+			&& gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
 	else
 		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
 	fi
@@ -528,7 +444,8 @@ elif [ "$OPTION" = "1" ]; then
 elif [ "$OPTION" = "2" ]; then
 	WM_SELECTION="dwm"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && fonts && gitrepos && gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos \
+			&& gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
 	else
 		packages_void && echo "dwm configured. Please, reboot system for the moment."
 	fi
@@ -536,11 +453,16 @@ elif [ "$OPTION" = "2" ]; then
 elif [ "$OPTION" = "3" ]; then
 	WM_SELECTION="dk"
 	if [ "$DISTRO" = "devuan" ]; then
-		packages && basicfolders && fonts && gitrepos && gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
+		packages && basicfolders && fonts && gitrepos \
+			&& gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
 	else
 		echo "dk not available on Void Linux. Only dwm available for the moment."
 	fi
 	echo "dk" > $WM_SELECTION_FILE
+elif [ "$OPTION" = "4" ]; then
+	patchdwm
+elif [ "$OPTION" = "5" ]; then
+	updatehosts
 else
 	usage
 fi
