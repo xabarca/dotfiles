@@ -8,6 +8,7 @@ dunst &
 #manage-monitors &
 #xautolock -time 20 -locker "$HOME/bin/i3/lock" &
 wallpaper-loop &
+xrdb ~/.Xresources &
 
 #dwm-bar &
 dwmblocks &

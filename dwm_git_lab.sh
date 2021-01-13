@@ -3,8 +3,8 @@
 BASE_DIR=/tmp/temp_dwm
 #BASE_DIR=/opt/git
 PROJECT="dwm"
-#DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/dwm_patches
-DIR_OFFICIAL_DIFFS=~/git/dotfiles/dwm_patches
+DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/dwm_patches
+#DIR_OFFICIAL_DIFFS=~/git/dotfiles/dwm_patches
 DIR_GENERATED_DIFFS=~
 
 suckClean() {
@@ -27,15 +27,15 @@ cloneRepo() {
     git clone https://git.suckless.org/dwm $BASE_DIR/$PROJECT
 }
 
-createSingleBranch() {
-	branchToCreate=$1
+createBranchByPatch() {
+	branchName=$1
 	git checkout master
     suckClean
-    git branch $branchToCreate
-    git checkout $branchToCreate
-    git apply "$(getOwnDiffFile $branchToCreate)"
+    git branch $branchName
+    git checkout $branchName
+    git apply "$(getOwnDiffFile $branchName)"
     git add .
-    git commit -m $branchToCreate
+    git commit -m $branchName
 }
 
 makeBranches() {
@@ -43,35 +43,33 @@ makeBranches() {
     git config user.name "xavi"
 	git config user.email "xavi@devuanfans.org"
 	
-    createSingleBranch config
-    createSingleBranch pertag
-    createSingleBranch noborder
-    createSingleBranch scratchpad
-    createSingleBranch dwmc
-    createSingleBranch statusallmons
-    createSingleBranch xresources
-    createSingleBranch attachtop
+    createBranchByPatch config
+    createBranchByPatch pertag
+    createBranchByPatch noborder
+    createBranchByPatch scratchpad
+    createBranchByPatch dwmc
+    createBranchByPatch statusallmons
+    createBranchByPatch xresources
+    createBranchByPatch attachtop
 }
 
 mergeManually() {
     gotoDir
-    echo "merging manually..."
-    sleep 1s
     git checkout master
     suckClean
-    echo "-------merging config ..."
+    echo "[*] ------- merging config ..."
     git merge config -m config
-    echo "-------merging pertag ..."
+    echo "[*] ------- merging pertag ..."
     git merge pertag -m pertag
-    echo "-------merging noborder ..."
+    echo "[*] ------- merging noborder ..."
     git merge noborder -m noborder
-    echo "-------merging dwmc ..."
+    echo "[*] ------- merging dwmc ..."
     git merge dwmc -m dwmc
-    echo "-------merging statusallmons ..."
+    echo "[*] ------- merging statusallmons ..."
     git merge statusallmons -m statusallmons
-    echo "-------merging xresources ..."
+    echo "[*] ------- merging xresources ..."
     git merge xresources -m xresources
-    echo "-------merging attachtop ..."
+    echo "[*] ------- merging attachtop ..."
     git merge attachtop -m attachtop
 }
 

@@ -34,6 +34,7 @@ urxvt*shading: 35
 urxvt*tintColor: #232323
 
 dwm.selfgcolor: #232323
-dwm.selbgcolor: #b1942b
-dwm.selbordercolor: #b1942b
+dwm.selbgcolor: #B1942B
+dwm.selbordercolor: #B1942B
 dwm.normbordercolor: #232323 
+st.font: Hack:pixelsize=12:antialias=true:autohint=true

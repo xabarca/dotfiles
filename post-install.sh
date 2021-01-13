@@ -35,8 +35,8 @@ packages () {
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 	sudo apt install -y libxinerama-dev libreadline-dev 
-	sudo apt install --no-install-recommends -y compton curl dunst libnotify-bin zip unzip xwallpaper feh
-	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus
+	sudo apt install --no-install-recommends -y compton curl dunst libnotify-bin zip unzip xwallpaper
+	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme numix-icon-theme-circle
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -90,7 +90,7 @@ packages_void () {
 	sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
 	cd $ACTUAL_DIR
 	cp Xresources ~/.Xresources
-	cp scratchpad.sh vm.sh ytp wall* ~/bin
+	cp scratchpad vm.sh ytp wall* ~/bin
 	cp -r dmenu ~/bin
 	chmod +x ~/bin/* ~/bin/dmenu/*
 	cd ~/pictures/walls
@@ -131,13 +131,13 @@ packages_void () {
 
 # ----- folders: HOME and /opt/git ---------
 basicfolders () {
-	mkdir ~/downloads ~/music ~/bin ~/pictures ~/pictures/walls ~/videos
+	mkdir ~/downloads ~/music ~/bin ~/bin/dwm ~/pictures ~/pictures/walls ~/videos
 	sudo mkdir /opt/git
 	sudo chown $USER /opt/git
-	cp $ACTUAL_DIR /opt/git
-	cp $ACTUAL_DIR
-	cp colors.sh nnnopen pirokit scratchpad.sh updatehosts vm.sh ytp wallpaper* ~/bin
-	cp dmenu ~/bin
+	cp -r $ACTUAL_DIR /opt/git
+	cd $ACTUAL_DIR
+	cp colors.sh nnnopen pirokit scratchpad updatehosts vm.sh ytp wallpaper* ~/bin
+	cp -r dmenu ~/bin
 	chmod +x ~/bin/* ~/bin/dmenu/* 
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
 }
@@ -146,7 +146,7 @@ basicfolders () {
 youtube_dl () {
 	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 	sudo chmod a+rx /usr/local/bin/youtube-dl
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-del ready" >> $LOG_FILE
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-dl ready" >> $LOG_FILE
 }
 
 # ----- nerd fonts ---------
@@ -250,6 +250,7 @@ gitrepos () {
 		cd /opt/git/dwm
 		make
 		git clone https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
+		cp $ACTUAL_DIR/blocks.h /opt/git/dwmblocks
 		cd /opt/git/dwmblocks
 		make
 		sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
@@ -280,17 +281,17 @@ defaultbspwm () {
 	echo "dunst &" >> ~/.config/bspwm/bspwmrc
 	echo " " >> ~/.config/sxhkd/sxhkdrc
 	echo "super + a" >> ~/.config/sxhkd/sxhkdrc
-    echo "    /home/$USER/bin/scratchpad.sh" >> ~/.config/sxhkd/sxhkdrc
+    echo "    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] bspwm & sxhkd installed and configured" >> $LOG_FILE
 	lemonbarpanelbsp	
 }
 
 # ----- configure dwm -----------------------------
 configdwm () {
-	cp $ACTUAL_DIR/dwm* ~/bin
-	chmod +x ~/bin/dwm*
-	echo "dwm-start" >> .xinitrc
-	# patchdwm
+	cp $ACTUAL_DIR/dwm* ~/bin/dwm
+	chmod +x ~/bin/dwm/*
+	echo "~/bin/dwm/dwm-start" >> .xinitrc
+	patchdwm
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dwm configured" >> $LOG_FILE
 
 # From Luke Smith dwmblocks repo (https://github.com/LukeSmithxyz/dwmblocks):
@@ -310,7 +311,7 @@ configdwm () {
 
 # ----- patch dwm -----------------------------
 patchdwm () {
-	echo "for patching dwm, use ~/bin/dwm_git_lab.sh script."
+	echo "For patching dwm, use ~/bin/dwm/dwm_git_lab.sh script."
 }
 
 # ----- configure dk -----------------------------
