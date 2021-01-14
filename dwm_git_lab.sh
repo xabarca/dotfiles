@@ -28,8 +28,8 @@ cloneRepo() {
 }
 
 createBranchByPatch() {
-	branchName=$1
-	git checkout master
+    branchName=$1
+    git checkout master
     suckClean
     git branch $branchName
     git checkout $branchName
@@ -41,7 +41,7 @@ createBranchByPatch() {
 makeBranches() {
     gotoDir    
     git config user.name "xavi"
-	git config user.email "xavi@devuanfans.org"
+    git config user.email "xavi@devuanfans.org"
 	
     createBranchByPatch config
     createBranchByPatch pertag
@@ -51,6 +51,7 @@ makeBranches() {
     createBranchByPatch statusallmons
     createBranchByPatch xresources
     createBranchByPatch attachtop
+    createBranchByPatch xrdb
 }
 
 mergeManually() {
@@ -68,9 +69,11 @@ mergeManually() {
     echo "[*] ------- merging statusallmons ..."
     git merge statusallmons -m statusallmons
     echo "[*] ------- merging xresources ..."
-    git merge xresources -m xresources
-    echo "[*] ------- merging attachtop ..."
+    #git merge xresources -m xresources
+    #echo "[*] ------- merging attachtop ..."
     git merge attachtop -m attachtop
+    echo "[*] ------- merging xrdb ..."
+    git merge attachtop -m xrdb
 }
 
 customRebase() {

@@ -14,7 +14,7 @@ SCRATCHPAD_NAME=$1
 # fi
 
 
-if [ "$SCRATCHPAD_NAME" = "st_scratchpad" ]; then
+if [ "$SCRATCHPAD_NAME" = "scratchpad" ]; then
 	# we decide that name "scratchpad" will be launched as an st
 	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \
       || xdotool search --classname $SCRATCHPAD_NAME windowmap \

@@ -367,14 +367,12 @@ walls () {
 finalsetup () {
 	cd $ACTUAL_DIR
 	cp Xresources ~/.Xresources
-	cp colors ~/bin/
-	chmod +x ~/bin/colors
 	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
 	cat bashrc >> ~/.bashrc
 	cp $ACTUAL_DIR/dmenu/choosewm ~/bin
 	chmod +x ~/bin/choosewm
 	if [ "$WM_SELECTION" = "dwm" ]; then
-		echo "dwm-start" >> ~/.xinitrc
+		echo "~/bin/dwm/dwm-start" >> ~/.xinitrc
 	elif [ "$WM_SELECTION" = "bspwm" ]; then
 		echo "exec bspwm" >> ~/.xinitrc
 	elif [ "$WM_SELECTION" = "dk" ]; then
