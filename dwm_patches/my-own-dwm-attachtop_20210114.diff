@@ -1,15 +1,5 @@
-From 17acbdcb56d0d2f39507a3f67ef329c14a213ef6 Mon Sep 17 00:00:00 2001
-From: MLquest8 <miskuzius@gmail.com>
-Date: Thu, 18 Jun 2020 15:34:18 +0400
-Subject: [PATCH] attachtop. Attaches new client below the last master/on top
- of the stack. In case of nmaster = 1 behaves like attachaside.
-
----
- dwm.c | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
-
 diff --git a/dwm.c b/dwm.c
-index 9fd0286..7ced982 100644
+index 664c527..cd7caa6 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,8 @@
@@ -83,6 +73,3 @@ index 9fd0286..7ced982 100644
  					attachstack(c);
  				}
  				if (m == selmon)
--- 
-2.26.2
-

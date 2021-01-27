@@ -1,0 +1,81 @@
+#! /bin/bash
+#
+# A dmenu "Siglo-21" podcasts audio player 
+#    https://www.rtve.es/alacarta/audios/siglo-21/" 
+#    https://www.rtve.es/alacarta/audios/turbo-3/
+#
+# 20/01/2021 - xabarca
+#
+# curl -s https://www.rtve.es/alacarta/audios/siglo-21/ | grep titulo-tooltip
+# curl -s https://www.rtve.es/alacarta/audios/siglo-21/ | grep mp3 | grep resources | grep mediavod
+
+PROGRAM="siglo-21"
+FOLDER_TEMP=/tmp
+FOLDER_MUSIC=~/music/radio3-programs
+
+
+# 
+# first we select which program we wanna download podcasts from
+#
+pogrames_disponibles="siglo-21\\nturbo-3"
+selection=$( printf "$pogrames_disponibles" | dmenu -i  -p "Chose program" )
+[ "$selection" = "" ] && exit 0
+PROGRAM=$selection
+
+URL="https://www.rtve.es/alacarta/audios/$PROGRAM/"
+TMP_HTML="$FOLDER_TEMP/_""$PROGRAM""_$(date  +'%Y-%m-%d')"
+DATA_NAMES="$TMP_HTML""names"
+DATA_mp3="$TMP_HTML""mp3"
+DATA_DAYS="$TMP_HTML""days"
+FULL_DATA="$TMP_HTML""dmenu"
+
+
+# 
+# download and process data
+#
+if [ ! -f $TMP_HTML ]; then
+    echo "downloading from: $URL"
+    curl -s $URL | grep 'mp3\|titulo-tooltip' > $TMP_HTML
+
+    # dates
+	cat $TMP_HTML | grep 'titulo-tooltip' | sed 's/\//_/g' \
+	     | sed 's/<span class="titulo-tooltip"><a href="https:__www.rtve.es_alacarta_audios//g' \
+         | awk -F\" '{print $1}' \
+         | awk -F'-' '{print $(NF-2)"-"$(NF-1)"-20"$(NF)}' \
+         | awk -F'_' '{print $(NF-2)}' > $DATA_DAYS
+    # text
+    cat $TMP_HTML | grep 'titulo-tooltip' | awk -F\" '{print $(NF-1)}' | sed 's/Ver //g' > $DATA_NAMES
+    # mp3 urls
+    cat $TMP_HTML  | grep mp3 | grep resources | grep mediavod | grep url | awk -F\" '{print $(NF-1)}' | grep -v 'data' > $DATA_mp3
+
+    readarray -t arrayD < $DATA_DAYS
+    readarray -t arrayN < $DATA_NAMES
+    readarray -t arrayM < $DATA_mp3
+     
+    [ -f $FULL_DATA ] && rm $FULL_DATA
+    
+    for index in "${!arrayD[@]}"; do
+        echo "${arrayD[$index]} - ${arrayN[$index]} - ${arrayM[$index]}" >> $FULL_DATA
+    done
+else
+     echo "data already exists"
+fi
+
+
+# 
+# choose episode with dmenu
+#
+selection=$( cat $FULL_DATA | awk -F ' - http' '{print $1}' | dmenu -p "$PROGRAM progams to select: " -l 20 )
+[ -z $selection ] && exit 0
+selected=$( cat $FULL_DATA | grep "`echo $selection | awk '{print $1}'`" )
+[ -z $selected ] && exit 0
+
+
+# 
+# download and play it !
+#
+selectedMP3=$(echo $selected | awk -F ' - ' '{print $3}' )
+mp3_to_download="$FOLDER_MUSIC/""$PROGRAM""__$(echo $selected | awk -F ' - ' '{print $1,"_",$2,".mp3"}' | sed 's/ /_/g' )"
+[ ! -f $FOLDER_MUSIC ] && mkdir -p $FOLDER_MUSIC
+[ ! -f $mp3_to_download ] && curl -L -o $mp3_to_download $selectedMP3
+mpv --no-audio-display  $selectedMP3

@@ -8,7 +8,7 @@ static const Block blocks[] = {
 	{"",  "~/bin/dwm/dwm-bar-functions -v",	         0,		12 },
 	{"",  "~/bin/dwm/dwm-bar-functions -a",	         0,		11 },
 	{"",  "~/bin/dwm/dwm-bar-functions -m",	        30,		 0 },
-	{"",  "~/bin/dwm/dwm-bar-functions -d",			30,		 0 },
+	{"",  "~/bin/dwm/dwm-bar-functions -t",			30,		 0 },
 };
 
 //sets delimeter between status commands. NULL character ('\0') means no delimeter.

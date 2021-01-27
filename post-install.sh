@@ -20,6 +20,7 @@ usage()
   echo "     3 : install and configure dk"
   echo "     4 : patch dwm"
   echo "     5 : configure hosts file to block trackers"
+  echo "     6 : life is easier with browsers"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
@@ -49,83 +50,56 @@ packages_void () {
 	sudo xbps-install -y nnn bash-completion setxkbmap rxvt-unicode dbus
 	sudo xbps-install -y gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
 	sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
-	sudo xbps-install -y sxhkd lemonbar-xft bspwm 
-	sudo xbps-install -y dejavu-fonts-ttf font-awesome5 font-hack-ttf xrandr
-	sudo xbps-install -y xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq youtube-dl
-	sudo xbps-install -y pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid_vs_pc
+	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq youtube-dl
+	#sudo xbps-install -y pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
-	cd
-	mkdir downloads music bin pictures pictures/walls videos
-	mkdir -p .config/bspwm -p .config/sxhkd  -p .config/dunst
-	sudo mkdir /opt/git
-	sudo chown $USER:$USER /opt/git
-	git clone https://git.suckless.org/wmname /opt/git/wmname
-	cd /opt/git/wmname
-	make
-	git clone https://git.suckless.org/dmenu /opt/git/dmenu
-	cd /opt/git/dmenu
-	make
-	git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
-	cd /opt/git/dk
-	make
-	git clone https://git.suckless.org/dwm /opt/git/dwm
-	sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
-	sed -i 's/define MODKEY Mod1Mask/define MODKEY Mod4Mask/' /opt/git/dwm/config.def.h
-	cd /opt/git/dwm
-	make
-	git clone https://git.disroot.org/lumaro/dotfiles.git /tmp/lumaro_dots
-	cp -r /tmp/lumaro_dots/suckless/st /opt/git
-	cd /opt/git/st
-	make
-	cd
-	sudo ln -fs /opt/git/dk/dk /usr/local/bin
-	sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
-	sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
-	sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
-	sudo ln -fs /opt/git/wmname/wmname /usr/local/bin
-	sudo ln -fs /opt/git/st/st /usr/local/bin
-	sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
-	sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
-	sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
-	sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
-	cd $ACTUAL_DIR
-	cp Xresources ~/.Xresources
-	cp scratchpad vm.sh ytp wall* ~/bin
-	cp -r dmenu ~/bin
-	chmod +x ~/bin/* ~/bin/dmenu/*
-	cd ~/pictures/walls
-	curl -O http://static.simpledesktops.com/uploads/desktops/2012/01/25/enso3.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2018/03/29/ESTRES.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2016/07/19/Path.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2013/02/22/Desktop_Squares.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2014/10/15/tetons-at-night.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixels.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
-	cp /usr/share/doc/bspwm/examples/bspwmrc ~/.config/bspwm/
-	cp /usr/share/doc/bspwm/examples/sxhkdrc ~/.config/sxhkdrc/
-	cp /opt/git/bspwm/examples/sxhkdrc ~/.config/sxhkd/
-	chmod +x ~/.config/bspwm/bspwmrc
-	chmod +x ~/.config/sxhkd/sxhkdrc
-	echo "xwallpaper --stretch /home/$USER/pictures/walls/zentree_1.png &" >> ~/.xinitrc
-	echo "bin/wallpaper-loop.sh &" >> ~/.xinitrc
-	echo "setxkbmap es &" >> ~/.xinitrc
-	echo "urxvtd -q -o -f &" >> ~/.xinitrc
-	echo "dunst &" >> ~/.xinitrc
-	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
-	echo "exec bspwm" >> ~/.xinitrc
-	echo "PS1='\e[1;33m$(date '+%H:%M.%S')\e[m \e[1;34m\w\e[m\e[1;35m\$\e[m '" >> ~.bashrc
+
+	# cd
+	# mkdir downloads music bin pictures pictures/walls videos
+	# mkdir -p .config/bspwm -p .config/sxhkd  -p .config/dunst
+	# sudo mkdir /opt/git
+	# sudo chown $USER:$USER /opt/git
 	
+	# git clone https://git.suckless.org/wmname /opt/git/wmname
+	# cd /opt/git/wmname
+	# make
+	# git clone https://git.suckless.org/dmenu /opt/git/dmenu
+	# cd /opt/git/dmenu
+	# make
+	# git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
+	# cd /opt/git/dk
+	# make
+
+	# git clone https://git.suckless.org/dwm /opt/git/dwm
+	# sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
+	# sed -i 's/define MODKEY Mod1Mask/define MODKEY Mod4Mask/' /opt/git/dwm/config.def.h
+	# cd /opt/git/dwm
+	# make
+	# git clone https://git.disroot.org/lumaro/dotfiles.git /tmp/lumaro_dots
+	# cp -r /tmp/lumaro_dots/suckless/st /opt/git
+	# cd /opt/git/st
+	# make
+
+	# cd
+	# sudo ln -fs /opt/git/dk/dk /usr/local/bin
+	# sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
+	# sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
+	# sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
+	# sudo ln -fs /opt/git/wmname/wmname /usr/local/bin
+	# sudo ln -fs /opt/git/st/st /usr/local/bin
+	# sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
+	# sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
+	# sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
+	# sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
+
+	# cd $ACTUAL_DIR
+	# 
+	# echo "urxvtd -q -o -f &" >> ~/.xinitrc
+	# echo "dunst &" >> ~/.xinitrc
+	# echo "xrdb ~/.Xresources &" >> ~/.xinitrc
+	# echo "exec bspwm" >> ~/.xinitrc
+	# echo "PS1='\e[1;33m$(date '+%H:%M.%S')\e[m \e[1;34m\w\e[m\e[1;35m\$\e[m '" >> ~.bashrc
 	
-	#  sudo xbps-install -Sy git vim xorg xserver-xorg gcc make xdo
-	#  sudo xbps-install -Sy libx11-dev lifxft-dev libxinerama-dev 
-	#  sudo xbps-install -Sy libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
-	#  sudo xbps-install -Sy libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
-	#  sudo xbps-install -Sy libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	#  sudo xbps-install -Sy compton feh fonts-font-awesome curl vifm dunst libnotify-bin
-	#  #sudo apt install -y spacefm lxappearance mpv cmus
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -133,7 +107,7 @@ packages_void () {
 basicfolders () {
 	mkdir ~/downloads ~/music ~/bin ~/bin/dwm ~/pictures ~/pictures/walls ~/videos
 	sudo mkdir /opt/git
-	sudo chown $USER /opt/git
+	sudo chown $USER:$USER /opt/git
 	cp -r $ACTUAL_DIR /opt/git
 	cd $ACTUAL_DIR
 	cp colors.sh nnnopen pirokit scratchpad updatehosts vm.sh ytp wallpaper* ~/bin
@@ -148,6 +122,26 @@ youtube_dl () {
 	sudo chmod a+rx /usr/local/bin/youtube-dl
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-dl ready" >> $LOG_FILE
 }
+
+# ----- brosers (qutebrowser & LibreWolf) ---------
+browsers () {
+	if [ "$DISTRO" = "devuan" ]; then
+		sudo apt install -y qutebroser
+	else
+		sudo xbps-install -y qutebroser
+	fi
+    curl -L -o ~/downloads/LibreWolf-84.0.2-1.AppImage 'https://gitlab.com/librewolf-community/browser/linux/uploads/c6df05ba53192f7df4b5e90e551c7317/LibreWolf-84.0.2-1.x86_64.AppImage'
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
+}
+
+
+# ----- dunst  ----------------
+notify_dunst () {
+	[ ! -d ~/.config/dunst ] && mkdir -p ~/.config/dunst
+	cp $ACTUAL_DIR/dunstrc ~/.config/dunst
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dunst configured" >> $LOG_FILE
+}
+
 
 # ----- nerd fonts ---------
 fonts() {
@@ -218,24 +212,25 @@ gitrepos () {
 		sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
 		sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
 		sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
-		# Protesilaos' compile of lemonbar with xft support
-		git clone https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
-		cd /opt/git/lemonbar-xft
-		make
-		sudo ln -fs /opt/git/lemonbar-xft/lemonbar /usr/local/bin
-		# sxhkd
-		git clone https://github.com/baskerville/sxhkd /opt/git/sxhkd
-		cd /opt/git/sxhkd
-		make
-		sudo make install
 		# wmname (to be able to start JDK swing applications)
 		git clone https://git.suckless.org/wmname /opt/git/wmname
 		cd /opt/git/wmname
 		make
 		sudo make install
 		if [ "$DISTRO" = "devuan" ]; then
+			# nnn file manager
 			git clone https://github.com/jarun/nnn /opt/git/nnn
 			cd /opt/git/nnn
+			make
+			sudo make install
+			# drscream's lemonbar with xft support
+			git clone https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
+			cd /opt/git/lemonbar-xft
+			make
+			sudo ln -fs /opt/git/lemonbar-xft/lemonbar /usr/local/bin
+			# sxhkd
+			git clone https://github.com/baskerville/sxhkd /opt/git/sxhkd
+			cd /opt/git/sxhkd
 			make
 			sudo make install
 		fi
@@ -248,6 +243,9 @@ gitrepos () {
 	elif [ "$1" = "dwm" ]; then
 		git clone https://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
+		if [ "$DISTRO" = "voidlinux" ]; then
+			sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
+		fi
 		make
 		git clone https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
 		cp $ACTUAL_DIR/blocks.h /opt/git/dwmblocks
@@ -268,6 +266,9 @@ gitrepos () {
 
 # ----- configure default bspwm -------------------
 defaultbspwm () {
+	if [ "$DISTRO" = "voidlinux" ]; then
+		sudo xbps-install -y sxhkd lemonbar-xft bspwm 
+	fi
 	mkdir ~/.config ~/.config/bspwm ~/.config/sxhkd
 	cp /opt/git/bspwm/examples/bspwmrc ~/.config/bspwm/
 	cp /opt/git/bspwm/examples/sxhkdrc ~/.config/sxhkd/
@@ -368,9 +369,8 @@ finalsetup () {
 	cd $ACTUAL_DIR
 	cp Xresources ~/.Xresources
 	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
+	echo "setxkbmap es &" >> ~/.xinitrc
 	cat bashrc >> ~/.bashrc
-	cp $ACTUAL_DIR/dmenu/choosewm ~/bin
-	chmod +x ~/bin/choosewm
 	if [ "$WM_SELECTION" = "dwm" ]; then
 		echo "~/bin/dwm/dwm-start" >> ~/.xinitrc
 	elif [ "$WM_SELECTION" = "bspwm" ]; then
@@ -446,7 +446,8 @@ elif [ "$OPTION" = "2" ]; then
 		packages && basicfolders && fonts && gitrepos \
 			&& gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
 	else
-		packages_void && echo "dwm configured. Please, reboot system for the moment."
+		packages_void && basicfolders && fonts && gitrepos \
+			&& gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
 	fi
 	echo "dwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "3" ]; then
@@ -462,6 +463,8 @@ elif [ "$OPTION" = "4" ]; then
 	patchdwm
 elif [ "$OPTION" = "5" ]; then
 	updatehosts
+elif [ "$OPTION" = "6" ]; then
+	browsers
 else
 	usage
 fi

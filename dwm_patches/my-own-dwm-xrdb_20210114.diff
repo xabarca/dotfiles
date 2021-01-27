@@ -46,10 +46,10 @@ index 1c0b587..5db7d05 100644
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
 diff --git a/drw.c b/drw.c
-index 8fd1ca4..e4968a0 100644
+index 4cdbcbe..8f1059e 100644
 --- a/drw.c
 +++ b/drw.c
-@@ -207,7 +207,7 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
+@@ -208,7 +208,7 @@ drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
  /* Wrapper to create color schemes. The caller has to call free(3) on the
   * returned color scheme when done using it. */
  Clr *
@@ -72,7 +72,7 @@ index 4bcd5ad..42b04ce 100644
  /* Cursor abstraction */
  Cur *drw_cur_create(Drw *drw, int shape);
 diff --git a/dwm.c b/dwm.c
-index 4465af1..7fa45c5 100644
+index 664c527..dde2605 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -35,6 +35,7 @@
@@ -105,7 +105,7 @@ index 4465af1..7fa45c5 100644
  
  /* enums */
  enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-@@ -177,6 +193,7 @@ static void grabkeys(void);
+@@ -178,6 +194,7 @@ static void grabkeys(void);
  static void incnmaster(const Arg *arg);
  static void keypress(XEvent *e);
  static void killclient(const Arg *arg);
@@ -113,7 +113,7 @@ index 4465af1..7fa45c5 100644
  static void manage(Window w, XWindowAttributes *wa);
  static void mappingnotify(XEvent *e);
  static void maprequest(XEvent *e);
-@@ -232,6 +249,7 @@ static Monitor *wintomon(Window w);
+@@ -233,6 +250,7 @@ static Monitor *wintomon(Window w);
  static int xerror(Display *dpy, XErrorEvent *ee);
  static int xerrordummy(Display *dpy, XErrorEvent *ee);
  static int xerrorstart(Display *dpy, XErrorEvent *ee);
@@ -121,7 +121,7 @@ index 4465af1..7fa45c5 100644
  static void zoom(const Arg *arg);
  
  /* variables */
-@@ -1014,6 +1032,37 @@ killclient(const Arg *arg)
+@@ -1015,6 +1033,37 @@ killclient(const Arg *arg)
  	}
  }
  
@@ -159,7 +159,7 @@ index 4465af1..7fa45c5 100644
  void
  manage(Window w, XWindowAttributes *wa)
  {
-@@ -2110,6 +2159,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
+@@ -2113,6 +2162,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
  	return -1;
  }
  
@@ -177,7 +177,7 @@ index 4465af1..7fa45c5 100644
  void
  zoom(const Arg *arg)
  {
-@@ -2136,6 +2196,8 @@ main(int argc, char *argv[])
+@@ -2139,6 +2199,8 @@ main(int argc, char *argv[])
  	if (!(dpy = XOpenDisplay(NULL)))
  		die("dwm: cannot open display");
  	checkotherwm();

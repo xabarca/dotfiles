@@ -4,9 +4,20 @@ export _JAVA_AWT_WM_NONREPARENTING=1 &
 wmname LG3D &
 compton -f &
 dunst &
-#urxvtd -q -o -f &
+
+if type compton > /dev/null; then
+    compton &
+fi
+if type picom > /dev/null; then
+    picom &
+fi
+if type urxvtd > /dev/null; then
+    urxvtd -q -o -f &
+fi
+
 #manage-monitors &
 #xautolock -time 20 -locker "$HOME/bin/i3/lock" &
+
 wallpaper-loop &
 xrdb ~/.Xresources &
 

@@ -7,8 +7,14 @@ DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/dwm_patches
 #DIR_OFFICIAL_DIFFS=~/git/dotfiles/dwm_patches
 DIR_GENERATED_DIFFS=~
 
-suckClean() {
+suckCleanMaster() {
+	git checkout master
     make clean && rm -f config.h && git reset --hard origin/master
+}
+
+generateLocalUserConfig() {
+    git config user.name "xavi"
+    git config user.email "xavi@devuanfans.org"
 }
 
 gotoDir() {
@@ -29,8 +35,7 @@ cloneRepo() {
 
 createBranchByPatch() {
     branchName=$1
-    git checkout master
-    suckClean
+    suckCleanMaster
     git branch $branchName
     git checkout $branchName
     git apply "$(getOwnDiffFile $branchName)"
@@ -40,8 +45,7 @@ createBranchByPatch() {
 
 makeBranches() {
     gotoDir    
-    git config user.name "xavi"
-    git config user.email "xavi@devuanfans.org"
+	generateLocalUserConfig
 	
     createBranchByPatch config
     createBranchByPatch pertag
@@ -56,8 +60,14 @@ makeBranches() {
 
 mergeManually() {
     gotoDir
-    git checkout master
-    suckClean
+    suckCleanMaster
+
+    if git show-ref --quiet refs/heads/allcustom; then
+		git branch -D allcustom
+	fi
+    git branch allcustom
+    git checkout allcustom
+    
     echo "[*] ------- merging config ..."
     git merge config -m config
     echo "[*] ------- merging pertag ..."
@@ -68,18 +78,15 @@ mergeManually() {
     git merge dwmc -m dwmc
     echo "[*] ------- merging statusallmons ..."
     git merge statusallmons -m statusallmons
-    echo "[*] ------- merging xresources ..."
-    #git merge xresources -m xresources
-    #echo "[*] ------- merging attachtop ..."
+    echo "[*] ------- merging attachtop ..."
     git merge attachtop -m attachtop
     echo "[*] ------- merging xrdb ..."
-    git merge attachtop -m xrdb
+    git merge xrdb -m xrdb
 }
 
 customRebase() {
     gotoDir
-    git checkout master
-    suckClean
+    suckCleanMaster
     git branch -D allcustom
     git branch allcustom
     git checkout allcustom
@@ -93,8 +100,7 @@ customRebase() {
 
 makeDiffs() {
     gotoDir
-    git checkout master
-    suckClean
+    suckCleanMaster
     for branch in $(git for-each-ref --format='%(refname)' refs/heads/ | cut -d'/' -f3); do
 	    if [ "$branch" != "master" ];then
             git diff master..$branch > "$DIR_GENERATED_DIFFS/my-own-$PROJECT-${branch}_$(date '+%Y%m%d').diff"

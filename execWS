@@ -1,0 +1,26 @@
+#!/bin/bash
+
+JSON=$1
+URL=$2
+
+[ -z $1  ] && echo "bad call to execWS" && exit 0
+
+if [ -z $2  ]; then
+    URL=$1
+    JSON=""
+fi
+
+if [ "$JSON" = "" ]; then
+        
+  time curl -A "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3" \
+    $URL
+
+else
+  
+  time curl -A "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    --data @$JSON \
+    $URL
+
+fi
