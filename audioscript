@@ -1,0 +1,63 @@
+#!/bin/bash
+
+opcio="$1"
+volume_quant="$2"
+default_volume_level=30
+
+update_wm_bar() {
+	# Like Smith:  "add 34 to your typical signal number"
+	if ps ax | grep -v grep | grep dwmblocks > /dev/null
+	then
+		kill -45 $(pidof dwmblocks)
+	fi
+	
+	# calling to the custom hook module volumehook
+	if ps ax | grep -v grep | grep polybar > /dev/null
+	then
+		polybar-msg hook volumehook 1 > /dev/null
+	fi
+
+    # lemonbar pipe fifo
+    if ps ax | grep -v grep | grep lemonbar > /dev/null
+    then
+		~/bin/bspwm/panel/panel update volume
+	fi
+}
+
+_toggle_mute() {
+	amixer -D pulse set Master 1+ toggle
+	update_wm_bar
+}
+
+_up() {
+	amixer -D pulse sset Master "$volume_quant%+"
+	update_wm_bar
+}
+
+_down() {
+	amixer -D pulse sset Master "$volume_quant%-"
+	update_wm_bar
+}
+
+_default() {
+	amixer -D pulse sset Master "$default_volume_level%"
+}
+
+_getvalue() {
+	echo "$( amixer sget Master | grep 'Front Left: Playback' | awk '{print $5}'  | tr -d '[' | tr -d ']' )"
+}
+
+
+case $1 in
+	-m|mute) _toggle_mute ;;
+	up) _up ;;
+	down) _down ;;
+	default) _default ;;
+	-g|getvalue) _getvalue ;;
+#   [+-]*|[0-9]*) _set_volume $1 ;;
+#   -V|get-volume) _get_volume && exit ;;
+#   -M|get-mute) _get_mute && exit ;;
+#   update) _update_pipe exit ;;
+#   subscribe) _subscribe ;;
+#   *) _get_state && exit ;; 
+esac

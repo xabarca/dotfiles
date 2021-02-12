@@ -43,63 +43,20 @@ packages () {
 
 # ----- default packages (void) --------
 packages_void () {
+	# https://notabug.org/reback00/void-goodies
+	# https://github.com/ymir-linux/void-packages
+	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
-	sudo xbps-install -Suy xorg-minimal xinit vim git   
+	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap
+	#sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
 # <<<<<<< basesystem 
-	sudo xbps-install -y nnn bash-completion setxkbmap rxvt-unicode dbus
+	sudo xbps-install -y nnn rxvt-unicode dbus
 	sudo xbps-install -y gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
 	sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq youtube-dl
+	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq unzip xsetroot
 	#sudo xbps-install -y pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
-
-	# cd
-	# mkdir downloads music bin pictures pictures/walls videos
-	# mkdir -p .config/bspwm -p .config/sxhkd  -p .config/dunst
-	# sudo mkdir /opt/git
-	# sudo chown $USER:$USER /opt/git
-	
-	# git clone https://git.suckless.org/wmname /opt/git/wmname
-	# cd /opt/git/wmname
-	# make
-	# git clone https://git.suckless.org/dmenu /opt/git/dmenu
-	# cd /opt/git/dmenu
-	# make
-	# git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
-	# cd /opt/git/dk
-	# make
-
-	# git clone https://git.suckless.org/dwm /opt/git/dwm
-	# sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
-	# sed -i 's/define MODKEY Mod1Mask/define MODKEY Mod4Mask/' /opt/git/dwm/config.def.h
-	# cd /opt/git/dwm
-	# make
-	# git clone https://git.disroot.org/lumaro/dotfiles.git /tmp/lumaro_dots
-	# cp -r /tmp/lumaro_dots/suckless/st /opt/git
-	# cd /opt/git/st
-	# make
-
-	# cd
-	# sudo ln -fs /opt/git/dk/dk /usr/local/bin
-	# sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
-	# sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
-	# sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
-	# sudo ln -fs /opt/git/wmname/wmname /usr/local/bin
-	# sudo ln -fs /opt/git/st/st /usr/local/bin
-	# sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
-	# sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
-	# sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
-	# sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
-
-	# cd $ACTUAL_DIR
-	# 
-	# echo "urxvtd -q -o -f &" >> ~/.xinitrc
-	# echo "dunst &" >> ~/.xinitrc
-	# echo "xrdb ~/.Xresources &" >> ~/.xinitrc
-	# echo "exec bspwm" >> ~/.xinitrc
-	# echo "PS1='\e[1;33m$(date '+%H:%M.%S')\e[m \e[1;34m\w\e[m\e[1;35m\$\e[m '" >> ~.bashrc
-	
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -117,7 +74,7 @@ basicfolders () {
 }
 
 # ----- download and install youtube-dl from github ---------
-youtube_dl () {
+youtube_downloader () {
 	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 	sudo chmod a+rx /usr/local/bin/youtube-dl
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-dl ready" >> $LOG_FILE
@@ -126,11 +83,15 @@ youtube_dl () {
 # ----- brosers (qutebrowser & LibreWolf) ---------
 browsers () {
 	if [ "$DISTRO" = "devuan" ]; then
-		sudo apt install -y qutebroser
+		sudo apt install -y qutebrowser
 	else
-		sudo xbps-install -y qutebroser
+		sudo xbps-install -Sy qutebrowser
 	fi
     curl -L -o ~/downloads/LibreWolf-84.0.2-1.AppImage 'https://gitlab.com/librewolf-community/browser/linux/uploads/c6df05ba53192f7df4b5e90e551c7317/LibreWolf-84.0.2-1.x86_64.AppImage'
+   	sudo mkdir /opt/LibreWolf
+	sudo chown $USER:$USER /opt/LibreWolf
+	mv ~/downloads/LibreWolf-84.0.2-1.AppImage /opt/LibreWolf/
+	sudo ln -fs /opt/LibreWolf/LibreWolf-84.0.2-1.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
 }
 
@@ -366,6 +327,8 @@ walls () {
 
 # ----- xinit & bashrc ----------------------------
 finalsetup () {
+	youtube_downloader
+	notify_dunst
 	cd $ACTUAL_DIR
 	cp Xresources ~/.Xresources
 	echo "xrdb ~/.Xresources &" >> ~/.xinitrc

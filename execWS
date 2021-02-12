@@ -1,26 +1,37 @@
 #!/bin/bash
 
-JSON=$1
+USER_AGENT="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"
+
+JSON_FILE=$1
 URL=$2
+MODE=$3
 
 [ -z $1  ] && echo "bad call to execWS" && exit 0
 
 if [ -z $2  ]; then
     URL=$1
-    JSON=""
+    JSON_FILE=""
 fi
 
-if [ "$JSON" = "" ]; then
+if [ "$JSON_FILE" = "" ]; then
         
-  time curl -A "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3" \
-    $URL
+  time curl -A "$USER_AGENT" $URL
 
 else
-  
-  time curl -A "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3" \
-    -H "Content-Type: application/json" \
-    -X POST \
-    --data @$JSON \
-    $URL
-
+	[ ! -f $JSON_FILE ] && echo "json file not found" && exit 0
+	
+    if [ "$MODE" = "batch" ]; then 
+       curl -A "$USER_AGENT" \
+          -H "Content-Type: application/json" \
+          -X POST \
+          -s \
+          --data @$JSON_FILE \
+          $URL
+    else
+       time curl -A "$USER_AGENT" \
+          -H "Content-Type: application/json" \
+          -X POST \
+          --data @$JSON_FILE \
+          $URL
+    fi
 fi
