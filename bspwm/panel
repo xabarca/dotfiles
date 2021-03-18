@@ -1,0 +1,176 @@
+#! /bin/bash
+
+# position in the folder the script is executing
+cd `dirname $0`
+
+PANEL_FIFO=/tmp/panel_bspwm_fifo
+PANEL_WM_NAME=bspwm_panel
+
+PANEL_HEIGHT=20
+
+PANEL_FONT_0="Hack:pixelsize=14"
+PANEL_FONT_1="Font Awesome 5 Free:style=Solid:pixelsize=13"
+PANEL_FONT_4="icomoon:pixelsize=18"
+PANEL_FONT_6="JetBrainsMono:size=10"
+
+# load panel config
+. panel_colors
+
+
+
+# _______________________________
+# _______________________________
+_update() {
+	case $1 in
+		volume) _updateVolume ;;
+		vpn) _updateVpn ;;
+		all) _start ;;
+		*) _start ;;
+	esac
+}
+
+# -------------------------
+# -------------------------
+my_date() {
+    while true; do
+        echo "D"" $(date +'%Y-%m-%d')"
+        sleep 6h
+    done
+}
+
+# -------------------------
+# -------------------------
+my_time() {
+    while true; do
+        echo "H"" $(date +'%H:%M')"
+        sleep 1m
+    done
+}
+
+# -------------------------
+# -------------------------
+getVolume() {
+	echo "V"" $( ~/bin/audioscript getvalue )"
+}
+
+# -------------------------
+# -------------------------
+_updateVolume() {
+	echo "$(getVolume)" >> "$PANEL_FIFO" &
+}
+
+# -------------------------
+# -------------------------
+getCmusInfo() {
+	if ps -C cmus > /dev/null; then
+	   artist=`cmus-remote -Q | 
+	      grep --text '^tag artist' | 
+	      sed '/^tag artistsort/d' | 
+	      awk '{gsub("tag artist ", "");print}'`
+	   title=`cmus-remote -Q  | 
+	      grep --text '^tag title' | 
+	      sed -e 's/tag title //' |
+	      awk '{gsub("tag title ", "");print}'`
+	   if [ -z "$artist" ]; then
+		   # 
+		   echo " `cmus-remote -Q | grep 'm4a\|opus' | sed "s/.*\///"`"
+	   else
+	       echo " $artist - $title"; 
+	   fi
+	else 
+		echo ""; 
+	fi
+}
+
+# -------------------------
+# -------------------------
+getVpnActive() {
+	command=$(ip link show | grep tunsnx | wc -l)
+	# vpn=""
+	vpn=" vpn"
+	if [[ "$command" == "1" ]]
+	then
+		# vpn=""
+		whichvpn="$(tail -n 1 /tmp/vpn_log)"
+		[[ "$whichvpn" == "arc" || "$whichvpn" == "oesia" ]] && vpn=" $whichvpn"
+	fi
+	echo "A$vpn"
+}
+
+# -------------------------
+# -------------------------
+_updateVpn() {
+	echo "$(getVpnActive)" > "$PANEL_FIFO" &
+}
+
+# -------------------------
+# -------------------------
+getCentralInfo() {
+	while true; do
+		echo "M""$(getCmusInfo)"
+		sleep 20s
+	done
+}
+
+# -------------------------
+# -------------------------
+getMem () {
+	while true; do
+		usedmem=$(free -m | grep Mem | awk '{print $3}')
+		totalmem=$(free -m | grep Mem | awk '{print $2}')
+		freemem=$(($totalmem-$usedmem))
+		usedpercent=$((100-($freemem*100)/$totalmem))
+
+		#echo "R"" $usedpercent% RAM"
+		echo "R"" $usedpercent%"
+		#echo "R"" $usedpercent%"
+		sleep 1m
+	done
+}
+
+# _______________________________
+# _______________________________
+_start() {
+	# Check if any lemonbar is running and kill it
+	if pgrep -xo lemonbar > /dev/null; then
+		pkill -xo lemonbar
+	fi
+
+	if xdo id -a "$PANEL_WM_NAME" > /dev/null ; then
+		printf "%s\n" "The panel is already running." >&2
+		exit 1
+	fi
+
+	trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+	# create a new named pipe
+	[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+	mkfifo "$PANEL_FIFO"
+
+	# subscriptions
+	my_date > "$PANEL_FIFO" &
+	my_time > "$PANEL_FIFO" &
+	getVolume > "$PANEL_FIFO" &
+	getVpnActive > "$PANEL_FIFO" &
+	getCentralInfo > "$PANEL_FIFO" &
+	getMem > "$PANEL_FIFO" &
+	bspc subscribe report > "$PANEL_FIFO" &
+
+	# executes panel_bar to create the status line to the bar
+	./panel_bar < "$PANEL_FIFO" | lemonbar -a 32 -u 0 -n "$PANEL_WM_NAME" -g x$PANEL_HEIGHT \
+	              -f "$PANEL_FONT_0" -o 2 -f "$PANEL_FONT_1" -o 1  \
+	              -F "$COLOR_DEFAULT_FG" -B "$COLOR_DEFAULT_BG" | sh &
+
+	wid=$(xdo id -a "$PANEL_WM_NAME")
+	xdo above -t "$(xdo id -N Bspwm -n root | sort | head -n 1)" "$wid"
+
+	wait
+}
+
+
+case $1 in
+    start) _start ;;
+    reload) _start ;;
+	update) _update $2 ;;
+    *) _start ;;
+esac

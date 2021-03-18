@@ -26,6 +26,6 @@ fi
 
 # PANEL with lemonbar (FIFO default)
 killall -q polybar
-~/bin/panel &
+~/bin/bspwm/panel &
 echo "Lemonbar launched ..."
 

@@ -21,6 +21,7 @@ usage()
   echo "     4 : patch dwm"
   echo "     5 : configure hosts file to block trackers"
   echo "     6 : life is easier with browsers"
+  echo "     7 : xbps-src packges (including ungoogled-chromium by marmaduke)"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
@@ -37,7 +38,7 @@ packages () {
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 	sudo apt install -y libxinerama-dev libreadline-dev 
 	sudo apt install --no-install-recommends -y compton curl dunst libnotify-bin zip unzip xwallpaper
-	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme numix-icon-theme-circle
+	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme rclone
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -52,10 +53,16 @@ packages_void () {
 	#sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
 # <<<<<<< basesystem 
 	sudo xbps-install -y nnn rxvt-unicode dbus
-	sudo xbps-install -y gcc make pkg-config libX11-devel libXft-devel libXinerama-devel 
-	sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
+	
+	# libraries per compilar dmenu / dwm / wmname
+	sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel 
+	# sudo xbps-install -y pkg-config
+
+	# libraries to complie bspwm / sxhkd / dk
+	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
+	
 	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq unzip xsetroot
-	#sudo xbps-install -y pcmanfm lxappearance firefox archlabs-themes papirus-icon-theme mpv scid_vs_pc
+	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
@@ -85,12 +92,13 @@ browsers () {
 	if [ "$DISTRO" = "devuan" ]; then
 		sudo apt install -y qutebrowser
 	else
-		sudo xbps-install -Sy qutebrowser
+		sudo xbps-install -Sy qutebrowser badwolf
 	fi
     curl -L -o ~/downloads/LibreWolf-84.0.2-1.AppImage 'https://gitlab.com/librewolf-community/browser/linux/uploads/c6df05ba53192f7df4b5e90e551c7317/LibreWolf-84.0.2-1.x86_64.AppImage'
    	sudo mkdir /opt/LibreWolf
 	sudo chown $USER:$USER /opt/LibreWolf
 	mv ~/downloads/LibreWolf-84.0.2-1.AppImage /opt/LibreWolf/
+	chmod +x /opt/LibreWolf/LibreWolf-84.0.2-1.AppImage /usr/local/bin/LibreWolf
 	sudo ln -fs /opt/LibreWolf/LibreWolf-84.0.2-1.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
 }
@@ -197,10 +205,12 @@ gitrepos () {
 		fi
 	fi
 	if [ "$1" = "bspwm" ]; then
-		git clone https://github.com/baskerville/bspwm /opt/git/bspwm
-		cd /opt/git/bspwm
-		make
-		sudo make install
+		if [ "$DISTRO" = "devuan" ]; then
+			git clone https://github.com/baskerville/bspwm /opt/git/bspwm
+			cd /opt/git/bspwm
+			make
+			sudo make install
+		fi
 	elif [ "$1" = "dwm" ]; then
 		git clone https://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
@@ -231,18 +241,29 @@ defaultbspwm () {
 		sudo xbps-install -y sxhkd lemonbar-xft bspwm 
 	fi
 	mkdir ~/.config ~/.config/bspwm ~/.config/sxhkd
-	cp /opt/git/bspwm/examples/bspwmrc ~/.config/bspwm/
-	cp /opt/git/bspwm/examples/sxhkdrc ~/.config/sxhkd/
+	cp /usr/share/doc/bspwm/examples/bspwm/examples/bspwmrc ~/.config/bspwm/
+	cp /opt/git/bspwm/sxhkdrc ~/.config/sxhkd/
 	chmod +x ~/.config/bspwm/bspwmrc
 	chmod +x ~/.config/sxhkd/sxhkdrc
-	sed -i 's/urxvt/st/' ~/.config/sxhkd/sxhkdrc
+	if [ "$DISTRO" = "devuan" ]; then
+		sed -i 's/urxvt/st/' ~/.config/sxhkd/sxhkdrc
+	else
+		sed -i 's/urxvt/urxvtc/' ~/.config/sxhkd/sxhkdrc
+	fi
 	sed -i 's/super + @space/super + p/' ~/.config/sxhkd/sxhkdrc
 	echo "bspc rule -a scratch state=floating sticky=on"  >> ~/.config/bspwm/bspwmrc
 	echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
-	echo "compton &" >> ~/.config/bspwm/bspwmrc
+	if [ "$DISTRO" = "devuan" ]; then
+		echo "compton &" >> ~/.config/bspwm/bspwmrc
+	else
+		echo "picom &" >> ~/.config/bspwm/bspwmrc
+	fi	
 	echo "dunst &" >> ~/.config/bspwm/bspwmrc
 	echo " " >> ~/.config/sxhkd/sxhkdrc
-	echo "super + a" >> ~/.config/sxhkd/sxhkdrc
+	echo "super + ntilde" >> ~/.config/sxhkd/sxhkdrc
+	if [ "$DISTRO" = "voidlinux" ]; then
+		echo "dunst &" >> urxvtd -q -o -f &
+	fi
     echo "    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] bspwm & sxhkd installed and configured" >> $LOG_FILE
 	lemonbarpanelbsp	
@@ -300,7 +321,7 @@ lemonbarpanelbsp () {
 	cp $ACTUAL_DIR/panel* ~/bin
 	cp $ACTUAL_DIR/launch-bar ~/bin
 	chmod +x ~/bin/*
-	echo "launch-bar &" >> ~/.config/bspwm/bspwmrc
+	echo "~/bin/bspwm/launch-bar &" >> ~/.config/bspwm/bspwmrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] lemonbar panel configured" >> $LOG_FILE
 }
 
@@ -323,6 +344,35 @@ walls () {
 		echo "exit 0" >> ~/.config/dk/dkrc
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
+}
+
+# ----- xbps-src from github----------------------------
+void_xbps_src() {
+	# by Jose Santos (AgarimOS)  from:  https://au.ytprivate.com/watch?v=q7Q9gecxSts
+	#
+	# 1) instalación de xtools:
+	#      sudo xbps-install -Syu xtools
+	# 2) Clonar los repositorios:
+	#      git clone https://github.com/void-linux/void-packages
+	#      cd void-packages
+	# 	   ./xbps-src binary-bootstrap
+	# 3) clonar el repositorio de nvoid:
+	#      git clone https://github.com/not-void/nvoid​
+	# 4) mover la carpeta ungoogled-chromium-marmaduke a la copia de los repositorios de void linux (/void-packages/srcpkgs/ )
+	# 5) des la carpeta "void-packages" ejecutar
+	#      ./xbps-src pkg -jx ungoogled-chromium-marmaduke
+	#    donde x es el número de hilos. Yo creo que incluso podíamos omitir esta opción. 
+	#    En el caso de compilaciones más largas nos ahorraría bastante tiempo (compilando un kernel por ejemplo).
+	# 6) instalar el paquete:
+	#      xi ungoogled-chromium-marmaduke
+	sudo xbps-install -Suy xtools
+	git clone https://github.com/void-linux/void-packages /opt/git/void-packages
+	git clone https://github.com/not-void/nvoid /opt/git/nvoid
+	cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
+	cd /opt/git/void-packages  
+	./xbps-src binary-bootstrap
+	./xbps-src pkg ungoogled-chromium-marmaduke
+	xi ungoogled-chromium-marmaduke
 }
 
 # ----- xinit & bashrc ----------------------------
@@ -369,6 +419,8 @@ updatehosts() {
 
 
 
+
+
 # ||||||||||||||||||||||||||||||||||||||||
 # ||||||||||||||||||||||||||||||||||||||||
 # ||||||||||||||||||||||||||||||||||||||||
@@ -400,7 +452,8 @@ elif [ "$OPTION" = "1" ]; then
 		packages && basicfolders && fonts && gitrepos \
 			&& gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
 	else
-		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
+		packages_void && basicfolders && fonts && gitrepos \
+			&& defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
 	fi
 	echo "bspwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "2" ]; then
@@ -428,6 +481,8 @@ elif [ "$OPTION" = "5" ]; then
 	updatehosts
 elif [ "$OPTION" = "6" ]; then
 	browsers
+elif [ "$OPTION" = "7" ]; then
+	void_xbps_src
 else
 	usage
 fi

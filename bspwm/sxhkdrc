@@ -1,0 +1,204 @@
+# -------------------------------------------
+#    wm independent hotkeys
+# -------------------------------------------
+
+# terminal emulator
+super + Return
+     urxvt
+
+# dmenu program launcher
+super + p
+	dmenu_run
+
+# floating st terminal
+super + a
+	st -f JetBrainsMono-9 -c floatterm 
+#	st -f Inconsolata-11 -c floatterm 
+
+# make sxhkd reload its configuration files.
+super + Escape
+	pkill -USR1 -x sxhkd
+
+
+# -------------------------------------------
+#    bspwm hotkeys
+# -------------------------------------------
+
+# quit/restart bspwm
+super + alt + {q,r}
+	bspc {quit,wm -r}
+
+# kill window
+super + shift + c
+	bspc node -c
+
+# alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
+
+
+# -------------------------------------------
+#    state/flags
+# -------------------------------------------
+
+super + {t,s,f}
+	bspc node -t {tiled,floating,fullscreen}
+
+
+# -------------------------------------------
+#    focus/swap
+# -------------------------------------------
+
+# focus the node in the given direction
+super + shift + {h,j,k,l}
+	bspc node -s {west,south,north,east}
+
+super + {h,j,k,l}
+	bspc node -f {prev,prev,next,next}.local
+
+# focus the last node/desktop
+super + {grave,Tab}
+ 	bspc {node,desktop} -f last
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0,apostrophe,exclamdown}
+	bspc {desktop -f,node -d} '^{1-9,10,11,12}'
+
+# -------------------------------------------
+#    move/resize
+# -------------------------------------------
+
+# Expand or contract node in the given direction (only tiled windows)
+super + ctrl + {h,j,k,l}
+    ~/bin/bspwm/bspwm_node_resize {west,south,north,east} 50
+
+# move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+
+# -------------------------------------------
+#    scratchpads
+# -------------------------------------------
+
+# scratchpad terminal st using default name (scratchpad)
+super + ntilde
+    /home/$USER/bin/scratchpad
+
+# scratchpad terminal urxvtc using name scratchurxvt
+super + shift + ntilde
+	/home/$USER/bin/scratchpad scratchurxvt
+
+# music schatchpad
+super + shift + a
+	/home/$USER/bin/scratchpad stmusic
+
+
+
+# -------------------------------------------
+#    my bindings
+# -------------------------------------------
+
+# reload BSPWM bar (lemonbar or polybar)
+super + shift + b
+    /home/$USER/bin/bspwm/launch-bar.sh
+
+# eclipse IDE
+super + shift + e
+	/home/$USER/bin/eclipse_start.sh
+
+# Aqua Database Studio
+super + shift + d
+	wmname LG3D;/opt/datastudio/datastudio.sh
+
+# Putty
+super + shift + p
+	/home/$USER/bin/dmenu/chooseputty
+
+# Chess pdf dmenu opener
+super + shift + i
+	/home/$USER/bin/dmenu/choosechesspdf
+
+super + shift + s
+        /home/$USER/bin/dmenu/ivooxtracker
+
+# Choose qemu VM launcher
+super + shift + v
+	/home/$USER/bin/dmenu/chooseQemuVM
+
+# Select folder music and play it in CMUS music player
+super + shift + m
+	/home/$USER/bin/dmenu/choosemusic
+
+# youtube dmenu search & play
+super + shift + y
+	~/bin/dmenu/ytfzf -D
+#    ~/bin/dmenu/yt -r
+
+# VPN chose
+# super + shift + v
+#          /home/$USER/bin/i3/i3vpnchoose
+
+# Logout
+super + shift + Delete
+	$HOME/bin/dmenu/out
+
+super + shift + BackSpace
+	$HOME/bin/dmenu/out
+
+# volume UP & DOWN
+super + shift + {plus,KP_Add,minus,KP_Subtract}
+	/home/$USER/bin/audioscript {up,up,down,down} 5
+
+# Change wallpaper
+super + shift + w
+	/home/$USER/bin/wallpaper.sh
+
+# Hattrick Organizer
+#super + shift + h
+#	cd /home/$USER/altres/hattrick/HO; /opt/Oracle/Server/java-8-oracle/bin/java -jar HO.jar
+
+# Telegram
+super + shift + t
+	/opt/Telegram/Telegram
+
+# Newsboat
+super + shift + n
+	st -f Inconsolata-11 -c floatterm -g 100x30 -e newsboat
+
+# Notificació estat BSPWM
+#super + shift + a
+#	/home/$USER/bin/bspwm/notify
+    
+Print
+    scrot scrot.png -e 'mv $f ~/Imatges/screenshots/`date '+%Y-%m-%d__%Hh-%Mm-%Ss'`__$wx$h.png'
+
+#super + shift + Print
+#    scrot -s  scrot.png -e 'mv $f ~/Imatges/screenshots/`date '+%Y-%m-%d__%Hh-%Mm-%Ss'`__$wx$h.png'
+
+alt + Print
+    scrot -s  scrot.png -e 'mv $f ~/Imatges/screenshots/`date '+%Y-%m-%d__%Hh-%Mm-%Ss'`__$wx$h.png'
+
+
+
+
+#
+#    B I G     D I S C O V E R I E S   !!!!
+#
+
+# BSPWM - Another way is to chain with the semicolon sign. This tell sxhkd to listen our next pressed key, eg:
+# URxvt applications
+#super + u ; {c,h,m,n,p,y}
+#	{ \
+#	urxvtc -name cmus -e cmus, \
+#	urxvtc -name htop -e htop -u archangel, \
+#	urxvtc -name ncmpcpp -e ncmpcpp -S clock --quiet, \
+#	urxvtc -name newsboat -e newsboat, \
+#	urxvtc -name ncpamixer -e ncpamixer, \
+#	urxvtc -name mpsyt -e mpsyt \
+#	}
+
+
+#
+# wmctrl -a firefox || firefox
+

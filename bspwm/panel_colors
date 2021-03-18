@@ -1,0 +1,83 @@
+#! /bin/sh
+
+#---------
+# Xresources colors
+colorbg=$(xrdb -query | grep '*.background' | awk '{print $2}')
+colorfg=$(xrdb -query | grep  foreground | awk '{print $2}')
+color0=$(xrdb -query  | grep  color0     | awk '{print $2}')
+color1=$(xrdb -query  | grep  'color1:'  | awk '{print $2}')
+color2=$(xrdb -query  | grep  color2     | awk '{print $2}')
+color3=$(xrdb -query  | grep  color3     | awk '{print $2}')
+color4=$(xrdb -query  | grep  color4     | awk '{print $2}')
+color5=$(xrdb -query  | grep  color5     | awk '{print $2}')
+color6=$(xrdb -query  | grep  color6     | awk '{print $2}')
+color7=$(xrdb -query  | grep  color7     | awk '{print $2}')
+color8=$(xrdb -query  | grep  color8     | awk '{print $2}')
+color9=$(xrdb -query  | grep  color9     | awk '{print $2}')
+color10=$(xrdb -query | grep  color10    | awk '{print $2}')
+color11=$(xrdb -query | grep  color11    | awk '{print $2}')
+color12=$(xrdb -query | grep  color12    | awk '{print $2}')
+color13=$(xrdb -query | grep  color13    | awk '{print $2}')
+color14=$(xrdb -query | grep  color14    | awk '{print $2}')
+color15=$(xrdb -query | grep  color15    | awk '{print $2}')
+
+
+#---------
+# default colors (have to match with panel script colors)
+COLOR_DEFAULT_FG="$colorfg"
+COLOR_DEFAULT_BG="$colorbg"
+#COLOR_DEFAULT_FG="#a7a5a5"
+#COLOR_DEFAULT_BG="#333232"
+
+#---------
+# monitor colors
+# COLOR_MONITOR_FG="#8dbcdf"
+#COLOR_MONITOR_BG="$COLOR_DEFAULT_BG"
+#COLOR_FOCUSED_MONITOR_FG="#b1d0e8"
+#COLOR_FOCUSED_MONITOR_BG="#4E4E4E"
+COLOR_MONITOR_FG="#6F7B6F"
+COLOR_MONITOR_BG="$COLOR_DEFAULT_BG"
+COLOR_FOCUSED_MONITOR_FG="#8EF882"
+COLOR_FOCUSED_MONITOR_BG="$COLOR_DEFAULT_BG"
+
+#---------
+# state colors
+COLOR_STATE_FG="#89b09c"
+COLOR_STATE_BG="$COLOR_DEFAULT_BG"
+
+#---------
+# workspace colors
+THEME_COLOR_WORKPACES="$color4"
+#THEME_COLOR_WORKPACES="#3B94C2"
+COLOR_FREE_FG="#676767"
+COLOR_FREE_BG="$COLOR_DEFAULT_BG"
+#COLOR_FOCUSED_FREE_FG="#b1d0e8"
+#COLOR_FOCUSED_FREE_BG="#144b6c"
+COLOR_FOCUSED_FREE_FG="$COLOR_DEFAULT_BG"
+COLOR_FOCUSED_FREE_BG="$THEME_COLOR_WORKPACES"
+#COLOR_OCCUPIED_FG="#79D9F3"
+#COLOR_OCCUPIED_BG="$COLOR_DEFAULT_BG"
+COLOR_OCCUPIED_FG="$THEME_COLOR_WORKPACES"
+COLOR_OCCUPIED_BG="$COLOR_DEFAULT_BG"
+#COLOR_FOCUSED_OCCUPIED_FG="#b1d0e8"
+#COLOR_FOCUSED_OCCUPIED_BG="#1C597E"
+COLOR_FOCUSED_OCCUPIED_FG="$COLOR_DEFAULT_BG"
+COLOR_FOCUSED_OCCUPIED_BG="$THEME_COLOR_WORKPACES"
+COLOR_URGENT_FG="#f15d66"
+COLOR_URGENT_BG="$COLOR_DEFAULT_BG"
+COLOR_FOCUSED_URGENT_FG="#501d1f"
+COLOR_FOCUSED_URGENT_BG="#d5443e"
+
+#---------
+# module colors
+COLOR_HORA_FG="$color4"
+COLOR_DATA_FG="$color3"
+COLOR_MEM_FG="$color14"
+COLOR_VOLUME_FG="$color9"
+COLOR_VPN_FG="$color12"
+COLOR_MUSIC_FG="$color2"
+#COLOR_HORA_FG="#74A4B4"
+#COLOR_DATA_FG="#b1a57d"
+#COLOR_MEM_FG="#78AF99"
+#COLOR_VOLUME_FG="#C7886D"
+#COLOR_VPN_FG="#B877C1"
