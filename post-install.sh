@@ -47,6 +47,9 @@ packages_void () {
 	# https://notabug.org/reback00/void-goodies
 	# https://github.com/ymir-linux/void-packages
 	
+	sudo echo "ignorepkg=linux-firmware-nvidia" > /etc/xbps.d/00-ignore.conf
+	# sudo echo "ignorepkg=linux5.4" >> 
+	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
 	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap
@@ -64,6 +67,8 @@ packages_void () {
 	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq unzip xsetroot
 	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
+	
+	
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -472,7 +477,8 @@ elif [ "$OPTION" = "3" ]; then
 		packages && basicfolders && fonts && gitrepos \
 			&& gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
 	else
-		echo "dk not available on Void Linux. Only dwm available for the moment."
+		packages_void && basicfolders && fonts && gitrepos \
+			&& gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
 	fi
 	echo "dk" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "4" ]; then

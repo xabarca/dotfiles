@@ -1,0 +1,7 @@
+#! /bin/sh
+
+file=$(find $HOME -type f | dmenu -i -l 25)
+shared_file_url=$(curl -F"file=@$file" 0x0.st)
+echo "$shared_file_url" >> /tmp/shared_file_url 
+notify-send "Your shared file URL is in /tmp/shared_file_url"
+

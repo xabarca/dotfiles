@@ -1,0 +1,87 @@
+#! /bin/bash
+#
+# A dmenu ivoox podcasts audio player 
+#    https://mytuner-radio.com/podcast/siglo-21-radio-3-281404669
+#    https://mytuner-radio.com/podcast/a-altas-horas1-a-altas-horas-1436728725
+#    https://mytuner-radio.com/podcast/turbo-3-radio-3-730325989
+#
+# 25/01/2021 - xabarca
+#
+# echo "seek -20" > /tmp/mpv.fifo
+# echo "seek 20" > /tmp/mpv.fifo
+# echo "stop" > /tmp/mpv.fifo
+# echo '{"command": ["cycle", "pause"]}' > /tmp/mpv.fifo
+#
+
+
+# curl -L https://invidious.kavin.rocks/search?q=qtile -o qtile.html
+#cat qtile.html | grep 'class=length'
+#cat qtile.html | grep channel
+#cat qtile.html | grep Shared
+
+FOLDER_TEMP=/tmp/yt
+TMP_HTML="$FOLDER_TEMP/yt_temp.html"
+DATA_NAMES="$FOLDER_TEMP/names"
+DATA_CHANNEL="$FOLDER_TEMP/channel"
+DATA_OLD="$FOLDER_TEMP/old"
+DATA_TIME="$FOLDER_TEMP/time"
+DATA_ID="$FOLDER_TEMP/id"
+FULL_DATA="$FOLDER_TEMP/fulldata"
+
+getDataFromInvidious() {
+	selection=$( echo $1 | sed 's/ /+/g' )
+	curl -L "https://invidious.kavin.rocks/search?q=$selection" -o "$TMP_HTML"
+}
+
+
+# 
+# first we select which program we wanna download podcasts from
+#
+selection=$( printf "" | dmenu -p "invidious Search: " )
+[ "$selection" = "" ] && exit 0
+
+[ ! -d "$FOLDER_TEMP" ] && mkdir -p $FOLDER_TEMP
+getDataFromInvidious "$selection"
+
+
+# 
+# process data
+#
+
+# name of video
+cat $TMP_HTML | grep watch | grep -v title | grep -v style | awk -F'>' {'print $3'} | sed 's/<\/a//g' > $DATA_NAMES
+# video ID
+cat $TMP_HTML | grep watch | grep -v title | grep -v style | awk -F'v=' {'print $2'} | awk -F'\"' {'print $1'} > $DATA_ID
+# name of the channel
+cat $TMP_HTML | grep channel | grep -v 'page=1' | awk -F'>' {'print $2'} | sed 's/<\/a//g' > $DATA_CHANNEL
+# time duration
+cat $TMP_HTML | grep length | awk -F'>' {'print $2'} | sed 's/<\/p//g' > $DATA_TIME
+# how old is the video
+cat $TMP_HTML | grep Shared | awk -F'>' {'print $2'} | sed 's/Shared //' | sed 's/<\/div//g' > $DATA_OLD
+
+readarray -t arrayI < $DATA_ID
+readarray -t arrayN < $DATA_NAMES
+readarray -t arrayC < $DATA_CHANNEL
+readarray -t arrayT < $DATA_TIME
+readarray -t arrayO < $DATA_OLD
+ 
+[ -f $FULL_DATA ] && rm $FULL_DATA
+
+for index in "${!arrayN[@]}"; do
+	echo "${arrayI[$index]} >> ${arrayN[$index]} >> ${arrayC[$index]} >> ${arrayT[$index]} >> ${arrayO[$index]}" >> $FULL_DATA
+done
+
+
+#cat "$FULL_DATA"
+#cat $FULL_DATA | awk -F ' >> ' '{print "[" $4 "]  " $2 "  <<" $3 ">>  " $5}'
+
+# 
+# choose episode with dmenu
+#
+selection=$( cat $FULL_DATA | awk -F ' >> ' '{print "[" $4 "]  " $2 "  <<" $3 ">>  " $5}' | dmenu -p "choose episode: " -l 20 )
+[ -z "$selection" ] && exit 0
+filter=$( echo $selection | awk -F'] ' '{print $2}' | awk -F' <<' '{print $1}' )
+selected=$( cat $FULL_DATA | grep "$filter" | awk -F' >> ' '{print $1}' )
+[ -z "$selected" ] && exit 0
+
+mpv "https://www.youtube.com/watch?v=$selected"
