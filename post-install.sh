@@ -21,7 +21,8 @@ usage()
   echo "     4 : patch dwm"
   echo "     5 : configure hosts file to block trackers"
   echo "     6 : life is easier with browsers"
-  echo "     7 : xbps-src packges (including ungoogled-chromium by marmaduke)"
+  echo "     7 : kmonad"
+  echo "     8 : xbps-src packges (including ungoogled-chromium by marmaduke)"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
@@ -37,8 +38,8 @@ packages () {
 	sudo apt install -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 	sudo apt install -y libxinerama-dev libreadline-dev 
-	sudo apt install --no-install-recommends -y compton curl dunst libnotify-bin zip unzip xwallpaper
-	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme rclone
+	sudo apt install --no-install-recommends -y compton curl dunst libnotify-bin zip unzip xwallpaper rclone
+	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -47,14 +48,17 @@ packages_void () {
 	# https://notabug.org/reback00/void-goodies
 	# https://github.com/ymir-linux/void-packages
 	
-	sudo echo "ignorepkg=linux-firmware-nvidia" > /etc/xbps.d/00-ignore.conf
+	sudo echo "ignorepkg=linux-firmware-nvidia" >> /etc/xbps.d/00-ignore.conf
+	sudo echo "ignorepkg=linux-firmware-amd" >> /etc/xbps.d/00-ignore.conf
 	# sudo echo "ignorepkg=linux5.4" >> 
 	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
 	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap
-	#sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
+	sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
+	
 # <<<<<<< basesystem 
+
 	sudo xbps-install -y nnn rxvt-unicode dbus
 	
 	# libraries per compilar dmenu / dwm / wmname
@@ -65,7 +69,7 @@ packages_void () {
 	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
 	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq unzip xsetroot
-	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
+	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone kmonad scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
 	
 	
@@ -79,7 +83,7 @@ basicfolders () {
 	sudo chown $USER:$USER /opt/git
 	cp -r $ACTUAL_DIR /opt/git
 	cd $ACTUAL_DIR
-	cp colors.sh nnnopen pirokit scratchpad updatehosts vm.sh ytp wallpaper* ~/bin
+	cp bin/colors.sh bin/nnnopen bin/pirokit bin/scratchpad bin/updatehosts bin/vm.sh bin/ytp bin/wallpaper* bin/encpass.sh bin/share ~/bin
 	cp -r dmenu ~/bin
 	chmod +x ~/bin/* ~/bin/dmenu/* 
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
@@ -97,17 +101,28 @@ browsers () {
 	if [ "$DISTRO" = "devuan" ]; then
 		sudo apt install -y qutebrowser
 	else
-		sudo xbps-install -Sy qutebrowser badwolf
+		sudo xbps-install -Sy qutebrowser
 	fi
-    curl -L -o ~/downloads/LibreWolf-84.0.2-1.AppImage 'https://gitlab.com/librewolf-community/browser/linux/uploads/c6df05ba53192f7df4b5e90e551c7317/LibreWolf-84.0.2-1.x86_64.AppImage'
+    curl -L -o ~/downloads/LibreWolf-84.0.2-1.AppImage 'https://gitlab.com/librewolf-community/browser/appimage/-/jobs/1246930630/artifacts/raw/LibreWolf-88.0.1-1.x86_64.AppImage'
+
    	sudo mkdir /opt/LibreWolf
 	sudo chown $USER:$USER /opt/LibreWolf
-	mv ~/downloads/LibreWolf-84.0.2-1.AppImage /opt/LibreWolf/
-	chmod +x /opt/LibreWolf/LibreWolf-84.0.2-1.AppImage /usr/local/bin/LibreWolf
-	sudo ln -fs /opt/LibreWolf/LibreWolf-84.0.2-1.AppImage /usr/local/bin/LibreWolf
+	mv ~/downloads/LibreWolf-88.0.1-1.x86_64.AppImage /opt/LibreWolf/
+	chmod +x /opt/LibreWolf/LibreWolf-88.0.1-1.x86_64.AppImage
+	sudo ln -fs /opt/LibreWolf/LibreWolf-88.0.1-1.x86_64.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
 }
 
+# ----- kmonad for non-void distros ---------
+kmonad () {
+	if [ "$DISTRO" = "devuan" ]; then
+		curl -L -o ~/downloads/kmonad 'https://github.com/kmonad/kmonad/releases/download/0.4.1/kmonad-0.4.1-linux'
+		chmod +x ~/downloads/kmonad
+		sudo mv ~/downloads/kmonad /usr/local/bin	
+	else
+		sudo xbps-install -Sy kmonad
+	fi
+}
 
 # ----- dunst  ----------------
 notify_dunst () {
@@ -119,12 +134,38 @@ notify_dunst () {
 
 # ----- nerd fonts ---------
 fonts() {
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/CascadiaCode/Bold/complete/Caskaydia%20Cove%20Bold%20Nerd%20Font%20Complete.otf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/CascadiaCode/Regular/complete/Caskaydia%20Cove%20Regular%20Nerd%20Font%20Complete.otf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Bold-Italic/complete/Iosevka%20Bold%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Bold/complete/Iosevka%20Bold%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Italic/complete/Iosevka%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Regular/complete/Iosevka%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FiraCode/Bold/complete/Fira%20Code%20Bold%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FiraCode/Regular/complete/Fira%20Code%20Regular%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Hack/Bold/complete/Hack%20Bold%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Hack/BoldItalic/complete/Hack%20Bold%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Hack/Italic/complete/Hack%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Hack/Regular/complete/Hack%20Regular%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/JetBrainsMono/Ligatures/Bold/complete/JetBrains%20Mono%20Bold%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/JetBrainsMono/Ligatures/BoldItalic/complete/JetBrains%20Mono%20Bold%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/JetBrainsMono/Ligatures/Italic/complete/JetBrains%20Mono%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/JetBrainsMono/Ligatures/Regular/complete/JetBrains%20Mono%20Regular%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Mononoki/Bold-Italic/complete/mononoki%20Bold%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Mononoki/Bold/complete/mononoki%20Bold%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Mononoki/Italic/complete/mononoki%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Mononoki/Regular/complete/mononoki-Regular%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/VictorMono/Bold-Italic/complete/Victor%20Mono%20Bold%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/VictorMono/Bold/complete/Victor%20Mono%20Bold%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/VictorMono/Italic/complete/Victor%20Mono%20Italic%20Nerd%20Font%20Complete.ttf
+	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/VictorMono/Regular/complete/Victor%20Mono%20Regular%20Nerd%20Font%20Complete.ttf
+	
 	mkdir /tmp/nerdfonts
 	cd /tmp/nerdfonts
 	curl -L -o ubuntu.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
 	curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
 	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.1/fontawesome-free-5.15.1-web.zip 
 	curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
+	curl -L -o Iosevka-Nerd-Font.ttf 'https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Regular/complete/Iosevka%20Nerd%20Font%20Complete.ttf'
 	unzip "*.zip"
 	sudo mkdir -p /usr/share/fonts/truetype/newfonts
 	#OLDIFS=$IFS
@@ -264,19 +305,19 @@ defaultbspwm () {
 		echo "picom &" >> ~/.config/bspwm/bspwmrc
 	fi	
 	echo "dunst &" >> ~/.config/bspwm/bspwmrc
-	echo " " >> ~/.config/sxhkd/sxhkdrc
-	echo "super + ntilde" >> ~/.config/sxhkd/sxhkdrc
 	if [ "$DISTRO" = "voidlinux" ]; then
-		echo "dunst &" >> urxvtd -q -o -f &
+		echo "urxvtd -q -o -f &" >> ~/.config/bspwm/bspwmrc 
 	fi
-    echo "    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
+    echo " " >> ~/.config/sxhkd/sxhkdrc
+	echo "super + ntilde" >> ~/.config/sxhkd/sxhkdrc
+	echo "    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] bspwm & sxhkd installed and configured" >> $LOG_FILE
 	lemonbarpanelbsp	
 }
 
 # ----- configure dwm -----------------------------
 configdwm () {
-	cp $ACTUAL_DIR/dwm* ~/bin/dwm
+	cp $ACTUAL_DIR/bin/dwm* ~/bin/dwm
 	chmod +x ~/bin/dwm/*
 	echo "~/bin/dwm/dwm-start" >> .xinitrc
 	patchdwm
@@ -323,8 +364,8 @@ configdk () {
 
 # ----- lemonbar panel -----------------------------
 lemonbarpanelbsp () {
-	cp $ACTUAL_DIR/panel* ~/bin
-	cp $ACTUAL_DIR/launch-bar ~/bin
+	cp $ACTUAL_DIR/bspwm/panel* ~/bin
+	cp $ACTUAL_DIR/bspwm/launch-bar ~/bin
 	chmod +x ~/bin/*
 	echo "~/bin/bspwm/launch-bar &" >> ~/.config/bspwm/bspwmrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] lemonbar panel configured" >> $LOG_FILE
@@ -417,7 +458,7 @@ finalsetup () {
 # ----- update /etc/hosts --------------------------
 updatehosts() {
 	cd $ACTUAL_DIR
-	cp updatehosts ~/bin/updatehosts
+	cp bin/updatehosts ~/bin/updatehosts
 	chmod +x updatehosts
 	~/bin/updatehosts
 }
@@ -455,7 +496,8 @@ elif [ "$OPTION" = "1" ]; then
 	WM_SELECTION="bspwm"
 	if [ "$DISTRO" = "devuan" ]; then
 		packages && basicfolders && fonts && gitrepos \
-			&& gitrepos bspwm && defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
+			&& gitrepos bspwm && defaultbspwm \
+			&& walls && finalsetup && echo "bspwm configured. Please, reboot system."
 	else
 		packages_void && basicfolders && fonts && gitrepos \
 			&& defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
@@ -465,7 +507,8 @@ elif [ "$OPTION" = "2" ]; then
 	WM_SELECTION="dwm"
 	if [ "$DISTRO" = "devuan" ]; then
 		packages && basicfolders && fonts && gitrepos \
-			&& gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
+			&& gitrepos dwm && configdwm \
+			&& walls && finalsetup && echo "dwm configured. Please, reboot system."
 	else
 		packages_void && basicfolders && fonts && gitrepos \
 			&& gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
@@ -475,7 +518,8 @@ elif [ "$OPTION" = "3" ]; then
 	WM_SELECTION="dk"
 	if [ "$DISTRO" = "devuan" ]; then
 		packages && basicfolders && fonts && gitrepos \
-			&& gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
+			&& gitrepos dk && configdk \
+			&& walls && finalsetup && echo "dk configured. Please, reboot system."
 	else
 		packages_void && basicfolders && fonts && gitrepos \
 			&& gitrepos dk && configdk && walls && finalsetup && echo "dk configured. Please, reboot system."
@@ -488,6 +532,8 @@ elif [ "$OPTION" = "5" ]; then
 elif [ "$OPTION" = "6" ]; then
 	browsers
 elif [ "$OPTION" = "7" ]; then
+	kmonad
+elif [ "$OPTION" = "8" ]; then
 	void_xbps_src
 else
 	usage

@@ -41,8 +41,14 @@ super + m
 #    state/flags
 # -------------------------------------------
 
-super + {t,s,f}
-	bspc node -t {tiled,floating,fullscreen}
+#super + {t,s,f}
+#	bspc node -t {tiled,floating,fullscreen}
+
+# toggle window states
+super + s
+	bspc node -t {tiled,floating}
+super + f
+	bspc node -t {tiled,fullscreen}
 
 
 # -------------------------------------------
