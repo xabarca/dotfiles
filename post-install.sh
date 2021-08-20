@@ -22,7 +22,7 @@ usage()
   echo "     5 : configure hosts file to block trackers"
   echo "     6 : life is easier with browsers"
   echo "     7 : kmonad"
-  echo "     8 : xbps-src packges (including ungoogled-chromium by marmaduke)"
+  echo "     8 : xbps-src packges (ungoogled-chromium by marmaduke not included by default)"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
@@ -50,7 +50,7 @@ packages_void () {
 	
 	sudo echo "ignorepkg=linux-firmware-nvidia" >> /etc/xbps.d/00-ignore.conf
 	sudo echo "ignorepkg=linux-firmware-amd" >> /etc/xbps.d/00-ignore.conf
-	# sudo echo "ignorepkg=linux5.4" >> 
+	# sudo echo "ignorepkg=linux5.12" >> /etc/xbps.d/00-ignore.conf
 	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
@@ -61,18 +61,17 @@ packages_void () {
 
 	sudo xbps-install -y nnn rxvt-unicode dbus
 	
-	# libraries per compilar dmenu / dwm / wmname
-	sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel 
+	# --- libraries per compilar dmenu / dwm / wmname / st ---
+	# sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel 
 	# sudo xbps-install -y pkg-config
 
-	# libraries to complie bspwm / sxhkd / dk
+	# --- libraries to complie bspwm / sxhkd / dk ---
 	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
 	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq unzip xsetroot
-	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone kmonad scid_vs_pc
+	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
-	
-	
+
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -98,22 +97,29 @@ youtube_downloader () {
 
 # ----- brosers (qutebrowser & LibreWolf) ---------
 browsers () {
+	# https://github.com/qutebrowser/qutebrowser/blob/master/doc/help/configuring.asciidoc
+	# https://github.com/Linuus/nord-qutebrowser/blob/master/nord-qutebrowser.py
+	
 	if [ "$DISTRO" = "devuan" ]; then
 		sudo apt install -y qutebrowser
 	else
-		sudo xbps-install -Sy qutebrowser
+		sudo xbps-install -Sy qutebrowser python3-adblock
 	fi
-    curl -L -o ~/downloads/LibreWolf-84.0.2-1.AppImage 'https://gitlab.com/librewolf-community/browser/appimage/-/jobs/1246930630/artifacts/raw/LibreWolf-88.0.1-1.x86_64.AppImage'
+	mkdir -p ~/.config/qutebrowser/themes
+	cd $ACTUAL_DIR
+	cp qutebrowser/config.py  ~/.config/qutebrowser/
+	cp qutebrowser/xavi.py qutebrowser/nord.py  ~/.config/qutebrowser/themes/
 
+    curl -L -o ~/downloads/LibreWolf-90.0.2-1.x86_64.AppImage 'https://gitlab.com/librewolf-community/browser/appimage/-/jobs/1450294189/artifacts/raw/LibreWolf-90.0.2-1.x86_64.AppImage'
    	sudo mkdir /opt/LibreWolf
 	sudo chown $USER:$USER /opt/LibreWolf
-	mv ~/downloads/LibreWolf-88.0.1-1.x86_64.AppImage /opt/LibreWolf/
-	chmod +x /opt/LibreWolf/LibreWolf-88.0.1-1.x86_64.AppImage
-	sudo ln -fs /opt/LibreWolf/LibreWolf-88.0.1-1.x86_64.AppImage /usr/local/bin/LibreWolf
+	mv ~/downloads/LibreWolf-90.0.2-1.x86_64.AppImage /opt/LibreWolf/
+	chmod +x /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage
+	sudo ln -fs /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
 }
 
-# ----- kmonad for non-void distros ---------
+# ---------  kmonad  -------------
 kmonad () {
 	if [ "$DISTRO" = "devuan" ]; then
 		curl -L -o ~/downloads/kmonad 'https://github.com/kmonad/kmonad/releases/download/0.4.1/kmonad-0.4.1-linux'
@@ -130,7 +136,6 @@ notify_dunst () {
 	cp $ACTUAL_DIR/dunstrc ~/.config/dunst
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dunst configured" >> $LOG_FILE
 }
-
 
 # ----- nerd fonts ---------
 fonts() {
@@ -163,10 +168,11 @@ fonts() {
 	cd /tmp/nerdfonts
 	curl -L -o ubuntu.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
 	curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
-	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.1/fontawesome-free-5.15.1-web.zip 
+	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.4/fontawesome-free-5.15.4-web.zip 
 	curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
 	curl -L -o Iosevka-Nerd-Font.ttf 'https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Regular/complete/Iosevka%20Nerd%20Font%20Complete.ttf'
 	unzip "*.zip"
+	rm *Windows*
 	sudo mkdir -p /usr/share/fonts/truetype/newfonts
 	#OLDIFS=$IFS
 	#IFS=$'\n'
@@ -212,6 +218,7 @@ gitrepos () {
 	# https://gitlab.com/souperdoupe/thom-utils/-/tree/master/wefe
 	#git clone https://git.torproject.org/torsocks.git
 	#git clone https://github.com/LukeSmithxyz/dwmblocks
+	# git clone https://github.com/dylanaraps/paleta
 	
 	if [ -z $1 ]; then
 		# st - Luke Smith's suckless st fork (patched)
@@ -413,12 +420,13 @@ void_xbps_src() {
 	#      xi ungoogled-chromium-marmaduke
 	sudo xbps-install -Suy xtools
 	git clone https://github.com/void-linux/void-packages /opt/git/void-packages
-	git clone https://github.com/not-void/nvoid /opt/git/nvoid
-	cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
+	
+	# git clone https://github.com/not-void/nvoid /opt/git/nvoid
+	# cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
 	cd /opt/git/void-packages  
 	./xbps-src binary-bootstrap
-	./xbps-src pkg ungoogled-chromium-marmaduke
-	xi ungoogled-chromium-marmaduke
+	# ./xbps-src pkg ungoogled-chromium-marmaduke
+	# xi ungoogled-chromium-marmaduke
 }
 
 # ----- xinit & bashrc ----------------------------
@@ -489,7 +497,8 @@ if [ "$OPTION" = "0" ]; then
 			&& gitrepos bspwm && gitrepos dwm && gitrepos dk && defaultbspwm && configdwm && configdk \
 			&& walls && finalsetup && echo "bspwm & dwm & dk configured. Please, reboot system."
 	else
-		echo "bspwm not implemented in Void Linux yet. Only dwm available for the moment."
+		packages_void && basicfolders && fonts && gitrepos \
+			&& gitrepos dwm && defaultbspwm && configdwm && walls && finalsetup && echo "bspwm & dwm configured. Please, reboot system."
 	fi
 	echo "bspwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "1" ]; then

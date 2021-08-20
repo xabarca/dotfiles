@@ -1,0 +1,140 @@
+#! /bin/bash
+#
+# A dmenu ivoox podcasts audio player 
+#    https://mytuner-radio.com/podcast/siglo-21-radio-3-281404669
+#    https://mytuner-radio.com/podcast/a-altas-horas1-a-altas-horas-1436728725
+#    https://mytuner-radio.com/podcast/turbo-3-radio-3-730325989
+#
+# 25/01/2021 - xabarca
+#
+# echo "seek -20" > /tmp/mpv.fifo
+# echo "seek 20" > /tmp/mpv.fifo
+# echo "stop" > /tmp/mpv.fifo
+# echo '{"command": ["cycle", "pause"]}' > /tmp/mpv.fifo
+#
+
+FOLDER_TEMP=/tmp/musicpodcasts
+FOLDER_MUSIC=~/Música/ivoox
+TEMP_MP3_FILE_NAME="podcast_tmp.mp3"
+FIFO_FILE=~/.config/mpv/mpv.fifo
+
+getURL() {
+	case "$1" in
+        "Siglo 21")
+            URL="https://mytuner-radio.com/podcast/siglo-21-radio-3-281404669"
+            NAME=siglo21
+            #~/bin/dmenu/siglo21tracker
+            #exit 0
+            ;;
+        "Turbo 3")
+            URL="https://mytuner-radio.com/podcast/turbo-3-radio-3-730325989"
+            NAME=turbo3
+            #~/bin/dmenu/siglo21tracker
+            #exit 0
+            ;;
+        "A altas horas")
+            URL="https://mytuner-radio.com/podcast/a-altas-horas1-a-altas-horas-1436728725"
+            NAME=aaltashoras
+            ;;
+        *)
+            exit 2
+    esac
+}
+
+openMediaFile() {
+	#mpv --no-audio-display  $1
+	
+	st -n stmusic -g 85x13 -e cmus & disown
+	#urxvtc -name floatterm -title floatterm -e cmus & disown
+	sleep 1
+	cmus-remote --clear -l &
+	sleep 1
+	cmus-remote -l "$1" &
+	sleep 0.5
+	cmus-remote --play &
+}
+
+downloadMediaFile() {
+	mp3url=$1
+	dest_mp3_file=$2
+	if [ "$dest_mp3_file" = "" ]; then 
+		curl -L -o "/tmp/$TEMP_MP3_FILE_NAME" "$mp3url" 
+		mv "/tmp/$TEMP_MP3_FILE_NAME" "$FOLDER_MUSIC"
+	else
+		# not downloading directly to final folder because curl doesn't like long filenames
+		curl -L -N -o "$FOLDER_TEMP/$TEMP_MP3_FILE_NAME" "$mp3url" 
+		mv "$FOLDER_TEMP/$TEMP_MP3_FILE_NAME" "$dest_mp3_file"
+	fi
+}
+
+
+# 
+# first we select which program we wanna download podcasts from
+#
+pogrames_disponibles="Siglo 21\\nTurbo 3\\nA altas horas"
+selection=$( printf "$pogrames_disponibles" | dmenu -i  -p "Chose program" )
+[ "$selection" = "" ] && exit 0
+PROGRAM=$selection
+
+getURL "$selection"
+[ ! -d "$FOLDER_TEMP" ] && mkdir -p $FOLDER_TEMP
+TMP_HTML="$FOLDER_TEMP/_""$NAME""_$(date  +'%Y-%m-%d')"
+DATA_NAMES="$TMP_HTML""names"
+DATA_mp3="$TMP_HTML""mp3"
+DATA_DAYS="$TMP_HTML""days"
+FULL_DATA="$TMP_HTML""dmenu"
+
+
+# 
+# download and process data
+#
+if [ ! -f $TMP_HTML ]; then
+    echo "downloading from: $URL"
+    curl -s $URL | grep 'mp3\|red-title\|date' > $TMP_HTML
+
+    # dates
+    cat $TMP_HTML | grep date | grep div | awk -F'>' '{print $2}' | sed 's/<\/div//g' | awk -F' ' '{print $4"-"$3"-"$2}' \
+         | sed 's/Jan/01/g' | sed 's/Feb/02/g' | sed 's/Mar/03/g' | sed 's/Apr/04/g' \
+         | sed 's/May/05/g' | sed 's/Jun/06/g' | sed 's/Jul/07/g' | sed 's/Aug/08/g' \
+         | sed 's/Sep/09/g' | sed 's/Oct/10/g' | sed 's/Nov/11/g' | sed 's/Dec/12/g'  > $DATA_DAYS
+
+    # text
+    cat $TMP_HTML | grep red | awk -F'"' '{print $5}' | sed 's/<\/div>//g' | sed 's/>//' | sed 's/&nbsp;//g' > $DATA_NAMES
+    # mp3 urls
+    cat $TMP_HTML | grep mp3 |  grep -v nodownload | sed 's/"Play"//g' | awk -F'"' '{print $6}' > $DATA_mp3
+
+    readarray -t arrayD < $DATA_DAYS
+    readarray -t arrayN < $DATA_NAMES
+    readarray -t arrayM < $DATA_mp3
+     
+    [ -f $FULL_DATA ] && rm $FULL_DATA
+    
+    for index in "${!arrayD[@]}"; do
+        echo "${arrayD[$index]} >> ${arrayN[$index]} >> ${arrayM[$index]}" >> $FULL_DATA
+    done
+else
+     echo "data already exists"
+fi
+
+
+# 
+# choose episode with dmenu
+#
+selection=$( cat $FULL_DATA | awk -F ' >> http' '{print $1}' | dmenu -p "choose episode: " -l 20 )
+[ -z "$selection" ] && exit 0
+filter=$( echo $selection | awk -F' >>' '{print $1}' )
+selected=$( cat $FULL_DATA | grep "$filter" )
+[ -z "$selected" ] && exit 0
+
+
+# 
+# download and play it !
+#
+mp3URL=$(echo $selected | awk -F ' >> ' '{print $3}' )
+#echo "mp3 url: $mp3URL"
+mp3_file="$FOLDER_MUSIC/$(echo $selected | awk -F ' >> ' '{print $1"-"$2}' | sed 's/[ |\.|\/]//g' | awk '{print substr($0,0,38)}' )"".mp3"
+#mp3_file="$FOLDER_MUSIC/file$NAME.mp3"
+echo "mp3 will be downloaded to $mp3_file"
+[ ! -d "$FOLDER_MUSIC" ] && mkdir -p $FOLDER_MUSIC
+[ ! -f $mp3_file ] && downloadMediaFile "$mp3URL" "$mp3_file"
+openMediaFile "$mp3_file"

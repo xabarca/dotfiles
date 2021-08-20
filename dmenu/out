@@ -1,0 +1,74 @@
+#!/bin/sh
+# A dmenu binary prompt script.
+# Gives a dmenu prompt labeled with $1 to perform command $2.
+# For example:
+# `./prompt "Do you want to shutdown?" "shutdown -h now"`
+
+lockScreen() {
+    ~/bin/lock
+}
+
+i3exit() {
+    case "$1" in
+        lock)
+            $HOME/bin/lock
+            ;;
+        logout)
+            window_manager=$( xprop -id $(xprop -root _NET_SUPPORTING_WM_CHECK | cut -d\# -f2) | grep WM_NAME | awk '{print $3}' | tr -d '"' )
+            if [ "$window_manager" = "i3" ]
+            then
+                i3-msg exit
+            elif [ "" !=  "$(pidof bspwm)" ]
+            then
+                bspc quit
+            elif [ "" !=  "$(pidof dwm)" ]
+            then
+                dwmc quit
+            fi
+            ;;
+        suspend)
+            sudo pm-suspend | i3lock
+            ;;
+        hibernate)
+            lock && systemctl hibernate
+            ;;
+        reboot)
+            systemctl reboot
+            ;;
+        shutdown)
+            systemctl poweroff
+            ;;
+        *)
+            echo "Usage: $0 {lock|logout|suspend|hibernate|reboot|shutdown}"
+            exit 2
+    esac
+}
+
+msg1="Do you really want me OUT of my X Session?"
+opcions="LOCK\\n-\\n-\\nLOGOUT\\nREBOOT\\nSHUTDOWN"
+#selection=$( printf "$opcions" | dmenu -i -p "$msg1" -nb darkred -sb red -sf white -nf gray)
+selection=$( printf "$opcions" | dmenu -i  -p "$msg1" -nb black -sb darkblue -sf lightblue -nf lightblue)
+echo "$selection"
+
+case "$selection" in
+    LOCK)
+        lockScreen        
+        ;;
+    LOGOUT)
+        #notify-send "LOGOUT"
+        #$HOME/bin/i3/i3exit logout
+        i3exit logout
+        ;;
+    REBOOT)
+        #notify-send "REBOOT"
+        #$HOME/bin/i3/i3exit reboot
+        i3exit reboot
+        ;;
+    SHUTDOWN)
+        #notify-send "SHUTDOWN"
+        #$HOME/bin/i3/i3exit shutdown
+        i3exit shutdown
+        ;;
+esac
+
+exit 0
