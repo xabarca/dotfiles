@@ -22,10 +22,14 @@ midgrey = "#808080"
 # white = "#ffffff"
 white = "#999999"
 
+# accent color
+accentcolor = xresources['*.color10']
+
 # this is too much, this ugly bright magenta !
 # magenta = "#ff009e"
 magenta = "#b1942b"
 magenta = xresources['*.color13']
+magenta = accentcolor
 
 # this is magenta even more bright
 # cyan = "#FA53FF"
@@ -74,13 +78,12 @@ c.colors.tabs.even.bg = darkgrey
 c.colors.tabs.odd.fg = white 
 c.colors.tabs.even.fg = white
 c.colors.tabs.odd.bg = darkgrey
-c.colors.tabs.selected.even.bg = lessdarkgrey
-c.colors.tabs.selected.odd.bg = lessdarkgrey
+c.colors.tabs.selected.even.bg = darkgrey
+c.colors.tabs.selected.odd.bg = darkgrey
 c.colors.tabs.selected.even.fg = magenta
 c.colors.tabs.selected.odd.fg = magenta
 # c.colors.tabs.selected.even.fg = xresources['*.color10']
 # c.colors.tabs.selected.odd.fg = xresources['*.color10']
-
 
 c.colors.statusbar.command.bg = darkgrey
 c.colors.statusbar.url.success.http.fg = cyan 

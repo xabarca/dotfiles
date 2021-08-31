@@ -38,3 +38,17 @@ dwm.selbgcolor: #B1942B
 dwm.selbordercolor: #B1942B
 dwm.normbordercolor: #232323 
 st.font: Hack:pixelsize=12:antialias=true:autohint=true
+
+herbe.background_color: #232323
+herbe.border_color:     #6e9cb0
+herbe.border_size:      2
+herbe.corner:   1
+herbe.duration: 5
+herbe.font_color:       #6e9cb0
+herbe.font_pattern:     Hack:size=11
+herbe.line_spacing:     5
+herbe.padding:  15
+herbe.pos_x:    20
+herbe.pos_y:    40
+herbe.width:    350
+

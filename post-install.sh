@@ -23,6 +23,7 @@ usage()
   echo "     6 : life is easier with browsers"
   echo "     7 : kmonad"
   echo "     8 : xbps-src packges (ungoogled-chromium by marmaduke not included by default)"
+  echo "     9 : void-mklive"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
@@ -48,14 +49,16 @@ packages_void () {
 	# https://notabug.org/reback00/void-goodies
 	# https://github.com/ymir-linux/void-packages
 	
+	sudo echo "permit nopass keepenv $USER" >> /etc/doas.conf
 	sudo echo "ignorepkg=linux-firmware-nvidia" >> /etc/xbps.d/00-ignore.conf
 	sudo echo "ignorepkg=linux-firmware-amd" >> /etc/xbps.d/00-ignore.conf
 	# sudo echo "ignorepkg=linux5.12" >> /etc/xbps.d/00-ignore.conf
 	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
-	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap
+	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap opendoas
 	sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
+	
 	
 # <<<<<<< basesystem 
 
@@ -68,8 +71,8 @@ packages_void () {
 	# --- libraries to complie bspwm / sxhkd / dk ---
 	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb picom dunst libnotify xclip jq unzip xsetroot
-	#sudo xbps-install -y pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
+	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip jq unzip xsetroot
+	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc libnotify
 	sudo ln -s /etc/sv/dbus /var/service
 
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
@@ -82,9 +85,10 @@ basicfolders () {
 	sudo chown $USER:$USER /opt/git
 	cp -r $ACTUAL_DIR /opt/git
 	cd $ACTUAL_DIR
-	cp bin/colors.sh bin/nnnopen bin/pirokit bin/scratchpad bin/updatehosts bin/vm.sh bin/ytp bin/wallpaper* bin/encpass.sh bin/share ~/bin
+	cp bin/colors.sh bin/getcolor bin/nnnopen bin/pirokit bin/scratchpad bin/updatehosts bin/vm.sh bin/ytp bin/wallpaper* bin/encpass.sh bin/share ~/bin
 	cp -r dmenu ~/bin
-	chmod +x ~/bin/* ~/bin/dmenu/* 
+	chmod +x ~/bin/* ~/bin/dmenu/*
+	echo "! Xresources configs --- " >> ~/.Xresources
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
 }
 
@@ -132,6 +136,9 @@ kmonad () {
 
 # ----- dunst  ----------------
 notify_dunst () {
+	if [ "$DISTRO" = "voidlinux" ]; then
+		sudo xbps-install -y dunst
+	fi
 	[ ! -d ~/.config/dunst ] && mkdir -p ~/.config/dunst
 	cp $ACTUAL_DIR/dunstrc ~/.config/dunst
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dunst configured" >> $LOG_FILE
@@ -170,7 +177,6 @@ fonts() {
 	curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
 	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.4/fontawesome-free-5.15.4-web.zip 
 	curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
-	curl -L -o Iosevka-Nerd-Font.ttf 'https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/Iosevka/Regular/complete/Iosevka%20Nerd%20Font%20Complete.ttf'
 	unzip "*.zip"
 	rm *Windows*
 	sudo mkdir -p /usr/share/fonts/truetype/newfonts
@@ -220,38 +226,41 @@ gitrepos () {
 	#git clone https://github.com/LukeSmithxyz/dwmblocks
 	# git clone https://github.com/dylanaraps/paleta
 	
+	
 	if [ -z $1 ]; then
 		# st - Luke Smith's suckless st fork (patched)
-		git clone https://github.com/LukeSmithxyz/st /opt/git/st
+		git clone --depth 1 https://github.com/LukeSmithxyz/st /opt/git/st
 		cd /opt/git/st
 		make
 		sudo ln -fs /opt/git/st/st /usr/local/bin
 		# dmenu from suckless
-		git clone https://git.suckless.org/dmenu /opt/git/dmenu 
+		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu 
+		git apply $ACTUAL_DIR/dwm_patches/dmenu-border-20201112-1a13d04.diff
+		git apply $ACTUAL_DIR/dwm_patches/dmenu-center-20200111-8cd37e1.diff
 		make
 		sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
 		sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
 		sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
 		sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
 		# wmname (to be able to start JDK swing applications)
-		git clone https://git.suckless.org/wmname /opt/git/wmname
+		git clone --depth 1  https://git.suckless.org/wmname /opt/git/wmname
 		cd /opt/git/wmname
 		make
 		sudo make install
 		if [ "$DISTRO" = "devuan" ]; then
 			# nnn file manager
-			git clone https://github.com/jarun/nnn /opt/git/nnn
+			git clone --depth 1  https://github.com/jarun/nnn /opt/git/nnn
 			cd /opt/git/nnn
 			make
 			sudo make install
 			# drscream's lemonbar with xft support
-			git clone https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
+			git clone --depth 1  https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
 			cd /opt/git/lemonbar-xft
 			make
 			sudo ln -fs /opt/git/lemonbar-xft/lemonbar /usr/local/bin
 			# sxhkd
-			git clone https://github.com/baskerville/sxhkd /opt/git/sxhkd
+			git clone --depth 1  https://github.com/baskerville/sxhkd /opt/git/sxhkd
 			cd /opt/git/sxhkd
 			make
 			sudo make install
@@ -259,32 +268,46 @@ gitrepos () {
 	fi
 	if [ "$1" = "bspwm" ]; then
 		if [ "$DISTRO" = "devuan" ]; then
-			git clone https://github.com/baskerville/bspwm /opt/git/bspwm
+			git clone --depth 1  https://github.com/baskerville/bspwm /opt/git/bspwm
 			cd /opt/git/bspwm
 			make
 			sudo make install
 		fi
 	elif [ "$1" = "dwm" ]; then
-		git clone https://git.suckless.org/dwm  /opt/git/dwm
+		git clone --depth 1  https://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
 		if [ "$DISTRO" = "voidlinux" ]; then
 			sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
 		fi
+		sed -i 's/resizehints = 1/resizehints = 0/' /opt/git/dwm/config.def.h
 		make
-		git clone https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
+		git clone --depth 1  https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
 		cp $ACTUAL_DIR/blocks.h /opt/git/dwmblocks
 		cd /opt/git/dwmblocks
 		make
 		sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
 		sudo ln -fs /opt/git/dwmblocks/dwmblocks /usr/local/bin
 	elif [ "$1" = "dk" ]; then
-		git clone https://bitbucket.org/natemaia/dk.git /opt/git/dk
+		git clone --depth 1  https://bitbucket.org/natemaia/dk.git /opt/git/dk
 		cd /opt/git/dk
 		make
 		sudo ln -fs /opt/git/dk/dk /usr/local/bin
 		sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
+}
+
+get_herbe() {
+	if [ "$DISTRO" = "voidlinux" ]; then
+		sudo xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
+	fi
+	git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
+	cd /opt/git/herbe
+	curl -o patch_Xresources.diff https://patch-diff.githubusercontent.com/raw/dudik/herbe/pull/11.diff
+	git apply patch_Xresources
+	make
+	sudo ln -fs /opt/git/herbe/herbe /usr/local/bin
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned and installed with Xresources support" >> $LOG_FILE
 }
 
 
@@ -294,8 +317,8 @@ defaultbspwm () {
 		sudo xbps-install -y sxhkd lemonbar-xft bspwm 
 	fi
 	mkdir ~/.config ~/.config/bspwm ~/.config/sxhkd
-	cp /usr/share/doc/bspwm/examples/bspwm/examples/bspwmrc ~/.config/bspwm/
-	cp /opt/git/bspwm/sxhkdrc ~/.config/sxhkd/
+	cp /usr/share/doc/bspwm/examples/bspwmrc ~/.config/bspwm/
+	cp /opt/git/dotfiles/bspwm/sxhkdrc ~/.config/sxhkd/
 	chmod +x ~/.config/bspwm/bspwmrc
 	chmod +x ~/.config/sxhkd/sxhkdrc
 	if [ "$DISTRO" = "devuan" ]; then
@@ -419,7 +442,7 @@ void_xbps_src() {
 	# 6) instalar el paquete:
 	#      xi ungoogled-chromium-marmaduke
 	sudo xbps-install -Suy xtools
-	git clone https://github.com/void-linux/void-packages /opt/git/void-packages
+	git clone --depth 1  https://github.com/void-linux/void-packages /opt/git/void-packages
 	
 	# git clone https://github.com/not-void/nvoid /opt/git/nvoid
 	# cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
@@ -429,12 +452,21 @@ void_xbps_src() {
 	# xi ungoogled-chromium-marmaduke
 }
 
+# ----- void-mklive from github ----------------------------
+void_mklive() {
+	sudo xbps-install -Suy xtools
+	git clone --depth 1  https://github.com/void-linux/void-mklive /opt/git/void-mklive
+	cd /opt/git/void-mklive
+	make
+}
+
+
 # ----- xinit & bashrc ----------------------------
 finalsetup () {
 	youtube_downloader
 	notify_dunst
 	cd $ACTUAL_DIR
-	cp Xresources ~/.Xresources
+	cat Xresources >> ~/.Xresources
 	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
 	echo "setxkbmap es &" >> ~/.xinitrc
 	cat bashrc >> ~/.bashrc
@@ -544,6 +576,8 @@ elif [ "$OPTION" = "7" ]; then
 	kmonad
 elif [ "$OPTION" = "8" ]; then
 	void_xbps_src
+elif [ "$OPTION" = "9" ]; then
+	void_mklive
 else
 	usage
 fi

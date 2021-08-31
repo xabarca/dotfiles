@@ -33,7 +33,7 @@ vmName=$( printf "" | dmenu -i  -p "$msg2" $COLOR_OPTIONS)
 
 [ "$vmName" = "" ] && exit 0
 if [ -d "$PATH_VMs/$vmName" ]; then
-	notify-send "VM name already exists"
+	herbe "VM name already exists"
 	exit 0
 fi
 
@@ -46,7 +46,7 @@ vmISO=$( printf "$opcions" | dmenu -i -l 15 -p "$msg3" $COLOR_OPTIONS)
 
 [ "$vmISO" = "" ] && exit 0
 if [ ! -f "$PATH_ISOs/$vmISO" ]; then
-	notify-send "Select a valid ISO"
+	herbe "Select a valid ISO"
 	exit 0
 fi
 

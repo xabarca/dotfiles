@@ -17,7 +17,7 @@ super + a
 
 # make sxhkd reload its configuration files.
 super + Escape
-	pkill -USR1 -x sxhkd
+	herbe "sxhkd reloaded"; pkill -USR1 -x sxhkd
 
 
 # -------------------------------------------

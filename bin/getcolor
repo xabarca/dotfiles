@@ -1,0 +1,63 @@
+#! /bin/sh
+# get colors from Xresources file
+
+case "$1" in
+	background|bg)
+		color=$(xrdb -query | grep '*.background' | awk '{print $2}')
+		;;
+	foreground|fg)
+		color=$(xrdb -query | grep '*.foreground' | awk '{print $2}')
+		;;
+	black)
+		color=$(xrdb -query | grep '*.color0' | awk '{print $2}')
+		;;
+	red)
+		color=$(xrdb -query | grep '*.color1:' | awk '{print $2}')
+		;;
+	green)
+		color=$(xrdb -query | grep '*.color2' | awk '{print $2}')
+		;;
+	yellow)
+		color=$(xrdb -query | grep '*.color3' | awk '{print $2}')
+		;;
+	blue)
+		color=$(xrdb -query | grep '*.color4' | awk '{print $2}')
+		;;
+	purple)
+		color=$(xrdb -query | grep '*.color5' | awk '{print $2}')
+		;;
+	cyan)
+		color=$(xrdb -query | grep '*.color6' | awk '{print $2}')
+		;;
+	white)
+		color=$(xrdb -query | grep '*.color7' | awk '{print $2}')
+		;;
+	brightblack|grey)
+		color=$(xrdb -query | grep '*.color8' | awk '{print $2}')
+		;;
+	brightred)
+		color=$(xrdb -query | grep '*.color9' | awk '{print $2}')
+		;;
+	brightgreen)
+		color=$(xrdb -query | grep '*.color10' | awk '{print $2}')
+		;;
+	brightyellow)
+		color=$(xrdb -query | grep '*.color11' | awk '{print $2}')
+		;;
+	brightblue)
+		color=$(xrdb -query | grep '*.color12' | awk '{print $2}')
+		;;
+	brightpurple)
+		color=$(xrdb -query | grep '*.color13' | awk '{print $2}')
+		;;
+	brightcyan)
+		color=$(xrdb -query | grep '*.color14' | awk '{print $2}')
+		;;
+	brightwhite)
+		color=$(xrdb -query | grep '*.color15' | awk '{print $2}')
+		;;
+	*)
+		exit 2
+esac
+
+echo $color
