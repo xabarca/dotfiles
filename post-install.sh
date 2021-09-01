@@ -228,11 +228,9 @@ gitrepos () {
 	
 	
 	if [ -z $1 ]; then
-		# st - Luke Smith's suckless st fork (patched)
-		git clone --depth 1 https://github.com/LukeSmithxyz/st /opt/git/st
-		cd /opt/git/st
-		make
-		sudo ln -fs /opt/git/st/st /usr/local/bin
+		if [ "$DISTRO" = "voidlinux" ]; then
+		    sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel
+		fi
 		# dmenu from suckless
 		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu 
@@ -249,6 +247,11 @@ gitrepos () {
 		make
 		sudo make install
 		if [ "$DISTRO" = "devuan" ]; then
+			# st - Luke Smith's suckless st fork (patched)
+			git clone --depth 1 https://github.com/LukeSmithxyz/st /opt/git/st
+			cd /opt/git/st
+			make
+			sudo ln -fs /opt/git/st/st /usr/local/bin
 			# nnn file manager
 			git clone --depth 1  https://github.com/jarun/nnn /opt/git/nnn
 			cd /opt/git/nnn
@@ -297,6 +300,7 @@ gitrepos () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
 }
 
+# ----- Daemon-less notifications without D-Bus. Minimal and lightweight. -------------------
 get_herbe() {
 	if [ "$DISTRO" = "voidlinux" ]; then
 		sudo xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
@@ -309,7 +313,6 @@ get_herbe() {
 	sudo ln -fs /opt/git/herbe/herbe /usr/local/bin
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned and installed with Xresources support" >> $LOG_FILE
 }
-
 
 # ----- configure default bspwm -------------------
 defaultbspwm () {
@@ -325,24 +328,28 @@ defaultbspwm () {
 		sed -i 's/urxvt/st/' ~/.config/sxhkd/sxhkdrc
 	else
 		sed -i 's/urxvt/urxvtc/' ~/.config/sxhkd/sxhkdrc
+		sed -i 's/urxvtcc/urxvtc/' ~/.config/sxhkd/sxhkdrc
 	fi
 	sed -i 's/super + @space/super + p/' ~/.config/sxhkd/sxhkdrc
-	echo "bspc rule -a scratch state=floating sticky=on"  >> ~/.config/bspwm/bspwmrc
+	# scratchpads (using instance name, not class name)
+	echo "bspc rule -a \"*:scratchpad\"     sticky=on state=floating"  >> ~/.config/bspwm/bspwmrc
+	echo "bspc rule -a \"*:scratchurxvt\"   sticky=on state=floating"  >> ~/.config/bspwm/bspwmrc
+	echo "bspc rule -a \"*:stmusic\"        sticky=on state=floating"  >> ~/.config/bspwm/bspwmrc
 	echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
 	if [ "$DISTRO" = "devuan" ]; then
 		echo "compton &" >> ~/.config/bspwm/bspwmrc
 	else
 		echo "picom &" >> ~/.config/bspwm/bspwmrc
 	fi	
-	echo "dunst &" >> ~/.config/bspwm/bspwmrc
+	echo "# dunst &" >> ~/.config/bspwm/bspwmrc
 	if [ "$DISTRO" = "voidlinux" ]; then
 		echo "urxvtd -q -o -f &" >> ~/.config/bspwm/bspwmrc 
 	fi
     echo " " >> ~/.config/sxhkd/sxhkdrc
-	echo "super + ntilde" >> ~/.config/sxhkd/sxhkdrc
-	echo "    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
+	echo "#super + ntilde" >> ~/.config/sxhkd/sxhkdrc
+	echo "#    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
+	lemonbarpanelbsp
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] bspwm & sxhkd installed and configured" >> $LOG_FILE
-	lemonbarpanelbsp	
 }
 
 # ----- configure dwm -----------------------------
@@ -394,9 +401,10 @@ configdk () {
 
 # ----- lemonbar panel -----------------------------
 lemonbarpanelbsp () {
-	cp $ACTUAL_DIR/bspwm/panel* ~/bin
-	cp $ACTUAL_DIR/bspwm/launch-bar ~/bin
-	chmod +x ~/bin/*
+	mkdir -p ~/bin/bspwm
+	cp $ACTUAL_DIR/bspwm/panel* ~/bin/bspwm
+	cp $ACTUAL_DIR/bspwm/launch-bar ~/bin/bspwm
+	chmod +x ~/bin/bspwm/*
 	echo "~/bin/bspwm/launch-bar &" >> ~/.config/bspwm/bspwmrc
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] lemonbar panel configured" >> $LOG_FILE
 }
@@ -443,11 +451,12 @@ void_xbps_src() {
 	#      xi ungoogled-chromium-marmaduke
 	sudo xbps-install -Suy xtools
 	git clone --depth 1  https://github.com/void-linux/void-packages /opt/git/void-packages
-	
-	# git clone https://github.com/not-void/nvoid /opt/git/nvoid
-	# cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
 	cd /opt/git/void-packages  
 	./xbps-src binary-bootstrap
+		
+	# git clone https://github.com/not-void/nvoid /opt/git/nvoid
+	# cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
+
 	# ./xbps-src pkg ungoogled-chromium-marmaduke
 	# xi ungoogled-chromium-marmaduke
 }
@@ -465,6 +474,7 @@ void_mklive() {
 finalsetup () {
 	youtube_downloader
 	notify_dunst
+	get_herbe
 	cd $ACTUAL_DIR
 	cat Xresources >> ~/.Xresources
 	echo "xrdb ~/.Xresources &" >> ~/.xinitrc

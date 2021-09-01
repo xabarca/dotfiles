@@ -46,7 +46,7 @@ KEYMAP='es' # Define keyboard layout: us or br-abnt2 (include more options)
 FONT='Lat2-Terminus16' # Set type face for terminal before X server starts
 TTYS=2 # Amount of ttys which should be setup
 # LANG='en_US.UTF-8' # I guess this one only necessary in glibc installs
-PKG_LIST='base-system git grub dhcpcd bash-completion setxkbmap' # Install this packages (add more to your taste)
+PKG_LIST='base-system git vim grub dhcpcd bash-completion setxkbmap' # Install this packages (add more to your taste)
 ############################
 ######## HEADER END ########
 ############################
@@ -386,6 +386,30 @@ echo ''
 read -p "Enable SSH ? [Y/n]:" answ
 [ "$answ" = "n" ] && SSH_SERVER=""
 
+
+
+
+
+
+
+#  ######################
+#  ### CHROOTed START ###
+#  ######################
+#  clear
+#  echo ''
+#  echo 'Set Root Password'
+#  echo ''
+#  # create the password for the root user
+#  while true; do
+#    chroot /mnt passwd root && break
+#    echo ''
+#  done
+
+
+
+
+
+
 ### SETUP SYSTEM INFOS START ###
 clear
 echo ''
@@ -399,7 +423,7 @@ $SSH_SERVER
 # Remove all gettys except for tty1 and tty2
 rm /etc/runit/runsvdir/default/agetty-tty[3456]
 # Create user
-useradd -g users -G wheel,storage,video,kvm,xbuilder,audio,cdrom,network,input $USERNAME
+useradd -g users -G wheel,storage,video,kvm,xbuilder,audio,network,input $USERNAME
 # Set password
 echo 'Define password for user ${USERNAME}'
 echo ''
