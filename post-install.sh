@@ -49,23 +49,22 @@ packages_void () {
 	# https://notabug.org/reback00/void-goodies
 	# https://github.com/ymir-linux/void-packages
 	
-	sudo echo "permit nopass keepenv $USER" >> /etc/doas.conf
-	sudo echo "ignorepkg=linux-firmware-nvidia" >> /etc/xbps.d/00-ignore.conf
-	sudo echo "ignorepkg=linux-firmware-amd" >> /etc/xbps.d/00-ignore.conf
-	# sudo echo "ignorepkg=linux5.12" >> /etc/xbps.d/00-ignore.conf
+	echo "permit nopass keepenv $USER" | sudo tee -a /etc/doas.conf
+	echo "ignorepkg=linux-firmware-nvidia" | sudo tee -a /etc/xbps.d/00-ignore.conf
+	echo "ignorepkg=linux-firmware-amd" | sudo tee -a /etc/xbps.d/00-ignore.conf
+	# echo "ignorepkg=linux5.12" | sudo tee -a /etc/xbps.d/00-ignore.conf
 	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
 	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap opendoas
 	sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
 	
-	
 # <<<<<<< basesystem 
 
 	sudo xbps-install -y nnn rxvt-unicode dbus
 	
 	# --- libraries per compilar dmenu / dwm / wmname / st ---
-	# sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel 
+	# sudo xbps-install -y gcc make libX11-devel libXft-devel libXinerama-devel 
 	# sudo xbps-install -y pkg-config
 
 	# --- libraries to complie bspwm / sxhkd / dk ---
@@ -80,15 +79,23 @@ packages_void () {
 
 # ----- folders: HOME and /opt/git ---------
 basicfolders () {
-	mkdir ~/downloads ~/music ~/bin ~/bin/dwm ~/pictures ~/pictures/walls ~/videos
-	sudo mkdir /opt/git
-	sudo chown $USER:$USER /opt/git
-	cp -r $ACTUAL_DIR /opt/git
-	cd $ACTUAL_DIR
-	cp bin/colors.sh bin/getcolor bin/nnnopen bin/pirokit bin/scratchpad bin/updatehosts bin/vm.sh bin/ytp bin/wallpaper* bin/encpass.sh bin/share ~/bin
-	cp -r dmenu ~/bin
-	chmod +x ~/bin/* ~/bin/dmenu/*
-	echo "! Xresources configs --- " >> ~/.Xresources
+	for dir in downloads music bin/dwm pictures/walls videos; do
+		mkdir -p "$HOME/$dir"
+	done
+	
+	if [ ! -d /opt/git ]; then
+		sudo mkdir /opt/git
+		sudo chown "$USER:$USER" /opt/git
+		cp -r "$ACTUAL_DIR" /opt/git
+	else
+		cp -r "$ACTUAL_DIR" /opt/git
+	fi
+	
+	cd $ACTUAL_DIR || return
+	cp bin/colors.sh bin/getcolor bin/nnnopen bin/pirokit bin/scratchpad bin/updatehosts bin/vm.sh bin/ytp bin/wallpaper* bin/encpass.sh bin/share "$HOME/bin"
+	cp -r dmenu "$HOME/bin"
+	chmod u+x "$HOME/bin/*" "$HOME/bin/dmenu/*"
+	echo "! Xresources configs --- " >> "$HOME/.Xresources"
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
 }
 
@@ -109,15 +116,15 @@ browsers () {
 	else
 		sudo xbps-install -Sy qutebrowser python3-adblock
 	fi
-	mkdir -p ~/.config/qutebrowser/themes
-	cd $ACTUAL_DIR
-	cp qutebrowser/config.py  ~/.config/qutebrowser/
-	cp qutebrowser/xavi.py qutebrowser/nord.py  ~/.config/qutebrowser/themes/
+	mkdir -p "$HOME/.config/qutebrowser/themes"
+	cd $ACTUAL_DIR || return
+	cp qutebrowser/config.py  "$HOME/.config/qutebrowser/"
+	cp qutebrowser/xavi.py qutebrowser/nord.py  "$HOME/.config/qutebrowser/themes/"
 
     curl -L -o ~/downloads/LibreWolf-90.0.2-1.x86_64.AppImage 'https://gitlab.com/librewolf-community/browser/appimage/-/jobs/1450294189/artifacts/raw/LibreWolf-90.0.2-1.x86_64.AppImage'
    	sudo mkdir /opt/LibreWolf
 	sudo chown $USER:$USER /opt/LibreWolf
-	mv ~/downloads/LibreWolf-90.0.2-1.x86_64.AppImage /opt/LibreWolf/
+	mv "$HOME/downloads/LibreWolf-90.0.2-1.x86_64.AppImage" /opt/LibreWolf/
 	chmod +x /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage
 	sudo ln -fs /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
@@ -126,9 +133,9 @@ browsers () {
 # ---------  kmonad  -------------
 kmonad () {
 	if [ "$DISTRO" = "devuan" ]; then
-		curl -L -o ~/downloads/kmonad 'https://github.com/kmonad/kmonad/releases/download/0.4.1/kmonad-0.4.1-linux'
-		chmod +x ~/downloads/kmonad
-		sudo mv ~/downloads/kmonad /usr/local/bin	
+		curl -L -o '$HOME/downloads/kmonad' 'https://github.com/kmonad/kmonad/releases/download/0.4.1/kmonad-0.4.1-linux'
+		chmod +x "$HOME/downloads/kmonad"
+		sudo mv "$HOME/downloads/kmonad" /usr/local/bin	
 	else
 		sudo xbps-install -Sy kmonad
 	fi
@@ -139,8 +146,8 @@ notify_dunst () {
 	if [ "$DISTRO" = "voidlinux" ]; then
 		sudo xbps-install -y dunst
 	fi
-	[ ! -d ~/.config/dunst ] && mkdir -p ~/.config/dunst
-	cp $ACTUAL_DIR/dunstrc ~/.config/dunst
+	[ ! -d '$HOME/.config/dunst' ] && mkdir -p '$HOME/.config/dunst'
+	cp $ACTUAL_DIR/dunstrc '$HOME/.config/dunst'
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dunst configured" >> $LOG_FILE
 }
 
@@ -172,7 +179,7 @@ fonts() {
 	# https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/VictorMono/Regular/complete/Victor%20Mono%20Regular%20Nerd%20Font%20Complete.ttf
 	
 	mkdir /tmp/nerdfonts
-	cd /tmp/nerdfonts
+	cd /tmp/nerdfonts || return
 	curl -L -o ubuntu.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
 	curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
 	curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.4/fontawesome-free-5.15.4-web.zip 
@@ -233,14 +240,17 @@ gitrepos () {
 		fi
 		# dmenu from suckless
 		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
-		cd /opt/git/dmenu 
-		git apply $ACTUAL_DIR/dwm_patches/dmenu-border-20201112-1a13d04.diff
-		git apply $ACTUAL_DIR/dwm_patches/dmenu-center-20200111-8cd37e1.diff
-		make
-		sudo ln -fs /opt/git/dmenu/dmenu /usr/local/bin
-		sudo ln -fs /opt/git/dmenu/dmenu_path /usr/local/bin
-		sudo ln -fs /opt/git/dmenu/dmenu_run /usr/local/bin
-		sudo ln -fs /opt/git/dmenu/stest /usr/local/bin
+		cd /opt/git/dmenu || return
+		git apply "$ACTUAL_DIR/dwm_patches/dmenu-border-20201112-1a13d04.diff"
+		git apply "$ACTUAL_DIR/dwm_patches/dmenu-center-20200111-8cd37e1.diff"
+		make && strip dmenu stest
+		for i in dmenu dmenu_* stest; do
+			sudo ln -sf "$PWD/$i" /usr/local/bin
+		done
+		# Crear enlace de manuales de usuario
+		for i in *.1; do
+			sudo ln -sf "$PWD/$i" /usr/local/share/man/man1/
+		done
 		# wmname (to be able to start JDK swing applications)
 		git clone --depth 1  https://git.suckless.org/wmname /opt/git/wmname
 		cd /opt/git/wmname
@@ -306,11 +316,11 @@ get_herbe() {
 		sudo xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
 	fi
 	git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
-	cd /opt/git/herbe
+	cd /opt/git/herbe || return
 	curl -o patch_Xresources.diff https://patch-diff.githubusercontent.com/raw/dudik/herbe/pull/11.diff
 	git apply patch_Xresources
-	make
-	sudo ln -fs /opt/git/herbe/herbe /usr/local/bin
+	make && strip herbe
+	sudo ln -fs "$PWD/herbe" /usr/local/bin
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned and installed with Xresources support" >> $LOG_FILE
 }
 
@@ -319,35 +329,37 @@ defaultbspwm () {
 	if [ "$DISTRO" = "voidlinux" ]; then
 		sudo xbps-install -y sxhkd lemonbar-xft bspwm 
 	fi
-	mkdir ~/.config ~/.config/bspwm ~/.config/sxhkd
-	cp /usr/share/doc/bspwm/examples/bspwmrc ~/.config/bspwm/
-	cp /opt/git/dotfiles/bspwm/sxhkdrc ~/.config/sxhkd/
-	chmod +x ~/.config/bspwm/bspwmrc
-	chmod +x ~/.config/sxhkd/sxhkdrc
+	for dir in bspwm sxhkd; do
+		mkdir -p "$HOME/.config/$dir"
+	done
+	cp /usr/share/doc/bspwm/examples/bspwmrc "$HOME/.config/bspwm/"
+	cp /opt/git/dotfiles/bspwm/sxhkdrc "$HOME/.config/sxhkd/"
+	chmod u+x "$HOME/.config/bspwm/bspwmrc"
+	chmod u+x "$HOME/.config/sxhkd/sxhkdrc"
 	if [ "$DISTRO" = "devuan" ]; then
-		sed -i 's/urxvt/st/' ~/.config/sxhkd/sxhkdrc
+		sed -i 's/urxvt/st/' "$HOME/.config/sxhkd/sxhkdrc"
 	else
-		sed -i 's/urxvt/urxvtc/' ~/.config/sxhkd/sxhkdrc
-		sed -i 's/urxvtcc/urxvtc/' ~/.config/sxhkd/sxhkdrc
+		sed -i 's/urxvt/urxvtc/' "$HOME/.config/sxhkd/sxhkdrc"
+		sed -i 's/urxvtcc/urxvtc/' "$HOME/.config/sxhkd/sxhkdrc"
 	fi
-	sed -i 's/super + @space/super + p/' ~/.config/sxhkd/sxhkdrc
+	sed -i 's/super + @space/super + p/' "$HOME/.config/sxhkd/sxhkdrc"
 	# scratchpads (using instance name, not class name)
-	echo "bspc rule -a \"*:scratchpad\"     sticky=on state=floating"  >> ~/.config/bspwm/bspwmrc
-	echo "bspc rule -a \"*:scratchurxvt\"   sticky=on state=floating"  >> ~/.config/bspwm/bspwmrc
-	echo "bspc rule -a \"*:stmusic\"        sticky=on state=floating"  >> ~/.config/bspwm/bspwmrc
-	echo "xsetroot -cursor_name left_ptr &" >> ~/.config/bspwm/bspwmrc
+	echo "bspc rule -a \"*:scratchpad\"     sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
+	echo "bspc rule -a \"*:scratchurxvt\"   sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
+	echo "bspc rule -a \"*:stmusic\"        sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
+	echo "xsetroot -cursor_name left_ptr &" >> "$HOME/.config/bspwm/bspwmrc"
 	if [ "$DISTRO" = "devuan" ]; then
-		echo "compton &" >> ~/.config/bspwm/bspwmrc
+		echo "compton &" >> "$HOME/.config/bspwm/bspwmrc"
 	else
-		echo "picom &" >> ~/.config/bspwm/bspwmrc
+		echo "picom &" >> "$HOME/.config/bspwm/bspwmrc"
 	fi	
-	echo "# dunst &" >> ~/.config/bspwm/bspwmrc
+	echo "# dunst &" >> "$HOME/.config/bspwm/bspwmrc"
 	if [ "$DISTRO" = "voidlinux" ]; then
-		echo "urxvtd -q -o -f &" >> ~/.config/bspwm/bspwmrc 
+		echo "urxvtd -q -o -f &" >> "$HOME/.config/bspwm/bspwmrc"
 	fi
-    echo " " >> ~/.config/sxhkd/sxhkdrc
-	echo "#super + ntilde" >> ~/.config/sxhkd/sxhkdrc
-	echo "#    /home/$USER/bin/scratchpad" >> ~/.config/sxhkd/sxhkdrc
+    echo " " >>"$HOME/.config/sxhkd/sxhkdrc"
+	echo "#super + ntilde" >> "$HOME/.config/sxhkd/sxhkdrc"
+	echo "#    /home/$USER/bin/scratchpad" >> "$HOME/.config/sxhkd/sxhkdrc"
 	lemonbarpanelbsp
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] bspwm & sxhkd installed and configured" >> $LOG_FILE
 }
@@ -401,17 +413,17 @@ configdk () {
 
 # ----- lemonbar panel -----------------------------
 lemonbarpanelbsp () {
-	mkdir -p ~/bin/bspwm
-	cp $ACTUAL_DIR/bspwm/panel* ~/bin/bspwm
-	cp $ACTUAL_DIR/bspwm/launch-bar ~/bin/bspwm
-	chmod +x ~/bin/bspwm/*
-	echo "~/bin/bspwm/launch-bar &" >> ~/.config/bspwm/bspwmrc
+	mkdir -p "$HOME/bin/bspwm"
+	cp "$ACTUAL_DIR/bspwm/panel*" "$HOME/bin/bspwm"
+	cp "$ACTUAL_DIR/bspwm/launch-bar" "$HOME/bin/bspwm"
+	chmod u+x "$HOME/bin/bspwm/*"
+	echo '"$HOME/bin/bspwm/launch-bar" &' >> "$HOME/.config/bspwm/bspwmrc"
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] lemonbar panel configured" >> $LOG_FILE
 }
 
 # ----- wallpaper ----------------------------------
 walls () {
-	cd ~/pictures/walls
+	cd "$HOME/pictures/walls" || return
 	curl -O http://static.simpledesktops.com/uploads/desktops/2012/01/25/enso3.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2018/03/29/ESTRES.png
@@ -422,7 +434,7 @@ walls () {
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
-	[ -f ~/.config/bspwm/bspwmrc ] && echo "wallpaper-loop &" >> ~/.config/bspwm/bspwmrc
+	[ -f ~/.config/bspwm/bspwmrc ] && echo "wallpaper-loop &" >> "$HOME/.config/bspwm/bspwmrc"
 	if [ -f ~/.config/dk/dkrc ]; then
 		sed -i 's/exit 0/wallpaper-loop \&/' ~/.config/dk/dkrc
 		echo "exit 0" >> ~/.config/dk/dkrc
@@ -475,42 +487,42 @@ finalsetup () {
 	youtube_downloader
 	notify_dunst
 	get_herbe
-	cd $ACTUAL_DIR
-	cat Xresources >> ~/.Xresources
-	echo "xrdb ~/.Xresources &" >> ~/.xinitrc
-	echo "setxkbmap es &" >> ~/.xinitrc
-	cat bashrc >> ~/.bashrc
+	cd $ACTUAL_DIR || return
+	cat Xresources >> "$HOME/.Xresources"
+	cat bashrc >> "$HOME/.bashrc"
+	echo "xrdb ~/.Xresources &" >> "$HOME/.xinitrc"
+	echo "setxkbmap es &" >> "$HOME/.xinitrc"
 	if [ "$WM_SELECTION" = "dwm" ]; then
-		echo "~/bin/dwm/dwm-start" >> ~/.xinitrc
+		echo "~/bin/dwm/dwm-start" >> "$HOME/.xinitrc"
 	elif [ "$WM_SELECTION" = "bspwm" ]; then
-		echo "exec bspwm" >> ~/.xinitrc
+		echo "exec bspwm" >> "$HOME/.xinitrc"
 	elif [ "$WM_SELECTION" = "dk" ]; then
-		echo "~/bin/bar-dk.sh &" >> .xinitrc 
-		echo "exec dk" >> ~/.xinitrc 
+		echo "~/bin/bar-dk.sh &" >> "$HOME/.xinitrc" 
+		echo "exec dk" >> "$HOME/.xinitrc"
 	elif [ "$WM_SELECTION" = "all" ]; then
-		echo "if [ -f $WM_SELECTION_FILE ]; then" >> ~/.xinitrc
-		echo "   SEL=\$(cat $WM_SELECTION_FILE)" >> ~/.xinitrc
-		echo "   if [ \$SEL = dwm ]; then"  >> ~/.xinitrc
-		echo "      dwm-start" >> ~/.xinitrc
-		echo "   elif [ \$SEL = dk ]; then" >> ~/.xinitrc
-		echo "      ~/bin/bar-dk.sh &" >> ~/.xinitrc
-		echo "      exec dk" >> ~/.xinitrc
-		echo "   else" >> ~/.xinitrc
-		echo "      exec bspwm" >> ~/.xinitrc
-		echo "   fi"  >> ~/.xinitrc
-		echo "else"  >> ~/.xinitrc
-		echo "   exec bspwm"  >> ~/.xinitrc
-		echo "fi" >> ~/.xinitrc
+		echo "if [ -f $WM_SELECTION_FILE ]; then" >> "$HOME/.xinitrc"
+		echo "   SEL=\$(cat $WM_SELECTION_FILE)" >> "$HOME/.xinitrc"
+		echo "   if [ \$SEL = dwm ]; then"  >> "$HOME/.xinitrc"
+		echo "      dwm-start" >>"$HOME/.xinitrc"
+		echo "   elif [ \$SEL = dk ]; then" >> "$HOME/.xinitrc"
+		echo "      ~/bin/bar-dk.sh &" >> "$HOME/.xinitrc"
+		echo "      exec dk" >> "$HOME/.xinitrc"
+		echo "   else" >> "$HOME/.xinitrc"
+		echo "      exec bspwm" >> "$HOME/.xinitrc"
+		echo "   fi"  >> "$HOME/.xinitrc"
+		echo "else"  >> "$HOME/.xinitrc"
+		echo "   exec bspwm"  >> "$HOME/.xinitrc"
+		echo "fi" >> "$HOME/.xinitrc"
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] xinitrc & bash alias setups done" >> $LOG_FILE
 }
 
 # ----- update /etc/hosts --------------------------
 updatehosts() {
-	cd $ACTUAL_DIR
-	cp bin/updatehosts ~/bin/updatehosts
-	chmod +x updatehosts
-	~/bin/updatehosts
+	cd $ACTUAL_DIR || return
+	cp bin/updatehosts "$HOME/bin/updatehosts"
+	chmod +x "$HOME/bin/updatehosts"
+	$HOME/bin/updatehosts
 }
 
 

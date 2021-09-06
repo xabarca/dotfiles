@@ -78,7 +78,7 @@ install() {
 	cp configs/resolve.conf /mnt/etc/
 	cp configs/hosts /mnt/etc/
 	cp configs/60-ioshedulers.rules /mnt/run/udev/rules.d/
-	echo "$hostname" /mnt/etc/hostname
+	echo "$HOSTNAME" /mnt/etc/hostname
 	chroot /mnt -c "ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime "
 	cp configs/rc.conf /mnt/etc
 	cp configs/Reynholm-Industries-psk.config /mnt/etc/wpa_supplicant/
@@ -139,7 +139,7 @@ menu() {
 	echo "User Passwd"
 	read -s userpasswd
 	echo " Hostname"
-	read $hostname
+	read $HOSTNAME
 }
 
 menu
