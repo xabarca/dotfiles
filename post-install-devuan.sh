@@ -4,7 +4,6 @@ ACTUAL_DIR="$(dirname $(readlink -f $0))"
 LOG_FILE=~/.post-install.log
 WM_SELECTION_FILE=~/.selected_wm
 OPTION=$1
-DISTRO="devuan"
 
 # ----- usage ---------
 usage()
@@ -14,63 +13,60 @@ usage()
   echo "Usage:  post-install.sh [ option ]"
   echo " "	
   echo "   available values for 'option' parameter:"
-  echo "     0 : install and configure all wm available"
+  echo "     0 : install and configure all wm available (bspwm & dwm)"
   echo "     1 : install and configure bspwm"
   echo "     2 : install and configure basic dwm"
   echo "     3 : patch dwm"
   echo "     4 : configure hosts file to block trackers"
   echo "     5 : life is easier with browsers"
   echo "     6 : kmonad"
-  echo "     7 : xbps-src packges (ungoogled-chromium by marmaduke not included by default)"
-  echo "     8 : void-mklive"
   echo " "	
   echo "Check the actions done on the log file: $LOG_FILE"	
   echo " "	
   exit 2
 }
 
-# ----- default packages (void) --------
-packages_void () {
-	# https://notabug.org/reback00/void-goodies
-	# https://github.com/ymir-linux/void-packages
-
-# --  faltari algun nopass antes del usuario para no requerir password..... -----
-# permit persist visone
-# permit visone as root cmd /usr/bin/reboot
-# permit visone as root cmd /usr/bin/poweroff
-# permit visone as root cmd /usr/bin/halt
-# permit visone as root cmd /usr/bin/shutdown args -h now, -r now
-
-
-	echo "permit nopass keepenv $USER" | sudo tee -a /etc/doas.conf
-    sudo chown -c root:root /etc/doas.conf
-    sudo chmod -c 0400 /etc/doas.conf
-	echo "ignorepkg=linux-firmware-nvidia" | sudo tee -a /etc/xbps.d/00-ignore.conf
-	echo "ignorepkg=linux-firmware-amd" | sudo tee -a /etc/xbps.d/00-ignore.conf
-	# echo "ignorepkg=linux5.12" | sudo tee -a /etc/xbps.d/00-ignore.conf
-	
-	sudo xbps-install -Suy xbps
-	sudo xbps-install -Suy
-	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap opendoas
-	sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
-	
-# <<<<<<< basesystem 
-
-	sudo xbps-install -y nnn rxvt-unicode dbus xterm
-	
-	# --- libraries per compilar dmenu / dwm / wmname / st ---
-	# sudo xbps-install -y gcc make libX11-devel libXft-devel libXinerama-devel 
-	# sudo xbps-install -y pkg-config
-
-	# --- libraries to complie bspwm / sxhkd / dk ---
-	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
-	
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip jq unzip xsetroot
-	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
-	sudo ln -s /etc/sv/dbus /var/service
-
+# ----- default packages ---------
+packages () {
+	sudo apt update 
+	sudo apt install --no-install-recommends -y git vim
+	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool
+	sudo apt install --no-install-recommends -y picom curl zip unzip xwallpaper rclone
+	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
+
+# ----- default packages to compile C programs from source  ---------
+packages_compile () {
+	sudo apt update 
+	sudo apt install --no-install-recommends -y gcc make
+	sudo apt install --no-install-recommends -y libx11-dev libxft-dev libharfbuzz-dev
+	sudo apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
+	sudo apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
+	sudo apt install --no-install-recommends -y llibxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
+	sudo apt install --no-install-recommends -y llibxinerama-dev libreadline-dev 
+	echo "[$(date '+%Y-%m-%d %H:%M.%s')]  packages to compile C software done" >> $LOG_FILE
+}
+
+# ---- configure no password actions - sudoers -------
+conf_doas() {
+    echo "permit keepenv nopass $USER as root" >> /tmp/doas
+   #  username ALL=(ALL) NOPASSWD: /usr/bin/reboot, /usr/bin/poweroff, /usr/bin/shutdown, /usr/bin/halt
+
+    echo "permit nopass $USER" >> /tmp/doas
+    # echo "permit persist $USER" >> /tmp/doas
+    # echo "permit nopass $USER as root cnd poweroff" >> /tmp/doas
+    #echo "permit nopass $USER as root cnd reboot" >> /tmp/doas
+    # echo "permit nopass $USER as root cmd /sbin/reboot" >> /tmp/doas
+    # echo "permit nopass $USER as root cmd /sbin/poweroff" >> /tmp/doas
+    # echo "permit nopass $USER as root cmd /sbin/halt" >> /tmp/doas
+    # echo "permit nopass $USER as root cmd /sbin/shutdown args -h now, -r now" >> /tmp/doas
+    sudo cp /tmp/doas /etc/doas.conf
+    sudo chown -c root:root /etc/doas.conf
+    sudo chmod -c 0400 /etc/doas.conf
+	echo "[$(date '+%Y-%m-%d %H:%M.%s')] doas configured" >> $LOG_FILE
+}
+
 
 # ----- folders: HOME and /opt/git ---------
 basicfolders () {
@@ -106,11 +102,10 @@ browsers () {
 	# https://github.com/qutebrowser/qutebrowser/blob/master/doc/help/configuring.asciidoc
 	# https://github.com/Linuus/nord-qutebrowser/blob/master/nord-qutebrowser.py
 	
-	sudo xbps-install -Sy fuse qutebrowser python3-adblock
+	sudo apt install -y qutebrowser
 	mkdir -p "$HOME/.config/qutebrowser/themes"
-	cd $ACTUAL_DIR || return
-	cp qutebrowser/config.py  "$HOME/.config/qutebrowser/"
-	cp qutebrowser/xavi.py qutebrowser/nord.py  "$HOME/.config/qutebrowser/themes/"
+	cp $ACTUAL_DIR/qutebrowser/config.py  "$HOME/.config/qutebrowser/"
+	cp $ACTUAL_DIR/qutebrowser/xavi.py $ACTUAL_DIR/qutebrowser/nord.py  "$HOME/.config/qutebrowser/themes/"
 
    	sudo mkdir /opt/LibreWolf
 	sudo chown $USER:$USER /opt/LibreWolf
@@ -122,14 +117,16 @@ browsers () {
 
 # ---------  kmonad  -------------
 kmonad () {
-	sudo xbps-install -Sy kmonad
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] kmonad" >> $LOG_FILE
+	curl -L -o '$HOME/downloads/kmonad' 'https://github.com/kmonad/kmonad/releases/download/0.4.1/kmonad-0.4.1-linux'
+	chmod +x "$HOME/downloads/kmonad"
+	sudo mv "$HOME/downloads/kmonad" /usr/local/bin	
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] kmonad installed" >> $LOG_FILE
 }
 
 # ----- dunst  ----------------
 notify_dunst () {
-	sudo xbps-install -y dunst libnotify
-	[ ! -d '$HOME/.config/dunst' ] && mkdir -p '$HOME/.config/dunst'
+	sudo apt-get install --no-install-recommends dunst libnotify-bin
+    [ ! -d '$HOME/.config/dunst' ] && mkdir -p '$HOME/.config/dunst'
 	cp $ACTUAL_DIR/dunstrc '$HOME/.config/dunst'
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dunst configured" >> $LOG_FILE
 }
@@ -144,22 +141,12 @@ fonts() {
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/JetBrainsMono.zip
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/VictorMono.zip
-    # curl -L -o ubuntu.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
 	# curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
 	# curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.4/fontawesome-free-5.15.4-web.zip 
 	# curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
 	unzip "*.zip"
 	rm *Windows*
 	sudo mkdir -p /usr/share/fonts/truetype/newfonts
-	#OLDIFS=$IFS
-	#IFS=$'\n'
-	#fileArray=($(find . -name '*.ttf*'))
-	#tLen=${#fileArray[@]}
-	#IFS=$OLDIFS
-	#for (( i=0; i<${tLen}; i++ ));
-	#do
-	#	sudo mv "${fileArray[$i]}" /usr/share/fonts/truetype/newfonts
-	#done
 	find . -name '*.ttf' >tmp
 	while read file
 	do
@@ -197,9 +184,7 @@ gitrepos () {
 	#git clone https://github.com/LukeSmithxyz/dwmblocks
 	# git clone https://github.com/dylanaraps/paleta
 	
-	
 	if [ -z $1 ]; then
-		sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel
 		# dmenu from suckless
 		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return
@@ -218,11 +203,35 @@ gitrepos () {
 		cd /opt/git/wmname
 		make
 		sudo make install
+		# st - Luke Smith's suckless st fork (patched)
+		git clone --depth 1 https://github.com/LukeSmithxyz/st /opt/git/st
+		cd /opt/git/st
+		make
+		sudo ln -fs /opt/git/st/st /usr/local/bin
+		# nnn file manager
+		git clone --depth 1  https://github.com/jarun/nnn /opt/git/nnn
+		cd /opt/git/nnn
+		make
+		sudo make install
+		# drscream's lemonbar with xft support
+		git clone --depth 1  https://github.com/drscream/lemonbar-xft /opt/git/lemonbar-xft
+		cd /opt/git/lemonbar-xft
+		make
+		sudo ln -fs /opt/git/lemonbar-xft/lemonbar /usr/local/bin
+		# sxhkd
+		git clone --depth 1  https://github.com/baskerville/sxhkd /opt/git/sxhkd
+		cd /opt/git/sxhkd
+		make
+		sudo make install
 	fi
-	if [ "$1" = "dwm" ]; then
+	if [ "$1" = "bspwm" ]; then
+		git clone --depth 1  https://github.com/baskerville/bspwm /opt/git/bspwm
+		cd /opt/git/bspwm
+		make
+		sudo make install
+	elif [ "$1" = "dwm" ]; then
 		git clone --depth 1  https://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
-		sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
 		sed -i 's/resizehints = 1/resizehints = 0/' /opt/git/dwm/config.def.h
 		make
 		git clone --depth 1  https://github.com/torrinfail/dwmblocks /opt/git/dwmblocks
@@ -231,18 +240,16 @@ gitrepos () {
 		make
 		sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
 		sudo ln -fs /opt/git/dwmblocks/dwmblocks /usr/local/bin
-		sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
 }
 
 # ----- Daemon-less notifications without D-Bus. Minimal and lightweight. -------------------
 get_herbe() {
-	sudo xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
-	git clone --depth 1  hZttps://github.com/dudik/herbe /opt/git/herbe
+    git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
 	cd /opt/git/herbe || return
 	curl -o patch_Xresources.diff https://patch-diff.githubusercontent.com/raw/dudik/herbe/pull/11.diff
-	git apply patch_Xresources
+	git apply patch_Xresources.diff
 	make && strip herbe
 	sudo ln -fs "$PWD/herbe" /usr/local/bin
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned and installed with Xresources support" >> $LOG_FILE
@@ -250,7 +257,6 @@ get_herbe() {
 
 # ----- configure default bspwm -------------------
 defaultbspwm () {
-	sudo xbps-install -y sxhkd lemonbar-xft bspwm 
 	for dir in bspwm sxhkd; do
 		mkdir -p "$HOME/.config/$dir"
 	done
@@ -258,18 +264,17 @@ defaultbspwm () {
 	cp /opt/git/dotfiles/bspwm/sxhkdrc "$HOME/.config/sxhkd/"
 	chmod u+x "$HOME/.config/bspwm/bspwmrc"
 	chmod u+x "$HOME/.config/sxhkd/sxhkdrc"
-	sed -i 's/urxvt/urxvtc/' "$HOME/.config/sxhkd/sxhkdrc"
-	sed -i 's/urxvtcc/urxvtc/' "$HOME/.config/sxhkd/sxhkdrc"
+	sed -i 's/urxvtc/st/' "$HOME/.config/sxhkd/sxhkdrc"
 	sed -i 's/super + @space/super + p/' "$HOME/.config/sxhkd/sxhkdrc"
 	# scratchpads (using instance name, not class name)
 	echo "bspc rule -a \"*:scratchpad\"     sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
 	echo "bspc rule -a \"*:scratchurxvt\"   sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
+	echo "bspc rule -a \"*:scratchxterm\"   sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
 	echo "bspc rule -a \"*:stmusic\"        sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
 	echo "xsetroot -cursor_name left_ptr &" >> "$HOME/.config/bspwm/bspwmrc"
 	echo "picom &" >> "$HOME/.config/bspwm/bspwmrc"
 	echo "# dunst &" >> "$HOME/.config/bspwm/bspwmrc"
-	echo "urxvtd -q -o -f &" >> "$HOME/.config/bspwm/bspwmrc"
-    echo " " >>"$HOME/.config/sxhkd/sxhkdrc"
+    echo " " >> "$HOME/.config/sxhkd/sxhkdrc"
 	echo "#super + ntilde" >> "$HOME/.config/sxhkd/sxhkdrc"
 	echo "#    /home/$USER/bin/scratchpad" >> "$HOME/.config/sxhkd/sxhkdrc"
 	lemonbarpanelbsp
@@ -304,24 +309,6 @@ patchdwm () {
 	echo "For patching dwm, use ~/bin/dwm/dwm_git_lab.sh script."
 }
 
-# ----- configure dk -----------------------------
-configdk () {
-	mkdir -p ~/.config/dk
-	mkdir -p ~/.config/sxhkd
-	cp /opt/git/dk/doc/scripts/bar.sh ~/bin/dk-bar.sh
-	cp /opt/git/dk/doc/dkrc ~/.config/dk/
-	cp /opt/git/dk/doc/sxhkdrc ~/.config/sxhkd/sxhkdrc.dk
-	chmod +x ~/.config/dk/dkrc
-	chmod +x ~/.config/sxhkd/sxhkdrc.dk
-	chmod +x ~/bin/dk-bar.sh
-	sed -i 's/alt/super/' ~/.config/sxhkd/sxhkdrc.dk
-	sed -i 's/sxhkd \&/sxhkd -c ~\/\.config\/sxhkd\/sxhkdrc\.dk/' ~/.config/dk/dkrc
-	sed -i 's/exit 0/compton \&/' ~/.config/dk/dkrc
-	echo "dunst &" >> ~/.config/dk/dkrc
-	echo "~/bin/dk-bar.sh &" >> ~/.config/dk/dkrc	
-	echo "exit 0" >> ~/.config/dk/dkrc
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dk configured" >> $LOG_FILE
-}
 
 # ----- lemonbar panel -----------------------------
 lemonbarpanelbsp () {
@@ -350,49 +337,12 @@ walls () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
 }
 
-# ----- xbps-src from github----------------------------
-void_xbps_src() {
-	# by Jose Santos (AgarimOS)  from:  https://au.ytprivate.com/watch?v=q7Q9gecxSts
-	#
-	# 1) instalación de xtools:
-	#      sudo xbps-install -Syu xtools
-	# 2) Clonar los repositorios:
-	#      git clone https://github.com/void-linux/void-packages
-	#      cd void-packages
-	# 	   ./xbps-src binary-bootstrap
-	# 3) clonar el repositorio de nvoid:
-	#      git clone https://github.com/not-void/nvoid​
-	# 4) mover la carpeta ungoogled-chromium-marmaduke a la copia de los repositorios de void linux (/void-packages/srcpkgs/ )
-	# 5) des la carpeta "void-packages" ejecutar
-	#      ./xbps-src pkg -jx ungoogled-chromium-marmaduke
-	#    donde x es el número de hilos. Yo creo que incluso podíamos omitir esta opción. 
-	#    En el caso de compilaciones más largas nos ahorraría bastante tiempo (compilando un kernel por ejemplo).
-	# 6) instalar el paquete:
-	#      xi ungoogled-chromium-marmaduke
-	sudo xbps-install -Suy xtools
-	git clone --depth 1  https://github.com/void-linux/void-packages /opt/git/void-packages
-	cd /opt/git/void-packages  
-	./xbps-src binary-bootstrap
-		
-	# git clone https://github.com/not-void/nvoid /opt/git/nvoid
-	# cp -r /opt/git/nvoid/srcpkgs/ungoogled-chromium-marmaduke /opt/git/void-packages/srcpkgs
-
-	# ./xbps-src pkg ungoogled-chromium-marmaduke
-	# xi ungoogled-chromium-marmaduke
-}
-
-# ----- void-mklive from github ----------------------------
-void_mklive() {
-	sudo xbps-install -Suy xtools
-	git clone --depth 1  https://github.com/void-linux/void-mklive /opt/git/void-mklive
-	cd /opt/git/void-mklive
-	make
-}
 
 # ----- configure vim and vim-plug -------------------------
 vim_config() {
 	curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     cp $ACTUAL_DIR/vimrc $HOME/.vimrc
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
 }
 
 
@@ -400,7 +350,8 @@ vim_config() {
 finalsetup () {
 	youtube_downloader
 	# notify_dunst
-	get_herbe
+    doas_conf
+    get_herbe
     vim_config
 	cd $ACTUAL_DIR || return
 	cat $ACTUAL_DIR/Xresources >> "$HOME/.Xresources"
@@ -432,6 +383,7 @@ updatehosts() {
 	cp bin/updatehosts "$HOME/bin/updatehosts"
 	chmod +x "$HOME/bin/updatehosts"
 	$HOME/bin/updatehosts
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] host update prepared" >> $LOG_FILE
 }
 
 
@@ -449,24 +401,26 @@ updatehosts() {
 # check if we are in Void Linux
 case "$( uname -a )" in 
    *oid*)
-      DISTRO="voidlinux"
+      echo "This script is meant to be used in Devuan. Please, try to run the Void Linux one."
       ;;
 esac
 
 if [ "$OPTION" = "0" ]; then
 	WM_SELECTION="all"
-	packages_void && basicfolders && fonts && gitrepos \
-			&& gitrepos dwm && defaultbspwm && configdwm && walls && finalsetup && echo "bspwm & dwm configured. Please, reboot system."
+	packages && basicfolders && fonts && packages_compile && gitrepos \
+			&& gitrepos bspwm && gitrepos dwm && defaultbspwm && configdwm \
+			&& walls && finalsetup && echo "bspwm & dwm configured. Please, reboot system."
 	echo "bspwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "1" ]; then
 	WM_SELECTION="bspwm"
-	packages_void && basicfolders && fonts && gitrepos \
-			&& defaultbspwm && walls && finalsetup && echo "bspwm configured. Please, reboot system."
+	packages && basicfolders && fonts &&  packages_compile &&  gitrepos && gitrepos bspwm && defaultbspwm \
+			&& walls && finalsetup && echo "bspwm configured. Please, reboot system."
 	echo "bspwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "2" ]; then
 	WM_SELECTION="dwm"
-	packages_void && basicfolders && fonts && gitrepos \
-			&& gitrepos dwm && configdwm && walls && finalsetup && echo "dwm configured. Please, reboot system."
+	packages && basicfolders && fonts && packages_compile && gitrepos \
+			&& gitrepos dwm && configdwm \
+			&& walls && finalsetup && echo "dwm configured. Please, reboot system."
 	echo "dwm" > $WM_SELECTION_FILE
 elif [ "$OPTION" = "3" ]; then
 	patchdwm
@@ -476,10 +430,6 @@ elif [ "$OPTION" = "5" ]; then
 	browsers
 elif [ "$OPTION" = "6" ]; then
 	kmonad
-elif [ "$OPTION" = "7" ]; then
-	void_xbps_src
-elif [ "$OPTION" = "8" ]; then
-	void_mklive
 else
 	usage
 fi

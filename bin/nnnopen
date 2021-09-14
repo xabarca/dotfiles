@@ -69,7 +69,7 @@ fi
 mime=$(file -b --mime-type "$1")
 echo $mime
 # m3u files report as text/plain for some reason
-if [[ "${1#*.}" = "m3u" ]];then
+if [[ "${1#*.}" = "m3u" || "${1#*.}" = "mp4" ]];then
 	mpv "$1"
 # text/*
 elif [[ "${mime%/*}" = "text" ]];then

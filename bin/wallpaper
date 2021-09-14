@@ -1,26 +1,28 @@
 #!/bin/sh
 
-# if set to 1, it uses feh and not xwallpaper
+# if set to 1, it uses feh and not wwallpaper
 FEH_MODE=0
 
-N_MONITORS=$( xrandr --query | grep ' connected' | wc -l )
+MONITORS=$( xrandr --query | grep ' connected' | awk '{print $1}' )
+N_MONITORS=$( echo $MONITORS | wc -w )
+
 DIR1="$HOME/pictures/walls"
 DIR2="$HOME/Imatges/wallpapers"
 
-[ -d $DIR1 ] && WALLPAPERS="$DIR1"
-[ -d $DIR2 ] && WALLPAPERS="$DIR2"
+[ -d $DIR1 ] && WALLPAPERS_DIR="$DIR1"
+[ -d $DIR2 ] && WALLPAPERS_DIR="$DIR2"
 
 if [ "$FEH_MODE" = "0" ]; then
-	FFF=$(ls $WALLPAPERS | sort -R | head -1)
-	WALLPAPERS="$WALLPAPERS/$FFF"
-fi
-
-if [ $N_MONITORS -gt 1 ]; then
-	WALLPAPERS="$WALLPAPERS $WALLPAPERS"
-fi
-
-if [ "$FEH_MODE" = "0" ]; then
-	xwallpaper --stretch $WALLPAPERS
+    for monitor in $MONITORS
+    do
+	    FFF=$(ls $WALLPAPERS_DIR | sort -R | head -1)
+	    echo "xwallpaper --output $monitor --stretch  $WALLPAPERS_DIR/$FFF &" 
+	    xwallpaper --output $monitor --stretch  $WALLPAPERS_DIR/$FFF &
+    done
 else
-	feh --randomize --bg-scale $WALLPAPERS
+    if [ $N_MONITORS -gt 1 ]; then
+	    WALLPAPERS_DIR="$WALLPAPERS_DIR $WALLPAPERS_DIR"
+    fi
+	feh --randomize --bg-scale $WALLPAPERS_DIR
 fi
+

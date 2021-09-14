@@ -33,10 +33,10 @@ i3exit() {
             lock && systemctl hibernate
             ;;
         reboot)
-            systemctl reboot
+            reboot
             ;;
         shutdown)
-            systemctl poweroff
+            poweroff
             ;;
         *)
             echo "Usage: $0 {lock|logout|suspend|hibernate|reboot|shutdown}"

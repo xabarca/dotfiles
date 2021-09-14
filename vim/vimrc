@@ -1,0 +1,63 @@
+" leader key
+let mapleader = " "
+
+" Display options
+set showcmd
+set showmode
+
+" Turn on syntax highlighting
+syntax on
+
+" Turn on line numbers
+set number
+set relativenumber
+
+" Turn on line wrapping
+set wrap
+
+" Better searching
+set ignorecase
+set smartcase
+set incsearch
+
+
+" Set colorscheme
+" se t_Co=16
+" let g:nord_termcolors=256  
+" set background=dark  
+" colorscheme nord 
+
+set termguicolors
+let g:tokyonight_style = 'night' " available: night, storm
+let g:tokyonight_enable_italic = 1
+colorscheme tokyonight
+
+
+" Better Scrolling
+set scrolloff=8
+
+
+" Encoding
+set encoding=utf-8
+
+" Highlight matching search patterns but turn off after enter is pressed
+set nohlsearch
+
+" Tab settings
+set tabstop=4 softtabstop=4
+set shiftwidth=4
+set expandtab
+set smartindent
+
+" sets the clipboard so you can paste stuff from system clipboard 
+set clipboard+=unnamedplus
+
+" Start plugin section
+call plug#begin('~/.vim/plugged')
+
+Plug 'arcticicestudio/nord-vim'
+Plug 'ghifarit53/tokyonight-vim'
+
+" End of plugin section
+call plug#end()
+
