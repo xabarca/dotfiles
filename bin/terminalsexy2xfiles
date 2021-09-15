@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# script que pren com a entrada un arxiu per a .Xresources generat via http://terminal.sexy
+# i el converteix en un format que pugui ser llegir per la meva configuració de variables de colors.
+#
+#
+# inspiration:  https://stackoverflow.com/questions/17403498/iterate-over-two-arrays-simultaneously-in-bash
+#               sed -i --follow-symlinks "/SEARCH/c\REPLACE\" "$FILE"
+# 
+
+[[ -z $1 ]] && exit 0
+
+dest_theme_file="$HOME/.config/Xresources/themes/$1"
+cp "$HOME/.xfiles/themes/gruvbox" "$dest_theme_file"
+
+colors=( foreground  background color0  color8 color1 color9 
+    color2 color10 color3 color11 color4 color12 
+    color5 color13 color6 color14 color7 color15 )
+
+definitions=( fg bg blk blk2 red red2 grn grn2 ylw ylw2
+    blu blu2 mag mag2 cyn cyn2 wht wht2 )
+
+for ((i=0;i<${#colors[@]};++i)); do
+    abc=$(cat $1 | awk -v reso=${colors[i]}: '$1~reso{print $2}')
+    sed -i --follow-symlinks "/${definitions[i]} /c\#define ${definitions[i]}  $abc" "$dest_theme_file"
+done
+
+echo "Done !"
+echo "check the resulting file: $dest_theme_file"

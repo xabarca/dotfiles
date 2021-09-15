@@ -340,9 +340,11 @@ walls () {
 
 # ----- configure vim and vim-plug -------------------------
 vim_config() {
-	curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    cp $ACTUAL_DIR/vimrc $HOME/.vimrc
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    cp $ACTUAL_DIR/vim/vimrc $HOME/.vimrc
+    mkdir -p $HOME/.vim/colors
+    cp $ACTUAL_DIR/vim/colors/*.vim $HOME/.vim/colors
+    echo "[$(date '+%Y-%m-%d %H:%M.%S')] vim config done" >> $LOG_FILE
 }
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-COLOR=$(xrdb -query | grep  color10  | awk '{print $2}')
-COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR=$($HOME/bin/getcolor color10)
+COLOR_BG=$($HOME/bin/getcolor bg)
 COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
 DMENU="dmenu -i -l 15 -p Choose $COLOR_OPTIONS"
 MUSIC_DIR="$HOME/Música"

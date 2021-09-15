@@ -1,0 +1,65 @@
+#!/bin/sh
+
+FILE_TEMPLATE=$HOME/.vim/template.vim
+FILE_TEMP=/tmp/template.vim
+FILE_COLORSCHEME=$HOME/.vim/colors/xavi.vim
+DIR_COLORSCHEME_LIGHTLINE=$HOME/.vim/plugged/lightline.vim/autoload/lightline/colorscheme
+
+putColorfromXres() {
+    COLOR=$( $HOME/bin/getcolor $2 | sed 's/#//' )
+    sed -i "s/let s:g$1 = '/let s:g$1 = '$COLOR/g" $FILE_TEMP
+}
+
+getActualColor() {
+    color="$( cat  $DIR_COLORSCHEME_LIGHTLINE/xavi.vim | grep '#' | grep $1 | awk -F"'" '{print $2}' )"
+    echo $color
+}
+
+putColorToLightLine() {
+    actual="$(getActualColor $1)"
+    new="$($HOME/bin/getcolor $2 )"
+    sed -i "s/$actual/$new/g" $DIR_COLORSCHEME_LIGHTLINE/xavi.vim
+}
+
+
+cp $HOME/.vim/template.vim $FILE_TEMP
+
+
+# sed -i "s/\[x\] //gi" /tmp/mytemplate.vim
+putColorfromXres 0 bg  # background
+putColorfromXres 5 fg  # foreground
+putColorfromXres 1 black  # linenumber background
+putColorfromXres 4 yellow  # linenumber foreground
+putColorfromXres 3 grey   # comments
+putColorfromXres 9 purple  # #!/bin/bash 
+putColorfromXres B red  # reserved words (function, for, echo...)
+putColorfromXres D cyan  # Strings
+putColorfromXres E blue  # [[ ]] ;;
+putColorfromXres F green  # bash variables $var
+
+# unknown colors
+putColorfromXres 2 brightblue
+putColorfromXres 6 brightred
+putColorfromXres 7 brightcyan
+putColorfromXres 8 brightgreen
+putColorfromXres A brightpurple
+putColorfromXres C brightyellow
+
+mv $FILE_TEMP $FILE_COLORSCHEME
+
+
+# -----  lightline section --------------
+[ ! -f "$DIR_COLORSCHEME_LIGHTLINE/xavi.vim" ] && cp $DIR_COLORSCHEME_LIGHTLINE/darcula.vim $DIR_COLORSCHEME_LIGHTLINE/xavi.vim 
+
+sed -i "s/darcula/xavi/g" $DIR_COLORSCHEME_LIGHTLINE/xavi.vim
+
+putColorToLightLine white white
+putColorToLightLine red red
+putColorToLightLine blue blue
+putColorToLightLine green cyan
+putColorToLightLine purple purple
+putColorToLightLine yellow yellow
+putColorToLightLine gray grey
+putColorToLightLine black black
+
+

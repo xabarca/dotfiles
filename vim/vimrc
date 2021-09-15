@@ -20,17 +20,20 @@ set ignorecase
 set smartcase
 set incsearch
 
+set termguicolors
+set background=dark  
+
 
 " Set colorscheme
 " se t_Co=16
 " let g:nord_termcolors=256  
-" set background=dark  
 " colorscheme nord 
+let g:lightline = {'colorscheme' : 'nord'}
 
-set termguicolors
 let g:tokyonight_style = 'night' " available: night, storm
 let g:tokyonight_enable_italic = 1
 colorscheme tokyonight
+" let g:lightline = {'colorscheme' : 'tokyonight'}
 
 
 " Better Scrolling
@@ -50,13 +53,19 @@ set expandtab
 set smartindent
 
 " sets the clipboard so you can paste stuff from system clipboard 
-set clipboard+=unnamedplus
+set clipboard^=unnamed,unnamedplus
+
+" let line bar visible
+set laststatus=2
+
 
 " Start plugin section
 call plug#begin('~/.vim/plugged')
 
+Plug 'sheerun/vim-polyglot'
 Plug 'arcticicestudio/nord-vim'
 Plug 'ghifarit53/tokyonight-vim'
+Plug 'itchyny/lightline.vim'
 
 " End of plugin section
 call plug#end()

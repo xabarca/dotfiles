@@ -6,8 +6,8 @@
 # yt search query		takes input from the passed arg, prompts using fzf
 # yt -r					takes input and prompts using rofi ($guicmd)
 
-COLOR=$(xrdb -query | grep  color12  | awk '{print $2}')
-COLOR_BG=$(xrdb -query | grep background | awk '{print $2}')
+COLOR=$($HOME/bin/getcolor color12 )
+COLOR_BG=$($HOME/bin/getcolor bg)
 COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
 
 LOG_VIDS=~/.youtube_log_vids
