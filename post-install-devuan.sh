@@ -31,7 +31,7 @@ packages () {
 	sudo apt update 
 	sudo apt install --no-install-recommends -y git vim
 	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool
-	sudo apt install --no-install-recommends -y picom curl zip unzip xwallpaper rclone
+	sudo apt install --no-install-recommends -y picom curl zip unzip xwallpaper rclone iw
 	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }

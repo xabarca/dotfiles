@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # https://fontawesome.com/cheatsheet
 
 usage() {
@@ -10,10 +11,11 @@ usage() {
   echo "   -b : battery"
   echo "   -v : VPN"
   echo "   -m : RAM"
-  echo "   -d : disk usage"
+  echo "   -u : disk usage"
   echo "   -l : cpu load"
   echo "   -a : volume"
-  echo "   -t : data-time"
+  echo "   -d : date"
+  echo "   -d : time"
   echo "   -c : cmus info"
   echo "   -h : help"
   echo " "	
@@ -52,7 +54,6 @@ getBattery () {
 	fi
 
 
-
 	# adding colors (if needed)
 	#if [ $perc -lt 20 ]
 	#then
@@ -66,14 +67,15 @@ getBattery () {
 }
 
 getVpnActive() {
-    command=$(ip link show | grep tunsnx | wc -l)
-    if [[ "$command" == "1" ]]
-    then
-        #echo "[VPN]"
-        echo " [$(tail -n 1 /tmp/vpn_log)]"
-    else
-        echo " "
-    fi
+	command=$(ip link show | grep tunsnx | wc -l)
+	# vpn=""
+	vpn=" vpn"
+	if [[ "$command" == "1" ]]
+	then
+		whichvpn="$(tail -n 1 /tmp/vpn_log)"
+		[[ "$whichvpn" == "arc" || "$whichvpn" == "oesia" ]] && vpn=" $whichvpn"
+	fi
+	echo "$vpn"
 }
 
 getMem () {
@@ -82,7 +84,7 @@ getMem () {
 	freemem=$(($totalmem-$usedmem))
 	usedpercent=$((100-($freemem*100)/$totalmem))
 
-	echo " $usedpercent%"
+	echo " $usedpercent%"
 }
 
 
@@ -107,7 +109,11 @@ getVolume() {
 }
 
 getDate() {
-	echo " $(date '+%a %d/%m/%Y %H:%M')"
+	echo " $(date '+%a %d/%m/%Y')"
+}
+
+getTime() {
+	echo " $(date '+%H:%M')"
 }
 
 getCmusInfo() {
@@ -120,27 +126,32 @@ getCmusInfo() {
 	      grep --text '^tag title' | 
 	      sed -e 's/tag title //' |
 	      awk '{gsub("tag title ", "");print}'`
-	   echo " [$artist - $title]  "; 
+	   if [ -z "$artist" ]; then
+		   # 
+		   echo " `cmus-remote -Q | grep 'm4a\|opus' | sed "s/.*\///"`"
+	   else
+	       echo " $artist - $title"; 
+	   fi
 	else 
 		echo ""; 
 	fi
 }
 
-
 # si no hi ha paràmtre o no comença per "-", error !
 [ -z $1 ] && usage
 [[ $1 != -* ]] && usage
 
-while getopts ':bvmdlatch' c
+while getopts ':bvmuladtch' c
 do
   case $c in
     b) getBattery ;; 
     v) getVpnActive ;;
     m) getMem ;;
-    d) getDiskUsage ;;
+    u) getDiskUsage ;;
     l) getCpuLoad ;;
     a) getVolume ;;
-    t) getDate ;;
+    d) getDate ;;
+    t) getTime ;;
     c) getCmusInfo ;;
     h) usage ;;
     :) usage ;;
