@@ -1,4 +1,4 @@
-#! /bin/sh
+#vi! /bin/sh
 # get colors from Xresources file
 
 case "$1" in
@@ -8,52 +8,52 @@ case "$1" in
 	foreground|fg)
 		color=$(xrdb -query | grep '*.foreground' | awk '{print $2}')
 		;;
-	black)
+	black|color0)
 		color=$(xrdb -query | grep '*.color0' | awk '{print $2}')
 		;;
-	red)
+	red|color1)
 		color=$(xrdb -query | grep '*.color1:' | awk '{print $2}')
 		;;
-	green)
+	green|color2)
 		color=$(xrdb -query | grep '*.color2' | awk '{print $2}')
 		;;
-	yellow)
+	yellow|color3)
 		color=$(xrdb -query | grep '*.color3' | awk '{print $2}')
 		;;
-	blue)
+	blue|color4)
 		color=$(xrdb -query | grep '*.color4' | awk '{print $2}')
 		;;
-	purple)
+	purple|magenta|color5)
 		color=$(xrdb -query | grep '*.color5' | awk '{print $2}')
 		;;
-	cyan)
+	cyan|color6)
 		color=$(xrdb -query | grep '*.color6' | awk '{print $2}')
 		;;
-	white)
+	white|color7)
 		color=$(xrdb -query | grep '*.color7' | awk '{print $2}')
 		;;
-	brightblack|grey)
+	brightblack|grey|color8)
 		color=$(xrdb -query | grep '*.color8' | awk '{print $2}')
 		;;
-	brightred)
+	brightred|color9)
 		color=$(xrdb -query | grep '*.color9' | awk '{print $2}')
 		;;
-	brightgreen)
+	brightgreen|color10)
 		color=$(xrdb -query | grep '*.color10' | awk '{print $2}')
 		;;
-	brightyellow)
+	brightyellow|color11)
 		color=$(xrdb -query | grep '*.color11' | awk '{print $2}')
 		;;
-	brightblue)
+	brightblue|color12)
 		color=$(xrdb -query | grep '*.color12' | awk '{print $2}')
 		;;
-	brightpurple)
+	brightpurple|brightmagenta|color13)
 		color=$(xrdb -query | grep '*.color13' | awk '{print $2}')
 		;;
-	brightcyan)
+	brightcyan|color14)
 		color=$(xrdb -query | grep '*.color14' | awk '{print $2}')
 		;;
-	brightwhite)
+	brightwhite|color15)
 		color=$(xrdb -query | grep '*.color15' | awk '{print $2}')
 		;;
 	*)

@@ -17,7 +17,7 @@ generateLocalUserConfig() {
     git config user.email "xavi@devuanfans.org"
 }
 
-gotoDir() {
+gotoDir() {S
     cd $BASE_DIR/$PROJECT
 }
 
@@ -30,7 +30,7 @@ cloneRepo() {
     [ ! -d $BASE_DIR ] && mkdir -p $BASE_DIR
     cd $BASE_DIR
     yes | rm -r $PROJECT
-    git clone https://git.suckless.org/dwm $BASE_DIR/$PROJECT
+    git clone --depth 1 https://git.suckless.org/dwm $BASE_DIR/$PROJECT
 }
 
 createBranchByPatch() {
@@ -48,11 +48,12 @@ makeBranches() {
 	generateLocalUserConfig
 	
     createBranchByPatch config
+    createBranchByPatch status2dallmons 
     createBranchByPatch pertag
     createBranchByPatch noborder
     createBranchByPatch scratchpad
     createBranchByPatch dwmc
-    createBranchByPatch statusallmons
+    #createBranchByPatch statusallmons
     createBranchByPatch xresources
     createBranchByPatch attachtop
     createBranchByPatch xrdb
@@ -76,15 +77,16 @@ mergeManually() {
     git merge noborder -m noborder
     echo "[*] ------- merging dwmc ..."
     git merge dwmc -m dwmc
-    echo "[*] ------- merging statusallmons ..."
-    git merge statusallmons -m statusallmons
     echo "[*] ------- merging attachtop ..."
     git merge attachtop -m attachtop
     echo "[*] ------- merging xrdb ..."
     git merge xrdb -m xrdb
+    echo "[*] ------- merging status2dallmons ..."
+    git merge status2dallmons -m status2dallmons
 }
 
 customRebase() {
+    echo "---- init of custom rebase -----"
     gotoDir
     suckCleanMaster
     git branch -D allcustom
@@ -99,6 +101,7 @@ customRebase() {
 }
 
 makeDiffs() {
+    echo "---- init of makeDiffs -----"
     gotoDir
     suckCleanMaster
     for branch in $(git for-each-ref --format='%(refname)' refs/heads/ | cut -d'/' -f3); do
