@@ -42,23 +42,33 @@ testExtractDir() {
 	[ ! -d $EXTRACT_DIR ] && mkdir $EXTRACT_DIR	
 }
 
+showNotification() {
+   #notify-send "$1 extracted"
+   notify-send "file extracted in $EXTRACT_DIR"
+}
+
 extract() {
 	case "$1" in
-		*.zip)
-		   testExtractDir	
-		   unzip "$1" -d $EXTRACT_DIR ;;
-		*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) 
-		   testExtractDir	
-		   tar xvf "$1" -C $EXTRACT_DIR ;;
+         *.zip)
+	   testExtractDir	
+	   unzip "$1" -d $EXTRACT_DIR 
+	   showNotification "$1" ;;
+	*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar) 
+	   testExtractDir	
+	   tar xvf "$1" -C $EXTRACT_DIR
+	   showNotification "$1" ;;
         *.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
-		   testExtractDir	
-           7z -y x "$1" -o$EXTRACT_DIR ;;
+	   testExtractDir	
+           7z -y x "$1" -o$EXTRACT_DIR
+	   showNotification "$1" ;;
         *.jar|*.war)
-		   testExtractDir	
-           7z -y x "$1" -o$EXTRACT_DIR  ;;
+	   testExtractDir	
+           7z -y x "$1" -o$EXTRACT_DIR
+	   showNotification "$1" ;;
         *.rar)
-		   testExtractDir	
-           7z -y x "$1" -o$EXTRACT_DIR  ;;
+	   testExtractDir	
+           7z -y x "$1" -o$EXTRACT_DIR
+	   showNotification "$1" ;;
 	esac
 }
 
@@ -72,7 +82,7 @@ echo $mime
 if [[ "${1#*.}" = "m3u" || "${1#*.}" = "mp4" ]];then
 	mpv "$1"
 # text/*
-elif [[ "${mime%/*}" = "text" ]];then
+elif [[ "${mime%/*}" = "text" || "$mime" = "application/json"  ]];then
     # external script to open text files
     TERMCMD="urxvtc"
     $TERMCMD -e vim "$1" > /dev/null 2>&1 &

@@ -32,7 +32,7 @@ case "$1" in
 	white|color7)
 		color=$(xrdb -query | grep '*.color7' | awk '{print $2}')
 		;;
-	brightblack|grey|color8)
+	brightblack|grey|gray|color8)
 		color=$(xrdb -query | grep '*.color8' | awk '{print $2}')
 		;;
 	brightred|color9)

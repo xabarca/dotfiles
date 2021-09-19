@@ -283,9 +283,8 @@ defaultbspwm () {
 
 # ----- configure dwm -----------------------------
 configdwm () {
-	cp $ACTUAL_DIR/bin/dwm* ~/bin/dwm
-	chmod +x ~/bin/dwm/*
-	echo "~/bin/dwm/dwm-start" >> .xinitrc
+	cp -r $ACTUAL_DIR/dwm* $HOME/bin
+	chmod +x $HOME/bin/dwm/*
 	patchdwm
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dwm configured" >> $LOG_FILE
 

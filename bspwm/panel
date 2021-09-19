@@ -16,8 +16,6 @@ PANEL_FONT_6="JetBrainsMono:size=10"
 # load panel config
 . panel_colors
 
-
-
 # _______________________________
 # _______________________________
 _update() {
@@ -33,7 +31,7 @@ _update() {
 # -------------------------
 my_date() {
     while true; do
-        echo "D"" $(date +'%Y-%m-%d')"
+        echo "D""$($HOME/bin/dwm/dwm-bar-functions -d )"
         sleep 6h
     done
 }
@@ -42,7 +40,7 @@ my_date() {
 # -------------------------
 my_time() {
     while true; do
-        echo "H"" $(date +'%H:%M')"
+        echo "H""$($HOME/bin/dwm/dwm-bar-functions -t )"
         sleep 1m
     done
 }
@@ -50,7 +48,7 @@ my_time() {
 # -------------------------
 # -------------------------
 getVolume() {
-	echo "V"" $( ~/bin/audioscript getvalue )"
+    echo "V""$($HOME/bin/dwm/dwm-bar-functions -a )"
 }
 
 # -------------------------
@@ -62,39 +60,13 @@ _updateVolume() {
 # -------------------------
 # -------------------------
 getCmusInfo() {
-	if ps -C cmus > /dev/null; then
-	   artist=`cmus-remote -Q | 
-	      grep --text '^tag artist' | 
-	      sed '/^tag artistsort/d' | 
-	      awk '{gsub("tag artist ", "");print}'`
-	   title=`cmus-remote -Q  | 
-	      grep --text '^tag title' | 
-	      sed -e 's/tag title //' |
-	      awk '{gsub("tag title ", "");print}'`
-	   if [ -z "$artist" ]; then
-		   # 
-		   echo " `cmus-remote -Q | grep 'm4a\|opus' | sed "s/.*\///"`"
-	   else
-	       echo " $artist - $title"; 
-	   fi
-	else 
-		echo ""; 
-	fi
+    echo "$($HOME/bin/dwm/dwm-bar-functions -c )"
 }
 
 # -------------------------
 # -------------------------
 getVpnActive() {
-	command=$(ip link show | grep tunsnx | wc -l)
-	# vpn=""
-	vpn=" vpn"
-	if [[ "$command" == "1" ]]
-	then
-		# vpn=""
-		whichvpn="$(tail -n 1 /tmp/vpn_log)"
-		[[ "$whichvpn" == "arc" || "$whichvpn" == "oesia" ]] && vpn=" $whichvpn"
-	fi
-	echo "A$vpn"
+    echo "A""$($HOME/bin/dwm/dwm-bar-functions -v )"
 }
 
 # -------------------------
@@ -116,14 +88,7 @@ getCentralInfo() {
 # -------------------------
 getMem () {
 	while true; do
-		usedmem=$(free -m | grep Mem | awk '{print $3}')
-		totalmem=$(free -m | grep Mem | awk '{print $2}')
-		freemem=$(($totalmem-$usedmem))
-		usedpercent=$((100-($freemem*100)/$totalmem))
-
-		#echo "R"" $usedpercent% RAM"
-		echo "R"" $usedpercent%"
-		#echo "R"" $usedpercent%"
+        echo "R""$($HOME/bin/dwm/dwm-bar-functions -m )"
 		sleep 1m
 	done
 }
@@ -158,7 +123,7 @@ _start() {
 
 	# executes panel_bar to create the status line to the bar
 	./panel_bar < "$PANEL_FIFO" | lemonbar -a 32 -u 0 -n "$PANEL_WM_NAME" -g x$PANEL_HEIGHT \
-	              -f "$PANEL_FONT_0" -o 2 -f "$PANEL_FONT_1" -o 1  \
+                 -f "$PANEL_FONT_0" -o 2 -f "$PANEL_FONT_1" -o 1  \
 	              -F "$COLOR_DEFAULT_FG" -B "$COLOR_DEFAULT_BG" | sh &
 
 	wid=$(xdo id -a "$PANEL_WM_NAME")

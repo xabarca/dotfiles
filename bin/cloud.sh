@@ -14,9 +14,9 @@ PASSWORD="jfj33f33f3hi3hi3i"
 
 
 
-usage()
-{
-   echo "Usage: $0 [ -p | --put FILE ] [ -g | --get FILE ] [ -l | --list ]"
+usage() {
+#   echo "Usage: $0 [ -p | --put FILE ] [ -g | --get FILE ] [ -d | --del FILE ]  [ -l | --list ]"
+   echo "Usage: cloud [ -p | --put FILE ] [ -g | --get FILE ] [ -d | --del FILE ]  [ -l | --list ]"
    exit 2
 }
 
@@ -26,11 +26,18 @@ _list_files() {
    exit 2
 }
 
+_del_file_from_cloud() {
+   file=$1
+   rclone delete "$CLOUD_RCLONE_ALIAS/$file" 
+   exit 2
+}
+
 _put_file_to_cloud() {
    file=$1
+   filename=$(basename $file)
    [ -d $FOLDER_TEMP_ENCRYPTIONS ] && rm -r $FOLDER_TEMP_ENCRYPTIONS 
    mkdir -p "$FOLDER_TEMP_ENCRYPTIONS"
-   encrypted_file="$FOLDER_TEMP_ENCRYPTIONS/$file"
+   encrypted_file="$FOLDER_TEMP_ENCRYPTIONS/$filename"
    _encrypt_file "$file" "$encrypted_file"
    rclone copy "$encrypted_file" "$CLOUD_RCLONE_ALIAS"
 }
@@ -65,6 +72,7 @@ _decrypt_file() {
 case $1 in
 	-p|--put)  FILE_PATH=$2  ACTION="put"  ;;
 	-g|--get)  FILE_PATH=$2  ACTION="get"  ;;
+	-d|--del)  FILE_PATH=$2  ACTION="del"  ;;
 	-l|--list) ACTION="list"  ;;
 	*) usage ;;
 esac
@@ -79,5 +87,8 @@ then
 elif [ "$ACTION" = "put" ];
 then
    _put_file_to_cloud $FILE_PATH
+elif [ "$ACTION" = "del" ];
+then
+   _del_file_from_cloud $FILE_PATH
 fi
 

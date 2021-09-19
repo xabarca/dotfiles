@@ -2,7 +2,7 @@
 
 # in bspwm, we have to stablish a rule like this:  
 #     bspc rule -a "*:scratchpad"  sticky=on state=floating
-# tp mach every scratchpad name we wanna use
+# to mach every scratchpad name we wanna use
 SCRATCHPAD_NAME=$1
 [ -z $SCRATCHPAD_NAME ] && SCRATCHPAD_NAME="scratchpad"
 
@@ -18,7 +18,7 @@ if [ "$SCRATCHPAD_NAME" = "scratchpad" ]; then
 	# we decide that name "scratchpad" will be launched as an st
 	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \
       || xdotool search --classname $SCRATCHPAD_NAME windowmap \
-      || st -n $SCRATCHPAD_NAME -f Hack-9 &
+      || st -f JetBrainsMono-9 -n $SCRATCHPAD_NAME -g 110x30+220+305 &
 else
 	# else, we launch urxvtc
 	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \

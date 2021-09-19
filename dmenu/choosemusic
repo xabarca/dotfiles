@@ -1,7 +1,7 @@
 #!/bin/bash
 
-COLOR=$($HOME/bin/getcolor color10)
-COLOR_BG=$($HOME/bin/getcolor bg)
+COLOR=$( $HOME/bin/getcolor color10 )
+COLOR_BG=$( $HOME/bin/getcolor bg )
 COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
 DMENU="dmenu -i -l 15 -p Choose $COLOR_OPTIONS"
 MUSIC_DIR="$HOME/Música"
@@ -11,8 +11,8 @@ target=$(ls */ -d | $DMENU)
 #echo "$target"
 if [[ "$target" != "" ]]; then
 killall cmus 
-st -f Inconsolata-11 -c floatterm -g 75x13 -e cmus & disown
-#urxvtc -name floatterm -title floatterm -e cmus & disown
+# st -f Inconsolata-11 -c floatterm -n stmusic -g 75x15 -e cmus & disown
+urxvtc -name stmusic -title floatterm -geometry 78x15 -e cmus & disown
 sleep 1
 cmus-remote --clear -l &
 sleep 1

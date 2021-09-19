@@ -1,10 +1,5 @@
 #! /bin/bash
 #
-# A dmenu ivoox podcasts audio player 
-#    https://mytuner-radio.com/podcast/siglo-21-radio-3-281404669
-#    https://mytuner-radio.com/podcast/a-altas-horas1-a-altas-horas-1436728725
-#    https://mytuner-radio.com/podcast/turbo-3-radio-3-730325989
-#
 # 25/01/2021 - xabarca
 #
 # echo "seek -20" > /tmp/mpv.fifo
@@ -19,6 +14,9 @@
 #cat qtile.html | grep channel
 #cat qtile.html | grep Shared
 
+INVIDIOUS_URL_BASE='https://invidious.kavin.rocks'
+
+FIFO_FILE=~/.config/mpv/mpv.fifo
 FOLDER_TEMP=/tmp/yt
 TMP_HTML="$FOLDER_TEMP/yt_temp.html"
 DATA_NAMES="$FOLDER_TEMP/names"
@@ -30,7 +28,7 @@ FULL_DATA="$FOLDER_TEMP/fulldata"
 
 getDataFromInvidious() {
 	selection=$( echo $1 | sed 's/ /+/g' )
-	curl -L "https://invidious.kavin.rocks/search?q=$selection" -o "$TMP_HTML"
+	curl -L "$INVIDIOUS_URL_BASE/search?q=$selection" -o "$TMP_HTML"
 }
 
 
@@ -67,7 +65,7 @@ readarray -t arrayO < $DATA_OLD
  
 [ -f $FULL_DATA ] && rm $FULL_DATA
 
-for index in "${!arrayN[@]}"; do
+for index in "${!arrayI[@]}"; do
 	echo "${arrayI[$index]} >> ${arrayN[$index]} >> ${arrayC[$index]} >> ${arrayT[$index]} >> ${arrayO[$index]}" >> $FULL_DATA
 done
 
@@ -85,3 +83,4 @@ selected=$( cat $FULL_DATA | grep "$filter" | awk -F' >> ' '{print $1}' )
 [ -z "$selected" ] && exit 0
 
 mpv "https://www.youtube.com/watch?v=$selected"
+

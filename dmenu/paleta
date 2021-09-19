@@ -1,0 +1,9 @@
+#! /bin/sh
+
+DIR="/opt/git_projects/paleta"
+
+chose="$(ls $DIR/palettes | dmenu)"
+
+cd $DIR
+./paleta <  palettes/$chose
+

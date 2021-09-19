@@ -26,12 +26,13 @@ else
           -X POST \
           -s \
           --data @$JSON_FILE \
-          $URL
+          "$URL"
     else
        time curl -A "$USER_AGENT" \
           -H "Content-Type: application/json" \
           -X POST \
+          $EXTRA_INFO \
           --data @$JSON_FILE \
-          $URL
+          "$URL"
     fi
 fi

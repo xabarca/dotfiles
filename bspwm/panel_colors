@@ -1,31 +1,9 @@
 #! /bin/sh
 
 #---------
-# Xresources colors
-colorbg=$(xrdb -query | grep '*.background' | awk '{print $2}')
-colorfg=$(xrdb -query | grep  foreground | awk '{print $2}')
-color0=$(xrdb -query  | grep  color0     | awk '{print $2}')
-color1=$(xrdb -query  | grep  'color1:'  | awk '{print $2}')
-color2=$(xrdb -query  | grep  color2     | awk '{print $2}')
-color3=$(xrdb -query  | grep  color3     | awk '{print $2}')
-color4=$(xrdb -query  | grep  color4     | awk '{print $2}')
-color5=$(xrdb -query  | grep  color5     | awk '{print $2}')
-color6=$(xrdb -query  | grep  color6     | awk '{print $2}')
-color7=$(xrdb -query  | grep  color7     | awk '{print $2}')
-color8=$(xrdb -query  | grep  color8     | awk '{print $2}')
-color9=$(xrdb -query  | grep  color9     | awk '{print $2}')
-color10=$(xrdb -query | grep  color10    | awk '{print $2}')
-color11=$(xrdb -query | grep  color11    | awk '{print $2}')
-color12=$(xrdb -query | grep  color12    | awk '{print $2}')
-color13=$(xrdb -query | grep  color13    | awk '{print $2}')
-color14=$(xrdb -query | grep  color14    | awk '{print $2}')
-color15=$(xrdb -query | grep  color15    | awk '{print $2}')
-
-
-#---------
 # default colors (have to match with panel script colors)
-COLOR_DEFAULT_FG="$colorfg"
-COLOR_DEFAULT_BG="$colorbg"
+COLOR_DEFAULT_FG="$($HOME/bin/getcolor fg)"
+COLOR_DEFAULT_BG="$($HOME/bin/getcolor bg)"
 
 #---------
 # monitor colors
@@ -41,7 +19,7 @@ COLOR_STATE_BG="$COLOR_DEFAULT_BG"
 
 #---------
 # workspace colors
-THEME_COLOR_WORKPACES="$color4"
+THEME_COLOR_WORKPACES="$($HOME/bin/getcolor color4)"
 COLOR_FREE_FG="#676767"
 COLOR_FREE_BG="$COLOR_DEFAULT_BG"
 COLOR_FOCUSED_FREE_FG="$COLOR_DEFAULT_BG"
@@ -57,9 +35,10 @@ COLOR_FOCUSED_URGENT_BG="#d5443e"
 
 #---------
 # module colors
-COLOR_HORA_FG="$color4"
-COLOR_DATA_FG="$color3"
-COLOR_MEM_FG="$color14"
-COLOR_VOLUME_FG="$color9"
-COLOR_VPN_FG="$color12"
-COLOR_MUSIC_FG="$color2"
+COLOR_HORA_FG="$($HOME/bin/getcolor color4)"
+COLOR_DATA_FG="$($HOME/bin/getcolor color3)"
+COLOR_MEM_FG="$($HOME/bin/getcolor color14)"
+COLOR_VOLUME_FG="$($HOME/bin/getcolor color9)"
+COLOR_VPN_FG="$($HOME/bin/getcolor color12)"
+COLOR_MUSIC_FG="$($HOME/bin/getcolor color2)"
+

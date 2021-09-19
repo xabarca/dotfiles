@@ -1,17 +1,14 @@
 #!/bin/sh
-# A dmenu binary prompt script.
-# Gives a dmenu prompt labeled with $1 to perform command $2.
-# For example:
-# `./prompt "Do you want to shutdown?" "shutdown -h now"`
 
-lockScreen() {
-    ~/bin/lock
-}
+COLOR_RED="$(~/bin/getcolor 'brightred')"
+COLOR_BG="$(~/bin/getcolor 'bg')"
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR_RED -sf $COLOR_BG -nf $COLOR_RED"
+DMENU="dmenu -c -i -l 8 -bw 4 -fn UbuntuMono:13 $COLOR_OPTIONS"
 
-i3exit() {
+doStuff() {
     case "$1" in
         lock)
-            $HOME/bin/lock
+            ~/bin/lock
             ;;
         logout)
             window_manager=$( xprop -id $(xprop -root _NET_SUPPORTING_WM_CHECK | cut -d\# -f2) | grep WM_NAME | awk '{print $3}' | tr -d '"' )
@@ -33,10 +30,10 @@ i3exit() {
             lock && systemctl hibernate
             ;;
         reboot)
-            reboot
+            systemctl reboot
             ;;
         shutdown)
-            poweroff
+            systemctl poweroff
             ;;
         *)
             echo "Usage: $0 {lock|logout|suspend|hibernate|reboot|shutdown}"
@@ -44,30 +41,21 @@ i3exit() {
     esac
 }
 
-msg1="Do you really want me OUT of my X Session?"
 opcions="LOCK\\n-\\n-\\nLOGOUT\\nREBOOT\\nSHUTDOWN"
-#selection=$( printf "$opcions" | dmenu -i -p "$msg1" -nb darkred -sb red -sf white -nf gray)
-selection=$( printf "$opcions" | dmenu -i  -p "$msg1" -nb black -sb darkblue -sf lightblue -nf lightblue)
-echo "$selection"
+selection=$( printf "$opcions" | $DMENU )
 
 case "$selection" in
     LOCK)
-        lockScreen        
+        doStuff lock
         ;;
     LOGOUT)
-        #notify-send "LOGOUT"
-        #$HOME/bin/i3/i3exit logout
-        i3exit logout
+        doStuff logout
         ;;
     REBOOT)
-        #notify-send "REBOOT"
-        #$HOME/bin/i3/i3exit reboot
-        i3exit reboot
+        doStuff reboot
         ;;
     SHUTDOWN)
-        #notify-send "SHUTDOWN"
-        #$HOME/bin/i3/i3exit shutdown
-        i3exit shutdown
+        doStuff shutdown
         ;;
 esac
 

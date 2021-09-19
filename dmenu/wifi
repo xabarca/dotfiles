@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# choose WIFI device
+device=$( ip link | grep ':' | grep w | awk -F': ' '{print $2}' | dmenu -p 'Choose device ' )
+if [ ! -f /etc/wpa_supplicant/wpa_supplicant.conf ]; then
+    herbe "ERROR: no wpa_supplicant.conf file" 
+    exit 2
+fi
+if [ ! -f /etc/wpa_supplicant/wpa_supplicant-$device.conf ]; then
+    doas cp /etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant-$device.conf 
+else
+    echo 'nice!'
+fi
+
+# choose WIFI SSID
+ssid=$( doas iw $device  scan | grep SSID: | awk '{print $2}' | dmenu -l 8 -p 'Choose wifi network ')
+
+# services: WPA & DHCP
+activeD=$( doas sv status dhcpcd | cut -d ":" -f1 )
+activeW=$( doas sv status wpa_supplicant | cut -d ":" -f1  )
+if [ "$activeD" != "run"  ]; then
+    echo "enabling service"
+    doas ln -s /etc/sv/dhcpcd /var/service/
+    herbe "dhcpcd service enabled" &
+else
+    echo "ok 1"
+fi
+if [ "$activeW" != "run" ]; then
+    echo "enabling service"
+    doas ln -s /etc/sv/wpa_supplicant /var/service/
+    herbe "wpa_supplicant service enabled" &
+else
+    echo "ok 2"
+fi
+
+# Ask for the wifi password 
+# $ wpa_passphrase ssid password | sudo tee -a /etc/wpa_supplicant/wpa_supplicant-INTERFAZ.conf
+if [ "$(doas grep $ssid /etc/wpa_supplicant/wpa_supplicant-$device.conf | wc -l)" -gt 0 ]; then
+    # doas cat /etc/wpa_supplicant/wpa_supplicant-$device.conf
+    herbe "ERROR: There is another password for your $ssid"
+    exit 2
+fi
+password_wifi=$( '' | dmenu -p 'Password ' )
+phrase=$( wpa_passphrase $ssid $password_wifi )
+echo "$phrase" | doas tee -a /etc/wpa_supplicant/wpa_supplicant-$device.conf
+
+# Establsh connection
+doas wpa_supplicant -B -D wext -i $device -c /etc/wpa_supplicant/wpa_supplicant-$device.conf
+

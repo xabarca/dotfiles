@@ -13,6 +13,7 @@ gethostfilesFromAnywhere() {
 	# https://github.com/hectorm/hblock
 	# https://github.com/notracking/hosts-blocklists
 	# https://github.com/StevenBlack/hosts
+	# https://someonewhocares.org/hosts/zero/hosts
 	
 	#wget https://easylist-downloads.adblockplus.org/easylist.txt
 	#curl -s  https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts  -o steven_black.txt
@@ -48,7 +49,6 @@ gethostfilesFromAnywhere
 cat $TMP_DIR/* | tr -d '\r' | sed 's/127.0.0.1/0.0.0.0/gi' | awk '!a[$0]++' > $TMP_ALL_HOSTS
 
 # delete localhosts entries in the generated hostfile
-sed -i '/localhost/d' $TMP_ALL_HOSTS
 sed -i '/localhost/d' $TMP_ALL_HOSTS
 sed -i '/::0/d' $TMP_ALL_HOSTS
 sed -i '/::1/d' $TMP_ALL_HOSTS

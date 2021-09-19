@@ -38,7 +38,7 @@ putColorfromXres E blue  # [[ ]] ;;
 putColorfromXres F green  # bash variables $var
 
 # unknown colors
-putColorfromXres 2 brightblue
+putColorfromXres 2 yellow
 putColorfromXres 6 brightred
 putColorfromXres 7 brightcyan
 putColorfromXres 8 brightgreen

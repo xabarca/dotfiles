@@ -1,14 +1,13 @@
 #!/bin/bash
 
-COLOR=$($HOME/bin/getcolor color6)
+GREEN=$($HOME/bin/getcolor green)
 COLOR_BG=$($HOME/bin/getcolor bg)
-COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
-DMENU="dmenu -i -l 7 -p Choose $COLOR_OPTIONS"
+COLOR_OPTIONS="-nb $COLOR_BG -sb $GREEN -sf $COLOR_BG -nf $GREEN"
+DMENU="dmenu -i -l 7 -c -bw 2 -p Connect: $COLOR_OPTIONS"
 
-COMMAND="ls | grep -v Default"
 cd $HOME/.putty/sessions
 
-target=$( ls | grep -v Default | $DMENU) 
+target=$( ls | grep -v Default | $DMENU ) 
 echo "$target"
 
 
