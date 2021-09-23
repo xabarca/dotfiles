@@ -29,7 +29,7 @@ usage()
 # ----- default packages ---------
 packages () {
 	sudo apt update 
-	sudo apt install --no-install-recommends -y git vim
+	sudo apt install --no-install-recommends -y git neovim
 	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool
 	sudo apt install --no-install-recommends -y picom curl zip unzip xwallpaper rclone iw
 	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme
@@ -246,13 +246,12 @@ gitrepos () {
 
 # ----- Daemon-less notifications without D-Bus. Minimal and lightweight. -------------------
 get_herbe() {
-    git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
+	git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
 	cd /opt/git/herbe || return
-	curl -o patch_Xresources.diff https://patch-diff.githubusercontent.com/raw/dudik/herbe/pull/11.diff
-	git apply patch_Xresources.diff
+	git apply "$ACTUAL_DIR/patches/herbe-xresources-critical.diff"
 	make && strip herbe
 	sudo ln -fs "$PWD/herbe" /usr/local/bin
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned and installed with Xresources support" >> $LOG_FILE
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned, installed and patched with Xresources/critical support" >> $LOG_FILE
 }
 
 # ----- configure default bspwm -------------------
@@ -346,6 +345,16 @@ vim_config() {
     echo "[$(date '+%Y-%m-%d %H:%M.%S')] vim config done" >> $LOG_FILE
 }
 
+# ----- configure neovim and vim-plug -------------------------
+vim_config() {
+	mkdir -p $HOME/.config/nvim/colors
+	sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    cp $ACTUAL_DIR/vim/init.vim $HOME/.config/nvim/init.vim
+    cp $ACTUAL_DIR/vim/colors/*.vim $HOME/.config/nvim/colors
+    echo "[$(date '+%Y-%m-%d %H:%M.%S')] neovim config done" >> $LOG_FILE
+}
+
 
 # ----- xinit & bashrc ----------------------------
 finalsetup () {
@@ -353,7 +362,7 @@ finalsetup () {
 	# notify_dunst
     doas_conf
     get_herbe
-    vim_config
+    neovim_config
 	cd $ACTUAL_DIR || return
 	cat $ACTUAL_DIR/Xresources >> "$HOME/.Xresources"
 	cat $ACTUAL_DIR/bashrc >> "$HOME/.bashrc"

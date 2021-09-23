@@ -1,4 +1,4 @@
-" leader key
+
 let mapleader = " "
 
 " Display options
@@ -6,7 +6,7 @@ set showcmd
 set showmode
 
 " Turn on syntax highlighting
-syntax on
+" syntax on
 
 " Turn on line numbers
 set number
@@ -24,7 +24,7 @@ set incsearch
 set scrolloff=8
 
 " Encoding
-set encoding=utf-8
+" set encoding=utf-8
 
 " Highlight matching search patterns but turn off after enter is pressed
 set nohlsearch
@@ -32,15 +32,12 @@ set nohlsearch
 " Tab settings
 set tabstop=4 softtabstop=4
 set shiftwidth=4
-set expandtab
-set smartindent
+" set expandtab
+" set smartindent
 
 " sets the clipboard so you can paste stuff from system clipboard 
-set clipboard^=unnamed,unnamedplus
-
-" let line bar visible
-set laststatus=2
-
+"set clipboard^=unmamed,unnamedplus
+set clipboard=unnamedplus
 
 " ----------------------------------------------------------
 " ----------------------------------------------------------
@@ -58,17 +55,16 @@ call plug#end()
 " ----------------------------------------------------------
 
 
-
 set background=dark  
 
-if $TERM == 'st-256color' || $TERM == "rxvt-unicode-256color"
-    colorscheme hybrid
-    let g:lightline = { 'colorscheme': 'powerline'}
+if $TERM == "rxvt-unicode-256color" || $TERM == "rxvt-unicode"
+    colorscheme gruvbox
+    let g:lightline = { 'colorscheme': 'powerlineish'}
 else
     set termguicolors
 " let g:tokyonight_style = 'night' " available: night, storm
 " let g:tokyonight_enable_italic = 1
-    colorscheme xavi2 
+    colorscheme xavi2
     let g:lightline = { 'colorscheme': 'xavi'}
 end
 
@@ -76,6 +72,11 @@ end
 " colorscheme hybrid
  
 " https://github.com/itchyny/lightline.vim/blob/master/colorscheme.md
+ 
+
+" vmap <C-c> "*y     " Yank current selection into system clipboard
+" nmap <C-c> "*Y     " Yank current line into system clipboard (if nothing is selected)
+" nmap <C-v> "*p     " Paste from system clipboard
 
 
 

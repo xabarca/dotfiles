@@ -13,7 +13,7 @@
 *.saveLines:	1000000
 urxvt.termName:	rxvt-unicode
 
-! fake transparency (enough for me)
+! fake transparency in URXVT (enough for me)
 urxvt*transparent: true
 urxvt*shading: 35
 urxvt*tintColor: bg
@@ -26,10 +26,13 @@ st.font: Hack Nerd Font:pixelsize=12:antialias=true:autohint=true
 
 herbe.background_color:  bg
 herbe.border_color:    blu     
+!herbe.background_color_critical:  red2
+!herbe.border_color_critical:    wht     
 herbe.border_size:      2
 herbe.corner:   1
 herbe.duration: 5
 herbe.font_color:       blu
+!herbe.font_color:       wht
 herbe.font_pattern:     Hack:size=11
 herbe.line_spacing:     5
 herbe.padding:  15

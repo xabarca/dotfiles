@@ -44,8 +44,9 @@ getURL() {
 openMediaFile() {
 	#mpv --no-audio-display  $1
 	
-	st -n stmusic -g 85x13 -f UbuntuMonoNerdFont-12 -e cmus & disown
-	#urxvtc -name floatterm -title floatterm -e cmus & disown
+	#st -n stmusic -g 85x13 -f UbuntuMonoNerdFont-12 -e cmus & disown
+	urxvtc -name stmusic -geometry 80x15 -title floatterm -e cmus & disown
+	#xterm -name stmusic -geometry 80x15 -title floatterm -e cmus & disown
 	sleep 1
 	cmus-remote --clear -l &
 	sleep 1

@@ -1,0 +1,55 @@
+#----  21 33 39 14     45 111 14 39 33  
+#---- colors used ....
+#----    - title and status line:          7 and 33
+#----    - selections:                    14
+#----    - playing and title of song:     33 and 111
+#----    - command line:                  45
+#----    - all backgrounds:          default
+#----    - generic text:                 248
+#----    - error:                        199
+#---- 
+
+# unified backgrounds -------------------
+set color_cmdline_bg=default
+set color_statusline_bg=default
+set color_titleline_bg=default
+set color_win_cur_sel_bg=default
+set color_win_inactive_sel_bg=default
+set color_win_inactive_cur_sel_bg=default
+set color_win_sel_bg=default
+set color_win_title_bg=default
+set color_win_bg=default
+
+# default foreground for tracks ----------
+set color_win_fg=248
+
+# black separator ------------------------
+set color_separator=45
+
+# command line colors --------------------
+set color_cmdline_fg=45
+set color_error=199
+set color_info=45
+
+# status line ----------------------------
+set color_statusline_fg=33
+
+# song playing (up close to the status line) ----------
+set color_titleline_fg=111
+
+# current playing track -------------------
+set color_win_cur=33
+set color_win_cur_sel_fg=33
+
+# directories in broser view --------------
+set color_win_dir=33
+
+# selected lines using {hjkl} -------------
+set color_win_sel_fg=14
+
+# title (first line) ----------------------
+set color_win_title_fg=7
+
+# selected row in (in)active window -------
+set color_win_inactive_cur_sel_fg=45
+set color_win_inactive_sel_fg=33

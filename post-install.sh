@@ -51,7 +51,7 @@ packages_void () {
 	
 	sudo xbps-install -Suy xbps
 	sudo xbps-install -Suy
-	sudo xbps-install -Suy xorg-minimal xinit vim git bash-completion setxkbmap opendoas
+	sudo xbps-install -Suy xorg-minimal xinit neovim git bash-completion setxkbmap opendoas
 	sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
 	
 # <<<<<<< basesystem 
@@ -203,8 +203,8 @@ gitrepos () {
 		# dmenu from suckless
 		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return
-		git apply "$ACTUAL_DIR/dwm_patches/dmenu-border-20201112-1a13d04.diff"
-		git apply "$ACTUAL_DIR/dwm_patches/dmenu-center-20200111-8cd37e1.diff"
+		git apply "$ACTUAL_DIR/patches/dmenu-border-20201112-1a13d04.diff"
+		git apply "$ACTUAL_DIR/patches/dmenu-center-20200111-8cd37e1.diff"
 		make && strip dmenu stest
 		for i in dmenu dmenu_* stest; do
 			sudo ln -sf "$PWD/$i" /usr/local/bin
@@ -239,13 +239,12 @@ gitrepos () {
 # ----- Daemon-less notifications without D-Bus. Minimal and lightweight. -------------------
 get_herbe() {
 	sudo xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
-	git clone --depth 1  hZttps://github.com/dudik/herbe /opt/git/herbe
+	git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
 	cd /opt/git/herbe || return
-	curl -o patch_Xresources.diff https://patch-diff.githubusercontent.com/raw/dudik/herbe/pull/11.diff
-	git apply patch_Xresources
+	git apply "$ACTUAL_DIR/patches/herbe-xresources-critical.diff"
 	make && strip herbe
 	sudo ln -fs "$PWD/herbe" /usr/local/bin
-	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned and installed with Xresources support" >> $LOG_FILE
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned, installed and patched with Xresources/critical support" >> $LOG_FILE
 }
 
 # ----- configure default bspwm -------------------
@@ -397,13 +396,23 @@ vim_config() {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] vim config done" >> $LOG_FILE
 }
 
+# ----- configure neovim and vim-plug -------------------------
+neovim_config() {
+	mkdir -p $HOME/.config/nvim/colors
+	sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    cp $ACTUAL_DIR/vim/init.vim $HOME/.config/nvim/init.vim
+    cp $ACTUAL_DIR/vim/colors/*.vim $HOME/.confit/nvim/colors
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] neovim config done" >> $LOG_FILE
+}
+
 
 # ----- xinit & bashrc ----------------------------
 finalsetup () {
 	youtube_downloader
 	# notify_dunst
 	get_herbe
-    vim_config
+    neovim_config
 	cd $ACTUAL_DIR || return
 	cat $ACTUAL_DIR/Xresources >> "$HOME/.Xresources"
 	cat $ACTUAL_DIR/bashrc >> "$HOME/.bashrc"
