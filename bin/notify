@@ -8,7 +8,7 @@ Format() {
 	echo "$1"
 }
 
-Workspaces() {
+Workspaces_old() {
 	desktops=$(bspc query -D --names)
     focused=$(bspc query -D --names -d focused)
 
@@ -28,6 +28,47 @@ Workspaces() {
   echo $desktops
 }
 
+Workspaces() {
+	desktops=$(bspc query -D --names)
+    focused=$(bspc query -D --names -d focused)
+	final=""
+
+	for desktop in $desktops; do
+		nodes=$(bspc query -N -d $desktop)
+		if [ "$focused" = "$desktop" ]; then
+			final="$final  "
+			#final="$final 硫"
+		elif [ -z "$nodes" ]; then
+			final="$final "
+		else
+			#final="$final  "
+			#final="$final  "
+			final="$final "
+		fi
+  done
+  echo $final
+}
+
+Workspaces2() {
+  while true; do
+    total="$(xdotool get_num_desktops)"
+    current="$(xdotool get_desktop)"
+    desktops=""
+
+    for i in $(seq 0 $total) 
+    do
+        if [ "$i" = "$current" ]; then
+            desktops="$desktops ■"
+        else
+            desktops="$desktops □"
+        fi
+    done
+
+    echo 'W' $desktops
+    sleep 0.1
+  done
+}
+
 CpuTemp() {
 	temp=$(sensors | grep "Tdie" | sed "s/Tdie: *+//;s/°C *//")
 	if [ 1 -eq "$(echo "$temp > 80" | bc)" ]; then
@@ -45,10 +86,13 @@ Cpu() {
 }
 
 Clock(){
-	DATE=$(date "+%d/%m/%y")
-	TIME=$(date "+%I:%M:%S")
+	TIME=$(date "+%I:%M")
+	Format " $TIME"
+}
 
-	Format "${DATE}  ${TIME}"
+Calendar(){
+	DATE=$(date "+%d/%m/%y")
+	Format " ${DATE}"
 }
 
 ActiveWindow(){
@@ -79,6 +123,10 @@ getMem () {
 }
 
 Sound(){
+	echo " $($HOME/bin/audioscript getvalue)"
+}
+
+Sound_old(){
 	device=$(pulsedevices | grep "pci-0000_0b" -A 2)
 	mute=$(echo "$device" | grep "Mute" | awk '{ print $2 }')
 	vol=$(echo "$device" | grep "front-left" | awk '{ print $5 }')
@@ -122,4 +170,5 @@ Update() {
 	#echo -e "%{r} $(NewModule)"
 }
 
-notify-send -u normal "BSPWM params" "$(Workspaces) \n$(Clock) \n$(ActiveWindow) \n$(Sound)"
+herbe  "$(Workspaces)" "$(Sound)" "$(ActiveWindow)" "$(Clock)  $(Calendar)"
+#notify-send -u normal "BSPWM params" "$(Workspaces) \n$(Clock) \n$(ActiveWindow) \n$(Sound)"

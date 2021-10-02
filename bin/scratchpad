@@ -19,6 +19,11 @@ if [ "$SCRATCHPAD_NAME" = "scratchpad" ]; then
 	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \
       || xdotool search --classname $SCRATCHPAD_NAME windowmap \
       || st -f JetBrainsMono-9 -n $SCRATCHPAD_NAME -g 110x30+220+305 &
+elif [ "$SCRATCHPAD_NAME" = "xterm_scratchpad" ]; then
+	# we launch xterm
+	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \
+      || xdotool search --classname $SCRATCHPAD_NAME windowmap \
+      || xterm -name $SCRATCHPAD_NAME &
 else
 	# else, we launch urxvtc
 	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \
