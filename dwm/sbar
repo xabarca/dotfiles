@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # INIT
-printf "$$" > ~/.cache/pidofbar
+# printf "$$" > ~/.cache/pidofbar
+printf "$$" > ~/tmp/sbar_dwm
 sec=0
 
 
@@ -17,15 +18,19 @@ update_cpu () {
 }
 
 update_memory () { 
-	memory="$(free -h | sed -n "2s/\([^ ]* *\)\{2\}\([^ ]*\).*/\2/p")"
+	memory="$(getcolor green)""$( $HOME/bin/dwm/dwm-bar-functions -m )"
+}
+
+update_date () { 
+	fecha="$(getcolor yellow)""$( $HOME/bin/dwm/dwm-bar-functions -d )"
 }
 
 update_time () { 
-	time="$(date "+[%a %d %b] [%I:%M %P]")" 
+	time="$(getcolor cyan)""$( $HOME/bin/dwm/dwm-bar-functions -t )"
 }
 
 update_weather () { 
-    weather="$(getcolor red)""$(curl -s "wttr.in?format=1"| sed -E "s/^(.).*\+/\1/")" 
+    weather="$(getcolor brightblue)""$(curl -s "wttr.in?format=1"| sed -E "s/^(.).*\+/\1/")" 
 }
 
 update_bat () { 
@@ -36,7 +41,7 @@ update_bat () {
 }
 
 update_vol () { 
-	vol="$([ "$(pamixer --get-mute)" = "false" ] && printf '🔊' || printf '🔇')$(pamixer --get-volume)%"
+	vol="$(getcolor magenta)""$( $HOME/bin/dwm/dwm-bar-functions -a )"
 }
 
 update_backlight () { 
@@ -56,18 +61,21 @@ update_backlight () {
 
 # modules that don't update on their own need to be run at the start for getting their initial value
 update_vol
-update_backlight
+update_date
+#update_backlight
 
 display () { 
-	#printf "%s\n" " $event [$weather] [$memory $cpu] [$bat] [$backlight] [$vol] $time "
-	xsetroot -name " [$weather] [$memory $cpu] [$bat] [$backlight] [$vol] $time "
+	#printf "%s\n" " $weather $memory $vol $fecha $time "
+	xsetroot -name " $weather   $memory   $vol   $fecha   $time "
+	#xsetroot -name " [$weather] [$memory $cpu] [$bat] [$backlight] [$vol] $time "
 }
 
 # SIGNALLING
 # trap	"<function>;display"		"RTMIN+n"
 trap	"update_vol;display"		"RTMIN"
-trap	"update_backlight;display" 	"RTMIN+1"
-trap	"update_bat;display" 		"RTMIN+2"
+# trap	"update_backlight;display" 	"RTMIN+1"
+# trap	"update_bat;display" 		"RTMIN+2"
+#
 # to update it from external commands
 ## kill -m "$(cat ~/.cache/pidofbar)"
 # where m = 34 + n
@@ -77,10 +85,10 @@ do
 	sleep 1 & wait && { 
 		# to update item ever n seconds with a offset of m
 		## [ $((sec % n)) -eq m ] && udpate_item
-		[ $((sec % 5 )) -eq 0 ] && update_time 	# update time every 5 seconds
-		[ $((sec % 15)) -eq 0 ] && update_cpu 	# update cpu every 15 seconds
-		[ $((sec % 15)) -eq 0 ] && update_memory
-		[ $((sec % 60)) -eq 0 ] && update_bat
+		[ $((sec % 15 )) -eq 0 ] && update_time 	# update time every 15 seconds
+		##[ $((sec % 15)) -eq 0 ] && update_cpu 	# update cpu every 15 seconds
+		[ $((sec % 30)) -eq 0 ] && update_memory
+		##[ $((sec % 60)) -eq 0 ] && update_bat
 		[ $((sec % 3600)) -eq 2 ] && update_weather 
 		#[ $((sec % 300)) -eq 1 ] && update_event
 

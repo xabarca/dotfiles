@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 EXTRACT_DIR=/tmp/extract
 
@@ -35,7 +35,7 @@ function extract___ {
           return 1
       fi
     done
-fi
+ fi
 }
 
 testExtractDir() {
@@ -46,6 +46,29 @@ showNotification() {
    #notify-send "$1 extracted"
    notify-send "file extracted in $EXTRACT_DIR"
 }
+
+open_sxiv() {
+    image="$1"
+    if [ "$image" != "${image#/}" ]; then
+        path=$(dirname $image)
+        filename="$(basename $image)"
+    else
+        path=$image
+        filename="$(pwd)"
+    fi
+
+    cd "$path"
+	j=1
+	for file in $(ls *.{jpeg,jpg,png,gif}); do 
+        echo "$j $file $1"
+		if [[ "$file" == "$filename" ]]; then
+			number=$j
+		fi
+		((j++))
+	done
+	sxiv -n $number $(pwd)
+}
+
 
 extract() {
 	case "$1" in
@@ -84,15 +107,18 @@ if [[ "${1#*.}" = "m3u" || "${1#*.}" = "mp4" ]];then
 # text/*
 elif [[ "${mime%/*}" = "text" || "$mime" = "application/json"  ]];then
     # external script to open text files
-    TERMCMD="urxvtc"
-    $TERMCMD -e vim "$1" > /dev/null 2>&1 &
+    TERMCMD="st"
+    $TERMCMD -e nvim "$1" > /dev/null 2>&1 &
 # djvu documents
 elif [[ "$mime" = "image/vnd.djvu" ]];then 
 	zathura "$1"
 # image/*
 elif [[ "${mime%/*}" = "image" ]];then
 	# eye of mate (eom). Usually it's used sxiv
-	eom "$1"
+	#load_dir sxiv "$1" >/dev/null 2>&1 &	
+	#sxiv "$1" -r $(pwd) 
+	open_sxiv "$1"
+	#eom "$1"
 # video/*
 elif [[ "${mime%/*}" = "video" || "${mime%/*}" = "audio" ]];then
 	mpv "$1"

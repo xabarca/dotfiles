@@ -5,7 +5,6 @@ NEW_HOSTS_GENERATED=/tmp/new.hosts
 
 # temp stuff
 TMP_DIR=/tmp/temp_hostsssss
-TMP_FILE1=$TMP_DIR/__tpm_file_1
 TMP_ALL_HOSTS=$TMP_DIR/__all_hosts
 
 
@@ -64,7 +63,7 @@ echo "\n#Hostslist created on "$(date '+%Y-%m-%d %H:%M') >> $NEW_HOSTS_GENERATED
 
 # Replace current /etc/hosts with our new one.
 echo ">> $NEW_HOSTS_GENERATED generated. "
-echo "Now you can use it to update your /etc/hosts. Please update your current /etc/hosts file first."
+echo "Now you can replace your /etc/hosts file. Please backup your current /etc/hosts file first."
 echo " use:  sudo cp -b $NEW_HOSTS_GENERATED /etc/hosts" 
 #head -n 25 $NEW_HOSTS_GENERATED
 

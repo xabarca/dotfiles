@@ -61,15 +61,16 @@ if $TERM == "rxvt-unicode-256color" || $TERM == "rxvt-unicode"
     colorscheme gruvbox
     let g:lightline = { 'colorscheme': 'powerlineish'}
 else
-    set termguicolors
+    " set termguicolors
+
 " let g:tokyonight_style = 'night' " available: night, storm
 " let g:tokyonight_enable_italic = 1
     colorscheme xavi2
     let g:lightline = { 'colorscheme': 'xavi'}
 end
 
-" colorscheme tokyonight
-" colorscheme hybrid
+colorscheme toy-blocks 
+let g:lightline = { 'colorscheme': 'powerlineish'}
  
 " https://github.com/itchyny/lightline.vim/blob/master/colorscheme.md
  

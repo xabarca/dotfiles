@@ -21,8 +21,8 @@ fi
 wallpaper-loop &
 xrdb ~/.Xresources &
 
-#dwm-bar &
-dwmblocks &
+#dwmblocks &
 #sxhkd -c ~/.config/sxhkd/sxhkdrc.dwm &
+$HOME/bin/dwm/sbar &
 
 exec dwm

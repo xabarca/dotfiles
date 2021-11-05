@@ -3,15 +3,14 @@
 # checks if cmus is running. If not, sends a signal to bspwm panel bar to 
 # actualize the cmus module.
 
+CMUS_PID_FILE=/tmp/cmus_module_active
+
 isCmusRunning() {
    echo "$(ps axo comm | grep cmus | wc -l)"
 }  
 
-pidfile=/tmp/cmus_module_active
-if [ -f "$pidfile" ]; then
+if [ -f "$CMUS_PID_FILE" ]; then
    exit 1
-else
-   #echo "check_active_cmus" > $pidfile
 fi
 
 
@@ -22,7 +21,7 @@ while true; do
    if [ "$a" = "0" ]; then
       $HOME/bin/bspwm/panel/panel update cmus
       #echo "no cmus! $(date '+%H:%m') " >> /tmp/cmus_active
-      rm $pidfile
+      rm $CMUS_PID_FILE
       exit 0
    fi
    #echo "in the bucle .. $(date '+%H:%m') " >> /tmp/cmus_active

@@ -116,6 +116,24 @@ getTime() {
 	echo " $(date '+%H:%M')"
 }
 
+getMusicInfo() {
+    if pgrep cmus > /dev/null; then
+		getCmusInfo
+	else
+		getMpvInfo
+	fi
+}
+
+
+getMpvInfo() {
+	# echo mpvc --format '%name% == %title% - %artist%'
+	if pgrep mpv > /dev/null; then
+		echo " ""$( mpvc -J́ | head -n 1 )"
+	else
+		echo ""
+	fi
+}
+
 getCmusInfo() {
 	if ps -C cmus > /dev/null; then
 	   artist=`cmus-remote -Q | 
@@ -133,7 +151,7 @@ getCmusInfo() {
 	       echo " $artist - $title"; 
 	   fi
 	else 
-		echo ""; 
+		echo " "; 
 	fi
 }
 
@@ -152,7 +170,7 @@ do
     a) getVolume ;;
     d) getDate ;;
     t) getTime ;;
-    c) getCmusInfo ;;
+    c) getMusicInfo ;;
     h) usage ;;
     :) usage ;;
     ?) usage ;;

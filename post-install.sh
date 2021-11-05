@@ -65,7 +65,7 @@ packages_void () {
 	# --- libraries to complie bspwm / sxhkd / dk ---
 	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip jq unzip xsetroot
+	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip jq unzip xsetroot ImageMagick i3lock
 	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
 
@@ -196,12 +196,12 @@ gitrepos () {
 	#git clone https://git.torproject.org/torsocks.git
 	#git clone https://github.com/LukeSmithxyz/dwmblocks
 	# git clone https://github.com/dylanaraps/paleta
-	
+	# git clone https://github.com/gonzalo-/termbar	
 	
 	if [ -z $1 ]; then
-		sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel
+		sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel imlib2-devel libXrandr
 		# dmenu from suckless
-		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
+		git clone --depth 1  git://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return
 		git apply "$ACTUAL_DIR/patches/dmenu-border-20201112-1a13d04.diff"
 		git apply "$ACTUAL_DIR/patches/dmenu-center-20200111-8cd37e1.diff"
@@ -214,13 +214,13 @@ gitrepos () {
 			sudo ln -sf "$PWD/$i" /usr/local/share/man/man1/
 		done
 		# wmname (to be able to start JDK swing applications)
-		git clone --depth 1  https://git.suckless.org/wmname /opt/git/wmname
+		git clone --depth 1  git://git.suckless.org/wmname /opt/git/wmname
 		cd /opt/git/wmname
 		make
 		sudo make install
 	fi
 	if [ "$1" = "dwm" ]; then
-		git clone --depth 1  https://git.suckless.org/dwm  /opt/git/dwm
+		git clone --depth 1  git://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
 		sed -i 's/\"st\"/\"urxvtc\"/' /opt/git/dwm/config.def.h
 		sed -i 's/resizehints = 1/resizehints = 0/' /opt/git/dwm/config.def.h

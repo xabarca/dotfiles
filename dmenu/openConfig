@@ -1,0 +1,28 @@
+#! /bin/sh
+
+# dmenu script to open certain scripts or config files
+# The files to choose from are hardcoded in the script.
+
+CONSOLE=st
+EDITOR=nvim
+TEMP_FILE=/tmp/configs
+
+GREEN=$($HOME/bin/getcolor white    )
+COLOR_BG=$($HOME/bin/getcolor bg)
+COLOR_OPTIONS="-nb $COLOR_BG -sb $GREEN -sf $COLOR_BG -nf $GREEN"
+DMENU="dmenu -i -l 8 -p Choose: $COLOR_OPTIONS"
+
+#if [ ! -f "$TEMP_FILE" ]; then
+	echo "/opt/sdr/config/sdr.properties" > $TEMP_FILE
+	echo "/opt/sdr/sdr_respostes_basiques_suport.txt" >> $TEMP_FILE
+	echo "/home/xabarca/Baixades/working.txt" >> $TEMP_FILE
+#fi
+
+chosen=$( cat $TEMP_FILE | awk -F'/' '{print $NF}' | $DMENU )
+[ -z $chosen ] && exit 0
+file2open=$( cat $TEMP_FILE | grep $chosen )
+[ ! -f $file2open ] && exit 0
+
+#bspc node -d 6 && nvim $chosen
+$CONSOLE -e $EDITOR $file2open
+

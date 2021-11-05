@@ -32,6 +32,7 @@ packages () {
 	sudo apt install --no-install-recommends -y git neovim
 	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool
 	sudo apt install --no-install-recommends -y picom curl zip unzip xwallpaper rclone iw
+	sudo apt install --no-install-recommends -y imagemagick i3lock
 	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
@@ -43,8 +44,9 @@ packages_compile () {
 	sudo apt install --no-install-recommends -y libx11-dev libxft-dev libharfbuzz-dev
 	sudo apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
-	sudo apt install --no-install-recommends -y llibxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	sudo apt install --no-install-recommends -y llibxinerama-dev libreadline-dev 
+	sudo apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
+	sudo apt install --no-install-recommends -y libxinerama-dev libreadline-dev 
+	sudo apt install --no-install-recommends -y libxrandr-dev libimlib2-dev 
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')]  packages to compile C software done" >> $LOG_FILE
 }
 
@@ -186,10 +188,10 @@ gitrepos () {
 	
 	if [ -z $1 ]; then
 		# dmenu from suckless
-		git clone --depth 1  https://git.suckless.org/dmenu /opt/git/dmenu 
+		git clone --depth 1  git://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return
-		git apply "$ACTUAL_DIR/dwm_patches/dmenu-border-20201112-1a13d04.diff"
-		git apply "$ACTUAL_DIR/dwm_patches/dmenu-center-20200111-8cd37e1.diff"
+		git apply "$ACTUAL_DIR/patches/dmenu-border-20201112-1a13d04.diff"
+		git apply "$ACTUAL_DIR/patches/dmenu-center-20200111-8cd37e1.diff"
 		make && strip dmenu stest
 		for i in dmenu dmenu_* stest; do
 			sudo ln -sf "$PWD/$i" /usr/local/bin
@@ -199,7 +201,7 @@ gitrepos () {
 			sudo ln -sf "$PWD/$i" /usr/local/share/man/man1/
 		done
 		# wmname (to be able to start JDK swing applications)
-		git clone --depth 1  https://git.suckless.org/wmname /opt/git/wmname
+		git clone --depth 1  git://git.suckless.org/wmname /opt/git/wmname
 		cd /opt/git/wmname
 		make
 		sudo make install
@@ -223,6 +225,12 @@ gitrepos () {
 		cd /opt/git/sxhkd
 		make
 		sudo make install
+		# slock from suckless
+		git clone --depth 1  git://git.suckless.org/slock /opt/git/slock
+		cd /opt/git/sxhkd
+		git apply "$ACTUAL_DIR/patches/slock-foreground-and-background-20210611-35633d4.diff"
+		make
+		sudo make install
 	fi
 	if [ "$1" = "bspwm" ]; then
 		git clone --depth 1  https://github.com/baskerville/bspwm /opt/git/bspwm
@@ -230,7 +238,7 @@ gitrepos () {
 		make
 		sudo make install
 	elif [ "$1" = "dwm" ]; then
-		git clone --depth 1  https://git.suckless.org/dwm  /opt/git/dwm
+		git clone --depth 1  git://git.suckless.org/dwm  /opt/git/dwm
 		cd /opt/git/dwm
 		sed -i 's/resizehints = 1/resizehints = 0/' /opt/git/dwm/config.def.h
 		make
@@ -259,7 +267,7 @@ defaultbspwm () {
 	for dir in bspwm sxhkd; do
 		mkdir -p "$HOME/.config/$dir"
 	done
-	cp /usr/share/doc/bspwm/examples/bspwmrc "$HOME/.config/bspwm/"
+	cp /opt/git/dotfiles/bspwm/bspwmrc "$HOME/.config/bspwm/"
 	cp /opt/git/dotfiles/bspwm/sxhkdrc "$HOME/.config/sxhkd/"
 	chmod u+x "$HOME/.config/bspwm/bspwmrc"
 	chmod u+x "$HOME/.config/sxhkd/sxhkdrc"
@@ -331,7 +339,7 @@ walls () {
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
 	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
-	[ -f ~/.config/bspwm/bspwmrc ] && echo "wallpaper-loop &" >> "$HOME/.config/bspwm/bspwmrc"
+	[ -f ~/.config/bspwm/bspwmrc ] && echo "$HOME/bin/wallpaper-loop &" >> "$HOME/.config/bspwm/bspwmrc"
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
 }
 
@@ -346,7 +354,7 @@ vim_config() {
 }
 
 # ----- configure neovim and vim-plug -------------------------
-vim_config() {
+neovim_config() {
 	mkdir -p $HOME/.config/nvim/colors
 	sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'

@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 86b7e76..640b836 100644
+index 86b7e76..48c7a2e 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -2,18 +2,23 @@ static const char *background_color = "#3e3e3e";
+@@ -2,18 +2,24 @@ static const char *background_color = "#3e3e3e";
  static const char *border_color = "#ececec";
  static const char *font_color = "#ececec";
  static const char *font_pattern = "monospace:size=10";
@@ -30,11 +30,12 @@ index 86b7e76..640b836 100644
  
 -static const unsigned int duration = 5; /* in seconds */
 +static unsigned int duration = 5; /* in seconds */
++static unsigned int duration_critical = 10; /* in seconds */
  
  #define DISMISS_BUTTON Button1
  #define ACTION_BUTTON Button3
 diff --git a/herbe.c b/herbe.c
-index 51d3990..d54c2e5 100644
+index 51d3990..2c533f9 100644
 --- a/herbe.c
 +++ b/herbe.c
 @@ -1,5 +1,6 @@
@@ -77,7 +78,7 @@ index 51d3990..d54c2e5 100644
  	struct sigaction act_expire, act_ignore;
  
  	act_expire.sa_handler = expire;
-@@ -107,6 +121,31 @@ int main(int argc, char *argv[])
+@@ -107,6 +121,33 @@ int main(int argc, char *argv[])
  	if (!(display = XOpenDisplay(0)))
  		die("Cannot open display");
  
@@ -104,12 +105,14 @@ index 51d3990..d54c2e5 100644
 +	XRES_INT(pos_x);
 +	XRES_INT(pos_y);
 +	XRES_INT(corner);
++
 +	XRES_INT(duration);
++	XRES_INT(duration_critical);
 +
  	int screen = DefaultScreen(display);
  	Visual *visual = DefaultVisual(display, screen);
  	Colormap colormap = DefaultColormap(display, screen);
-@@ -117,6 +156,13 @@ int main(int argc, char *argv[])
+@@ -117,6 +158,14 @@ int main(int argc, char *argv[])
  	XSetWindowAttributes attributes;
  	attributes.override_redirect = True;
  	XftColor color;
@@ -118,12 +121,13 @@ index 51d3990..d54c2e5 100644
 +		font_color = font_color_critical;
 +		background_color = background_color_critical;
 +		border_color = border_color_critical;
++		duration = duration_critical;
 +	}
 +
  	XftColorAllocName(display, visual, colormap, background_color, &color);
  	attributes.background_pixel = color.pixel;
  	XftColorAllocName(display, visual, colormap, border_color, &color);
-@@ -133,6 +179,9 @@ int main(int argc, char *argv[])
+@@ -133,6 +182,9 @@ int main(int argc, char *argv[])
  
  	for (int i = 1; i < argc; i++)
  	{
@@ -133,7 +137,7 @@ index 51d3990..d54c2e5 100644
  		for (unsigned int eol = get_max_len(argv[i], font, max_text_width); eol; argv[i] += eol, num_of_lines++, eol = get_max_len(argv[i], font, max_text_width))
  		{
  			if (lines_size <= num_of_lines)
-@@ -214,7 +263,8 @@ int main(int argc, char *argv[])
+@@ -214,7 +266,8 @@ int main(int argc, char *argv[])
  	XftDrawDestroy(draw);
  	XftColorFree(display, visual, colormap, &color);
  	XftFontClose(display, font);

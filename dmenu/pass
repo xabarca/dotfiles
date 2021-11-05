@@ -1,0 +1,31 @@
+#! /bin/sh
+# @see	: man xsel
+#  xsel -ib  -> copy to clibboard
+#  xsel -cb  -> clear clibboard
+
+. $HOME/bin/encpass.sh
+
+COLOR=$( $HOME/bin/getcolor color4 )
+COLOR_BG=$( $HOME/bin/getcolor bg )
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+msg1="Choose your pasword:  "
+DMENU="dmenu -i  -p '$msg1' $COLOR_OPTIONS"
+
+cd $HOME
+list=$(find .encpass -type f -name *.enc | sed -e 's|.encpass/secrets/||' -e 's/.enc//')
+
+opcions="NEW VM\\ntest ISO\\n$(ls $PATH_VMs)"
+target=$( printf "$list" | dmenu -i  -p "$msg1" $COLOR_OPTIONS)
+[ -z $target ] && exit 0
+verification=$(echo $list | grep $target | wc -l)
+[ $verification -eq 0 ] && exit 0
+
+bucket=$(echo $target | awk -F'/' '{print $1}')
+secret=$(echo $target | awk -F'/' '{print $2}')
+
+get_secret $bucket $secret | xsel -ib
+herbe "password copied to clipboard" &
+
+sleep 10s
+xsel -cb
+

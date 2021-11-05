@@ -1,4 +1,50 @@
-#!/bin/bash
+#!/bin/sh
+
+USE_MPV=1
+
+
+# mpv --shuffle --loop inf --no-audio-display /folder/music/*
+
+playWithCmus() {
+	# st -f Inconsolata-11 -c floatterm -n stmusic -g 75x15 -e cmus & disown
+	urxvtc -name stmusic -title floatterm -geometry 78x15 -e cmus & disown
+	sleep 1
+	cmus-remote --clear -l &
+	sleep 1
+	cmus-remote -l "$1" &
+	sleep 1
+	cmus-remote --play &
+}
+
+playWithMpv() {
+	tempfile=/tmp/mpvtempfile
+	# https://github.com/lwilletts/mpvc	
+	# ~/Música/Editors$ find "$(pwd)" -iname "*.mp3"
+	cd "$1"
+	find "$(pwd)" -iname "*mp3"  >  $tempfile
+	find "$(pwd)" -iname "*wma"  >> $tempfile
+	find "$(pwd)" -iname "*opus" >> $tempfile
+	find "$(pwd)" -iname "*m4a"  >> $tempfile
+	# suffle tracks...
+	shuf $tempfile > /tmp/mpv.m3u
+	# start mpv with our playlist just created
+	mpvc add /tmp/mpv.m3u
+}
+
+ 
+killPlayers() {
+	# killall mpv || echo "Process was not running."
+	# killall cmus || echo "Process was not running."
+	if [ $USE_MPV -eq 1 ]; then
+		echo "kill all mpv instances"
+		killall mpv || echo "error killing mpv"
+		mpvc kill || echo "already killed"
+	else
+		echo "kill all cmus instances"
+		killall cmus || echo "error killing cmus"
+	fi
+}
+ 
 
 COLOR=$( $HOME/bin/getcolor color10 )
 COLOR_BG=$( $HOME/bin/getcolor bg )
@@ -7,17 +53,16 @@ DMENU="dmenu -i -l 15 -p Choose $COLOR_OPTIONS"
 MUSIC_DIR="$HOME/Música"
 
 cd "$MUSIC_DIR"
-target=$(ls */ -d | $DMENU) 
-#echo "$target"
-if [[ "$target" != "" ]]; then
-killall cmus 
-# st -f Inconsolata-11 -c floatterm -n stmusic -g 75x15 -e cmus & disown
-urxvtc -name stmusic -title floatterm -geometry 78x15 -e cmus & disown
-sleep 1
-cmus-remote --clear -l &
-sleep 1
-cmus-remote -l "$target" &
-sleep 1
-cmus-remote --play &
+target="$(ls */ -d | $DMENU)" 
+[ -z $target ] && exit 0
+
+killPlayers
+
+echo $target
+if [ $USE_MPV -eq 1 ]; then
+	playWithMpv "$target"
+else
+	playWithCmus "$target"
 fi
+
 
