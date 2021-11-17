@@ -3,8 +3,8 @@
 BASE_DIR=/tmp/temp_dwm
 #BASE_DIR=/opt/git
 PROJECT="dwm"
-DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/dwm_patches
-#DIR_OFFICIAL_DIFFS=~/git/dotfiles/dwm_patches
+DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/patches
+#DIR_OFFICIAL_DIFFS=~/git/dotfiles/patches
 DIR_GENERATED_DIFFS=~
 
 suckCleanMaster() {
@@ -17,7 +17,7 @@ generateLocalUserConfig() {
     git config user.email "xavi@devuanfans.org"
 }
 
-gotoDir() {S
+gotoDir() {
     cd $BASE_DIR/$PROJECT
 }
 
@@ -30,7 +30,7 @@ cloneRepo() {
     [ ! -d $BASE_DIR ] && mkdir -p $BASE_DIR
     cd $BASE_DIR
     yes | rm -r $PROJECT
-    git clone --depth 1 https://git.suckless.org/dwm $BASE_DIR/$PROJECT
+    git clone --depth 1 git://git.suckless.org/dwm $BASE_DIR/$PROJECT
 }
 
 createBranchByPatch() {
@@ -83,6 +83,8 @@ mergeManually() {
     git merge xrdb -m xrdb
     echo "[*] ------- merging status2dallmons ..."
     git merge status2dallmons -m status2dallmons
+    echo "[*] ------- merging colortagoccupied ..."
+    git merge colortagoccupied -m colortagoccupied
 }
 
 customRebase() {

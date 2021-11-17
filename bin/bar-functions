@@ -1,0 +1,191 @@
+#!/bin/bash
+
+
+# https://fontawesome.com/cheatsheet
+
+usage() {
+  echo " "	
+  echo "Usage:  dwm-bar-functions -[ OPTIONS ]"
+  echo " "	
+  echo "Options: "	
+  echo "   -b : battery"
+  echo "   -v : VPN"
+  echo "   -m : RAM"
+  echo "   -u : disk usage"
+  echo "   -l : cpu load"
+  echo "   -a : volume"
+  echo "   -d : date"
+  echo "   -d : time"
+  echo "   -c : cmus/mpv info"
+  echo "   -w : weather"
+  echo "   -h : help"
+  echo " "	
+  exit 2
+}
+
+
+getBattery () {
+    # /sys/class/power_supply/BAT0/capacity
+    # /sys/class/power_supply/BAT0/status
+
+	mycommand=$(acpi)
+	mycommand=$( echo $mycommand | sed 's/ remaining//' | sed 's/ until charged//' | sed 's/%//' )
+	# echo $mycommand
+
+	perc=$( echo "$mycommand" | awk '{print $4}' | sed 's/,//' )
+	#echo $perc
+
+	if [[ $mycommand == *"Charging"* ]]
+	then
+		suppltext=" "
+	elif [[ $mycommand == *"Discharging"* ]]
+	then
+		timevar=$( echo $mycommand | awk '{print $NF}')
+		timevar=${timevar%:*}
+		suppltext=" ($timevar)"
+	fi
+
+	# print the value to the battery block
+	#echo "$perc%$suppltext"
+	if [[ $mycommand == *"Full"* ]]
+	then
+		echo " Full"
+	else
+		echo "$perc%$suppltext"
+	fi
+
+
+	# adding colors (if needed)
+	#if [ $perc -lt 20 ]
+	#then
+	#	echo " ";
+	#	echo "$colorPANIC";
+	#elif [ $perc -lt 50 ]
+	#then
+	#	echo " ";
+	#	echo "$colorALERT";
+	#fi
+}
+
+getWeather () { 
+    echo "$(curl -s "wttr.in?format=1"| sed -E "s/^(.).*\+/\1/")" 
+}
+
+
+
+getVpnActive() {
+	command=$(ip link show | grep tunsnx | wc -l)
+	# vpn=""
+	vpn=" vpn"
+	if [[ "$command" == "1" ]]
+	then
+		whichvpn="$(tail -n 1 /tmp/vpn_log)"
+		[[ "$whichvpn" == "arc" || "$whichvpn" == "oesia" ]] && vpn=" $whichvpn"
+	fi
+	echo "$vpn"
+}
+
+getMem () {
+	usedmem=$(free -m | grep Mem | awk '{print $3}')
+	totalmem=$(free -m | grep Mem | awk '{print $2}')
+	freemem=$(($totalmem-$usedmem))
+	usedpercent=$((100-($freemem*100)/$totalmem))
+
+	echo " $usedpercent%"
+}
+
+
+getDiskUsage () {
+	#  /dev/sda2   -->>  /
+	#  /dev/sda3   -->>  /opt
+	#  /dev/sda4   -->>  /home
+	
+	diskfree=$(df -h -P -l $1 | grep sda4 | awk '{print $4}')
+	freeperc=$(df -h -P -l $1 | grep sda4 | awk '{print $5}')
+	freeArranged="${freeperc%?}"
+	echo " $diskfree"
+}
+
+getCpuLoad () {
+	load=$( mpstat 1 1 | grep Average | awk '{ print 100 - $12 }' | awk '{print int($0)}' )
+	echo " $load%"
+}
+
+getVolume() {
+	echo " $( ~/bin/audioscript getvalue )"
+}
+
+getDate() {
+	echo " $(date '+%a %d/%m/%Y')"
+}
+
+getTime() {
+	echo " $(date '+%H:%M')"
+}
+
+getMusicInfo() {
+    if pgrep cmus > /dev/null; then
+		getCmusInfo
+	else
+		getMpvInfo
+	fi
+}
+
+
+getMpvInfo() {
+	# echo mpvc --format '%name% == %title% - %artist%'
+	if pgrep mpv > /dev/null; then
+		info="$( mpvc -J́ | head -n 1 )"
+		if [ "$info" = "*Ǹo files added*" ]; then
+			echo ""
+		else
+			echo " $info"
+		fi
+	else
+		echo ""
+	fi
+}
+
+getCmusInfo() {
+	if ps -C cmus > /dev/null; then
+	   artist=`cmus-remote -Q | 
+	      grep --text '^tag artist' | 
+	      sed '/^tag artistsort/d' | 
+	      awk '{gsub("tag artist ", "");print}'`
+	   title=`cmus-remote -Q  | 
+	      grep --text '^tag title' | 
+	      sed -e 's/tag title //' |
+	      awk '{gsub("tag title ", "");print}'`
+	   if [ -z "$artist" ]; then
+		   # 
+		   echo " `cmus-remote -Q | grep 'm4a\|opus' | sed "s/.*\///"  | sed "s/\.opus//" | sed "s/\.m4a//"`"
+	   else
+	       echo " $artist - $title"; 
+	   fi
+	else 
+		echo " "; 
+	fi
+}
+
+# si no hi ha paràmtre o no comença per "-", error !
+[ -z $1 ] && usage
+[[ $1 != -* ]] && usage
+
+while getopts ':bvmuladtcwh' c
+do
+  case $c in
+    b) getBattery ;; 
+    v) getVpnActive ;;
+    m) getMem ;;
+    u) getDiskUsage ;;
+    l) getCpuLoad ;;
+    a) getVolume ;;
+    d) getDate ;;
+    t) getTime ;;
+    c) getMusicInfo ;;
+    w) getWeather ;;
+    h) usage ;;
+    :) usage ;;
+    ?) usage ;;
+  esac
+done

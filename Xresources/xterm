@@ -1,0 +1,24 @@
+!---======  XTerm ===========----
+XTerm.termName: xterm-256color
+
+!! Selecting Text ========================================================
+! Only select text
+XTerm*highlightSelection: true
+! Remove trailing spaces
+XTerm*trimSelection: true
+
+XTerm*renderFont:	true
+!XTerm*faceName:	xft:VictorMono Nerd Font:pixelsize=13:antialias=true
+XTerm*faceName:	xft:VictorMono Nerd Font:pixelsize=13:antialias=true
+XTerm*faceSize:	11
+XTerm*boldFont:	xft:VictorMono Nerd Font:pixelsize=13:weight=bold
+XTerm*utf8:	2
+XTerm*locale:	true
+XTerm*vt100.translations:	#override \n Ctrl <Key> j: smaller-vt-font() \n Ctrl <Key> k: larger-vt-font()
+XTerm*loginshell:	true
+XTerm*savelines:	163840
+XTerm*charClass:	33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
+XTerm.colorBD:	red
+XTerm.colorUL:	blu
+XTerm.colorIT:	grn
+

@@ -29,11 +29,11 @@ usage()
 # ----- default packages ---------
 packages () {
 	sudo apt update 
-	sudo apt install --no-install-recommends -y git neovim
-	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool
-	sudo apt install --no-install-recommends -y picom curl zip unzip xwallpaper rclone iw
-	sudo apt install --no-install-recommends -y imagemagick i3lock
-	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme
+	sudo apt install --no-install-recommends -y git neovim doas
+	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool xautolock
+	sudo apt install --no-install-recommends -y xcompmgr curl zip unzip xwallpaper rclone iw rxvt-unicode
+	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme imagemagick 
+	sudo apt install -y elogind
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
 
@@ -43,19 +43,25 @@ packages_compile () {
 	sudo apt install --no-install-recommends -y gcc make
 	sudo apt install --no-install-recommends -y libx11-dev libxft-dev libharfbuzz-dev
 	sudo apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
-	sudo apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
-	sudo apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 	sudo apt install --no-install-recommends -y libxinerama-dev libreadline-dev 
 	sudo apt install --no-install-recommends -y libxrandr-dev libimlib2-dev 
+	# next two lines are needed only for compile bspwm
+	sudo apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
+	sudo apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')]  packages to compile C software done" >> $LOG_FILE
 }
 
 # ---- configure no password actions - sudoers -------
 conf_doas() {
-    echo "permit keepenv nopass $USER as root" >> /tmp/doas
+    echo "permit persist keepenv $USER as root" >> /tmp/doas
    #  username ALL=(ALL) NOPASSWD: /usr/bin/reboot, /usr/bin/poweroff, /usr/bin/shutdown, /usr/bin/halt
 
-    echo "permit nopass $USER" >> /tmp/doas
+    echo "permit nopass $USER as root cmd apt" >> /tmp/doas
+    echo "permit nopass $USER as root cmd poweroff" >> /tmp/doas
+    echo "permit nopass $USER as root cmd reboot" >> /tmp/doas
+
+
+    #echo "permit nopass $USER" >> /tmp/doas
     # echo "permit persist $USER" >> /tmp/doas
     # echo "permit nopass $USER as root cnd poweroff" >> /tmp/doas
     #echo "permit nopass $USER as root cnd reboot" >> /tmp/doas
@@ -88,7 +94,6 @@ basicfolders () {
 	cp bin/colors.sh bin/getcolor bin/nnnopen bin/pirokit bin/scratchpad bin/updatehosts bin/vm.sh bin/ytp bin/wallpaper* bin/encpass.sh bin/share "$HOME/bin"
 	cp -r dmenu "$HOME/bin"
 	chmod u+x "$HOME/bin/*" "$HOME/bin/dmenu/*"
-	echo "! Xresources configs --- " >> "$HOME/.Xresources"
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] home folders created" >> $LOG_FILE
 }
 
@@ -139,9 +144,9 @@ fonts() {
 	cd /tmp/nerdfonts || return
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Ubuntu.zip
-	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Iosevka.zip
+#	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Iosevka.zip
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/JetBrainsMono.zip
-	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip
+#	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip
 	curl -L -O https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/VictorMono.zip
 	# curl -L -o hack.zip https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip
 	# curl -L -o awesome-5-15.zip https://github.com/FortAwesome/Font-Awesome/releases/download/5.15.4/fontawesome-free-5.15.4-web.zip 
@@ -279,7 +284,7 @@ defaultbspwm () {
 	echo "bspc rule -a \"*:scratchxterm\"   sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
 	echo "bspc rule -a \"*:stmusic\"        sticky=on state=floating"  >> "$HOME/.config/bspwm/bspwmrc"
 	echo "xsetroot -cursor_name left_ptr &" >> "$HOME/.config/bspwm/bspwmrc"
-	echo "picom &" >> "$HOME/.config/bspwm/bspwmrc"
+	echo "xcompmgr &" >> "$HOME/.config/bspwm/bspwmrc"
 	echo "# dunst &" >> "$HOME/.config/bspwm/bspwmrc"
     echo " " >> "$HOME/.config/sxhkd/sxhkdrc"
 	echo "#super + ntilde" >> "$HOME/.config/sxhkd/sxhkdrc"
@@ -318,7 +323,7 @@ patchdwm () {
 
 # ----- lemonbar panel -----------------------------
 lemonbarpanelbsp () {
-	mkdir -p "$HOME/bin/bspwm"
+	[ ! -d  "$HOME/bin/bspwm" ] && mkdir -p "$HOME/bin/bspwm"
 	cp "$ACTUAL_DIR/bspwm/panel*" "$HOME/bin/bspwm"
 	cp "$ACTUAL_DIR/bspwm/launch-bar" "$HOME/bin/bspwm"
 	chmod u+x "$HOME/bin/bspwm/*"
@@ -341,6 +346,13 @@ walls () {
 	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
 	[ -f ~/.config/bspwm/bspwmrc ] && echo "$HOME/bin/wallpaper-loop &" >> "$HOME/.config/bspwm/bspwmrc"
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] wallpapers downloaded and working" >> $LOG_FILE
+}
+
+
+# ----- configure Xresources -------------------------
+xresources() {
+    cp -r $ACTUAL_DIR/Xresources $HOME/.config/
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] Xresources configured"  >> $LOG_FILE
 }
 
 
@@ -368,13 +380,13 @@ neovim_config() {
 finalsetup () {
 	youtube_downloader
 	# notify_dunst
-    doas_conf
+	xresources
+    conf_doas
     get_herbe
     neovim_config
 	cd $ACTUAL_DIR || return
-	cat $ACTUAL_DIR/Xresources >> "$HOME/.Xresources"
 	cat $ACTUAL_DIR/bashrc >> "$HOME/.bashrc"
-	echo "xrdb ~/.Xresources &" >> "$HOME/.xinitrc"
+	echo "xrdb ~/.config/Xresources/Xresources &" >> "$HOME/.xinitrc"
 	echo "setxkbmap es &" >> "$HOME/.xinitrc"
 	if [ "$WM_SELECTION" = "dwm" ]; then
 		echo "~/bin/dwm/dwm-start" >> "$HOME/.xinitrc"

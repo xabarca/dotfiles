@@ -18,15 +18,15 @@ update_cpu () {
 }
 
 update_memory () { 
-	memory="$(getcolor green)""$( $HOME/bin/dwm/dwm-bar-functions -m )"
+	memory="$(getcolor green)""$( $HOME/bin/bar-functions -m )"
 }
 
 update_date () { 
-	fecha="$(getcolor yellow)""$( $HOME/bin/dwm/dwm-bar-functions -d )"
+	fecha="$(getcolor yellow)""$( $HOME/bin/bar-functions -d )"
 }
 
 update_time () { 
-	time="$(getcolor cyan)""$( $HOME/bin/dwm/dwm-bar-functions -t )"
+	time="$(getcolor cyan)""$( $HOME/bin/bar-functions -t )"
 }
 
 update_weather () { 
@@ -41,7 +41,7 @@ update_bat () {
 }
 
 update_vol () { 
-	vol="$(getcolor magenta)""$( $HOME/bin/dwm/dwm-bar-functions -a )"
+	vol="$(getcolor magenta)""$( $HOME/bin/bar-functions -a )"
 }
 
 update_backlight () { 

@@ -1,0 +1,16 @@
+
+#define accent red2 
+
+!-- dwm & st variables ----
+dwm.selfgcolor: accent 
+dwm.selbgcolor: bg
+dwm.selbordercolor: accent 
+dwm.normbordercolor: bg
+dwm.normbgcolor: bg
+dwm.normfgcolor: #666666 
+dwm.selbgoccupcolor: bg
+dwm.normbgoccupcolor: bg
+dwm.normfgoccupcolor: fg
+dwm.selfgoccupcolor:  accent
+
+st.font: JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true

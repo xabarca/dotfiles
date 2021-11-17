@@ -5,8 +5,10 @@ alias myip='curl ipinfo.io/ip'
 alias q="exit"
 alias nnn="nnn -de"
 alias mem='ps -u $USER -o pid,%mem,comm | sort -b -k2'
-alias shutdown='doas shutdown -h now'
-alias reboot='doas shutdown -r now'
+alias poweroff='doas /sbin/poweroff'
+alias reboot='doas /sbin/reboot'
+#alias shutdown='doas shutdown -h now'
+#alias reboot='doas shutdown -r now'
 
 if [ $(id -u) -eq 0 ];
 then # you are root, set red colour prompt

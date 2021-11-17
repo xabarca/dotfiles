@@ -1,0 +1,20 @@
+! ----  config herbe notification program ------
+herbe.background_color:  bg
+herbe.border_color:    ylw     
+!herbe.background_color_critical:  red2
+!herbe.border_color_critical:    wht     
+herbe.border_size:      2
+herbe.corner:   1
+herbe.duration: 5
+herbe.duration_critical: 10
+herbe.font_color:       ylw
+!herbe.font_color_critical:       wht2
+!herbe.font_pattern:     VictorMono Nerd Font:size=11
+herbe.font_pattern:     Ubuntu Nerd Font:size=11
+herbe.line_spacing:     5
+herbe.padding:  15
+herbe.pos_x:    1385
+herbe.pos_y:    22
+herbe.width:    350
+
+

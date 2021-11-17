@@ -6,39 +6,33 @@
 ! \/   \/_|  \___||___/\___/ \__,_|_|  \___\___||___/
 ! 
 
+#include "themes/dracula"
+#include "colors"
+#include "herbe"
+#include "xterm"
+#include "suckless"
+
 *.scrollBar:	false
 *.font:	xft:Hack Nerd Font:pixelsize=13:antialias=true
 *.boldFont:	xft:Hack Nerd Font:pixelsize=14:weight=bold
 *.letterSpace:	-1
 *.saveLines:	1000000
+
+
 urxvt.termName:	rxvt-unicode
 
-! fake transparency in URXVT (enough for me)
+!--- fake transparency in URXVT (enough for me)
 urxvt*transparent: true
 urxvt*shading: 35
 urxvt*tintColor: bg
 
-dwm.selfgcolor: fg
-dwm.selbgcolor: bg
-dwm.selbordercolor: fg
-dwm.normbordercolor: bg
-st.font: Hack Nerd Font:pixelsize=12:antialias=true:autohint=true
+!-- fading when focus off ----
+!urxvt.fading: 32
+!urxvt.fadeColor: bg
 
-herbe.background_color:  bg
-herbe.border_color:    blu     
-!herbe.background_color_critical:  red2
-!herbe.border_color_critical:    wht     
-herbe.border_size:      2
-herbe.corner:   1
-herbe.duration: 5
-herbe.font_color:       blu
-!herbe.font_color:       wht
-herbe.font_pattern:     Hack:size=11
-herbe.line_spacing:     5
-herbe.padding:  15
-herbe.pos_x:    20
-herbe.pos_y:    40
-herbe.width:    350
+!-- real transparency (compositor needed) --
+!URxvt*depth:      32
+!URxvt.background: [90]bg  
 
 
 ! --- XTerm section -------
@@ -49,16 +43,4 @@ Xft.rgba:	rgb
 Xft.autohint:	true
 Xft.hintstyle:	hintfull
 Xft.lcdfilter:	lcdfilter
-XTerm*renderFont:	true
-XTerm*faceName:	xft:VictorMono Nerd Font:pixelsize=13:antialias=true
-XTerm*faceSize:	11
-XTerm*utf8:	2
-XTerm*locale:	true
-XTerm.vt100.translations:	#override \n Ctrl <Key> j: smaller-vt-font() \n Ctrl <Key> k: larger-vt-font()
-XTerm*loginshell:	true
-XTerm*savelines:	16384
-XTerm*charClass:	33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
-XTerm.colorBD:	red
-XTerm.colorUL:	blu
-XTerm.colorIT:	grn
 
