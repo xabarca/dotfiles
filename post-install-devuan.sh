@@ -100,6 +100,16 @@ basicfolders () {
 
 # ----- download and install youtube-dl from github ---------
 youtube_downloader () {
+	sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+	sudo chmod a+rx /usr/local/bin/yt-dlp
+	mkdir -p $HOME/.config/mpv
+	echo "input-ipc-server=/tmp/mpvsocket" >> $HOME/.config/mpv/mpv.conf
+	echo "script-opts=ytdl_hook-ytdl_path=yt-dlp" >> $HOME/.config/mpv/mpv.conf
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] yt-dlp ready" >> $LOG_FILE
+}
+
+# ----- download and install youtube-dl from github ---------
+youtube_downloader_old () {
 	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 	sudo chmod a+rx /usr/local/bin/youtube-dl
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-dl ready" >> $LOG_FILE

@@ -1,6 +1,11 @@
 
 let mapleader = " "
 
+" Reloads config file
+nnoremap <leader>s :source ~/.config/nvim/init.vim<CR>
+
+set nobackup nowritebackup nocursorline wildmode=longest,list,full
+
 " Display options
 set showcmd
 set showmode
@@ -32,24 +37,26 @@ set nohlsearch
 " Tab settings
 set tabstop=4 softtabstop=4
 set shiftwidth=4
-" set expandtab
-" set smartindent
+set expandtab
+set smartindent
 
 " sets the clipboard so you can paste stuff from system clipboard 
 "set clipboard^=unmamed,unnamedplus
 set clipboard=unnamedplus
 
+" syntax por PGN chess database files
+au BufNewFile,BufRead *.pgn    setf pgn
+
+
 " ----------------------------------------------------------
 " ----------------------------------------------------------
-" Start plugin section
-call plug#begin('~/.vim/plugged')
+call plug#begin('~/.config/nvim/plugged')
 
 Plug 'sheerun/vim-polyglot'
-Plug 'arcticicestudio/nord-vim'
-Plug 'ghifarit53/tokyonight-vim'
+"Plug 'arcticicestudio/nord-vim'
+"Plug 'ghifarit53/tokyonight-vim'
 Plug 'itchyny/lightline.vim'
 
-" End of plugin section
 call plug#end()
 " ----------------------------------------------------------
 " ----------------------------------------------------------

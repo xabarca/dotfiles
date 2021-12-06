@@ -8,7 +8,6 @@ XTerm*highlightSelection: true
 XTerm*trimSelection: true
 
 XTerm*renderFont:	true
-!XTerm*faceName:	xft:VictorMono Nerd Font:pixelsize=13:antialias=true
 XTerm*faceName:	xft:VictorMono Nerd Font:pixelsize=13:antialias=true
 XTerm*faceSize:	11
 XTerm*boldFont:	xft:VictorMono Nerd Font:pixelsize=13:weight=bold
@@ -21,4 +20,25 @@ XTerm*charClass:	33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
 XTerm.colorBD:	red
 XTerm.colorUL:	blu
 XTerm.colorIT:	grn
+
+
+!!! ssh terminals  ------
+
+xtermssh*faceName: xft:VictorMono Nerd Font:pixelsize=13
+!xtermssh*internalBorder: 4
+xtermssh*scrollBar: false
+xtermssh*foreground: mag2
+xtermssh*title: ssh
+
+xtermssh2*faceName: xft:VictorMono Nerd Font:pixelsize=13
+!xtermssh2*internalBorder: 4
+xtermssh2*scrollBar: false
+xtermssh2*foreground: ylw2
+xtermssh2*title: ssh
+
+xtermssh3*faceName: xft:VictorMono Nerd Font:pixelsize=13
+!xtermssh3*internalBorder: 4
+xtermssh3*scrollBar: false
+xtermssh3*foreground: grn2
+xtermssh3*title: ssh
 

@@ -1,0 +1,38 @@
+! --- ---  URxvt --- --- ---  
+
+urxvt.termName:	rxvt-unicode
+
+
+URxvt.font:	xft:Hack Nerd Font:pixelsize=12:antialias=true
+URxvt.boldFont:	xft:Hack Nerd Font:pixelsize=12:weight=bold
+
+
+URxvt.perl-lib:        ~/.config/urxvt/ext
+
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-S-Up:   font-size:incglobal
+URxvt.keysym.C-S-Down: font-size:decglobal
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-slash:  font-size:show
+
+URxvt.perl-ext-common: font-size,matcher
+
+
+! fake transparency (enough for me)
+urxvt*transparent: true
+urxvt*shading: 90
+! urxvt*tintColor: #888888
+! urxvt*tintColor: #5599DD
+urxvt*tintColor: bg 
+
+!-- fading when focus off ----
+!urxvt.fading: 32
+!urxvt.fadeColor: bg
+
+!-- real transparency (compositor needed) --
+! URxvt*depth:      32
+! URxvt.background: [90]bg  
+
+
+URxvt.keyboard-select.clipboard: true

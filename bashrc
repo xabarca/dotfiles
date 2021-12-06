@@ -7,6 +7,7 @@ alias nnn="nnn -de"
 alias mem='ps -u $USER -o pid,%mem,comm | sort -b -k2'
 alias poweroff='doas /sbin/poweroff'
 alias reboot='doas /sbin/reboot'
+alias xr='xrdb ~/.config/Xresources/Xresources'
 #alias shutdown='doas shutdown -h now'
 #alias reboot='doas shutdown -r now'
 
