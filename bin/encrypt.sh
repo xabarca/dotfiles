@@ -1,30 +1,27 @@
-#! /bin/sh
+#! /bin/bash
 
-PASSWORD="jfj33f33f3hi3hi3i"
+PASSWORD="abcdefghijk123456789"
 
-# -------- notes of encrypt - decrypt with SSH keys lab ---------
+# -------- lab notes of encrypt / decrypt with SSH keys ---------
 #
-#  # generate a keyfile
+#  # 1) generate a keyfile
 #  openssl rand -hex 64 > key.bin
 #  
-#  # encrypt myimage.jpg with keyfile key.bin
+#  # 2) encrypt myimage.jpg with keyfile key.bin
 #  openssl enc -aes-256-cbc -salt -md sha256 -pbkdf2 -in  myimage.jpg -out myimage.jpg.enc -pass file:./key.bin
 #  
-#  # generate a PEM key-pair ssh keys
-#  ssh-keygen -t rsa -m PEM -f ./test -P ''
+#  # 3) generate a PEM key-pair ssh keys
+#  ssh-keygen -t rsa -m PEM -f /tmp/sshKeysName -P ''
 #  
-#  # generates a public key in PEM format (the other one didn't work)
-#  # openssl rsa -in test -pubout > mykey.pub
-#  # encrypt the key.bin keyfile with public key
-#  # openssl rsautl -encrypt -inkey mykey.pub -pubin -in key.bin -out key.bin.enc
+#  # 4) encrypt the key.bin keyfile with public key
+#  openssl rsautl -encrypt -oaep -pubin -inkey <(ssh-keygen -e -f /tmp/sshKeysName.pub -m PKCS8) -in key.bin -out secret.key.enc
 #  
-#  # encrypt the key.bin keyfile with public key
-#  openssl rsautl -encrypt -oaep -pubin -inkey <(ssh-keygen -e -f test.pub -m PKCS8) -in key.bin -out secret.key.enc
+#  # 5) send files to final user:  secret.key.enc  &  myimage.jpg.enc
 #  
-#  # decrypt the secret.key.enc using private key
-#  openssl rsautl -decrypt -oaep -inkey test  -in secret.key.enc -out secret.key
+#  # 6) final user decrypts the secret.key.enc using the private key
+#  openssl rsautl -decrypt -oaep -inkey /tmp/sshKeysName -in secret.key.enc -out secret.key
 #  
-#  # finally decrypt the original myimage.jpg.enc file
+#  # 7) finally decrypt myimage.jpg.enc to get back the original myimage.jpg
 #  openssl enc -aes-256-cbc -d -md sha256 -pbkdf2 -in myimage.jpg.enc -out myimage2.jpg -pass file:./secret.key
 #  
 
@@ -32,8 +29,8 @@ PASSWORD="jfj33f33f3hi3hi3i"
 FOLDER_TEMP_ENCRYPTIONS=/tmp/encypt_lab
 KEYFILE=/tmp/keyfile
 KEYFILE_ENC=/tmp/keyfile.enc
-KEY_PUBLIC=/tmp/test.pub
-KEY_PRIVATE=/tmp/test
+KEY_PUBLIC=/tmp/sshKeysName.pub
+KEY_PRIVATE=/tmp/sshKeysName
 
 # usage: _enc_file  input_file  encrypted_file
 _enc_file() {
@@ -47,6 +44,7 @@ _enc_file() {
    openssl enc -aes-256-cbc -salt -md sha256 -pbkdf2 -in $input_file -out $encrypted -pass file:$KEYFILE
    # encrypt keyfile with public key and remove non-encrypted keyfile
    openssl rsautl -encrypt -oaep -pubin -inkey <(ssh-keygen -e -f $KEY_PUBLIC -m PKCS8) -in $KEYFILE -out $KEYFILE_ENC
+   # remove the temp key
    rm $KEYFILE
 }
 
@@ -61,6 +59,8 @@ _dec_file() {
    openssl rsautl -decrypt -oaep -inkey $KEY_PRIVATE -in $encrypted_keyfile -out $KEYFILE
    # decrypt the file using our decrypted keyfile
    openssl enc -aes-256-cbc -d -md sha256 -pbkdf2 -in $encrypted_file -out $decrypted_file -pass file:$KEYFILE
+   # remove the key
+   rm $KEYFILE
 }
 
 
@@ -137,8 +137,10 @@ done
 
 if [ "$ACTION" = "enc" ];
 then
-	_encrypt_file $PATH_IN $PATH_OUT
+	#_encrypt_file $PATH_IN $PATH_OUT
+	_enc_file $PATH_IN $PATH_OUT
 else
-	_decrypt_file $PATH_IN $PATH_OUT
+	#_decrypt_file $PATH_IN $PATH_OUT
+	_dec_file $PATH_IN  $KEYFILE_ENC  $PATH_OUT
 fi
 

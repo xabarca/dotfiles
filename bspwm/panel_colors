@@ -19,7 +19,7 @@ COLOR_STATE_BG="$COLOR_DEFAULT_BG"
 
 #---------
 # workspace colors
-THEME_COLOR_WORKPACES="$($HOME/bin/getcolor color4)"
+THEME_COLOR_WORKPACES="$($HOME/bin/getcolor cyan)"
 COLOR_FREE_FG="#676767"
 COLOR_FREE_BG="$COLOR_DEFAULT_BG"
 COLOR_FOCUSED_FREE_FG="$COLOR_DEFAULT_BG"
@@ -35,10 +35,10 @@ COLOR_FOCUSED_URGENT_BG="#d5443e"
 
 #---------
 # module colors
-COLOR_HORA_FG="$($HOME/bin/getcolor color4)"
-COLOR_DATA_FG="$($HOME/bin/getcolor color3)"
-COLOR_MEM_FG="$($HOME/bin/getcolor color14)"
-COLOR_VOLUME_FG="$($HOME/bin/getcolor color9)"
-COLOR_VPN_FG="$($HOME/bin/getcolor color12)"
-COLOR_MUSIC_FG="$($HOME/bin/getcolor color2)"
+COLOR_HORA_FG="$($HOME/bin/getcolor cyan  )"
+COLOR_DATA_FG="$($HOME/bin/getcolor green)"
+COLOR_MEM_FG="$($HOME/bin/getcolor magenta)"
+COLOR_VOLUME_FG="$($HOME/bin/getcolor blue)"
+COLOR_VPN_FG="$($HOME/bin/getcolor yellow)"
+COLOR_MUSIC_FG="$($HOME/bin/getcolor green)"
 

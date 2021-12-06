@@ -8,7 +8,7 @@ PANEL_WM_NAME=bspwm_panel
 
 PANEL_HEIGHT=20
 
-PANEL_FONT_0="Hack:pixelsize=14"
+PANEL_FONT_0="Hack Nerd Font:pixelsize=14"
 PANEL_FONT_1="Font Awesome 5 Free:style=Solid:pixelsize=13"
 PANEL_FONT_4="icomoon:pixelsize=18"
 PANEL_FONT_6="JetBrainsMono:size=10"
@@ -123,8 +123,9 @@ _start() {
 
 	# executes panel_bar to create the status line to the bar
 	./panel_bar < "$PANEL_FIFO" | lemonbar -a 32 -u 0 -n "$PANEL_WM_NAME" -g x$PANEL_HEIGHT \
-                 -f "$PANEL_FONT_0" -o 2 -f "$PANEL_FONT_1" -o 1  \
-	              -F "$COLOR_DEFAULT_FG" -B "$COLOR_DEFAULT_BG" | sh &
+                 -f "$PANEL_FONT_0" -o 2 \
+				 -f "$PANEL_FONT_1" -o 1  \
+	             -F "$COLOR_DEFAULT_FG" -B "$COLOR_DEFAULT_BG" | sh &
 
 	wid=$(xdo id -a "$PANEL_WM_NAME")
 	xdo above -t "$(xdo id -N Bspwm -n root | sort | head -n 1)" "$wid"

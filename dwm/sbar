@@ -2,7 +2,7 @@
 
 # INIT
 # printf "$$" > ~/.cache/pidofbar
-printf "$$" > ~/tmp/sbar_dwm
+printf "$$" > /tmp/sbar_dwm
 sec=0
 
 

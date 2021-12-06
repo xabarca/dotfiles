@@ -23,6 +23,6 @@ else
     if [ $N_MONITORS -gt 1 ]; then
 	    WALLPAPERS_DIR="$WALLPAPERS_DIR $WALLPAPERS_DIR"
     fi
-	feh --randomize --bg-scale $WALLPAPERS_DIR
+	feh --no-fehbg --randomize --bg-scale $WALLPAPERS_DIR
 fi
 

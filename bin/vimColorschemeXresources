@@ -1,10 +1,11 @@
 #!/bin/sh
 
-FILE_TEMPLATE=$HOME/.vim/template.vim
-FILE_TEMPLATE2=$HOME/.vim/template2.vim
+DIR_CONFIGS=$HOME/.config/nvim
+FILE_TEMPLATE=$DIR_CONFIGS/template.vim
+FILE_TEMPLATE2=$DIR_CONFIGS/template2.vim
 FILE_TEMP=/tmp/template.vim
-FILE_COLORSCHEME=$HOME/.vim/colors/xavi.vim
-FILE_COLORSCHEME2=$HOME/.vim/colors/xavi2.vim
+FILE_COLORSCHEME=$DIR_CONFIGS/colors/xavi.vim
+FILE_COLORSCHEME2=$DIR_CONFIGS/colors/xavi2.vim
 DIR_COLORSCHEME_LIGHTLINE=$HOME/.vim/plugged/lightline.vim/autoload/lightline/colorscheme
 
 putColorfromXres() {
@@ -52,23 +53,23 @@ mv $FILE_TEMP $FILE_COLORSCHEME
 # --- template 2 -----
 cp $FILE_TEMPLATE2 $FILE_TEMP
 putColorfromXres2 bg bg
-putColorfromXres2 comment green
-putColorfromXres2 markup blue
-putColorfromXres2 constant cyan
+putColorfromXres2 comment fg
+putColorfromXres2 markup yellow 
+putColorfromXres2 constant brightred
 putColorfromXres2 operator purple
 putColorfromXres2 tag purple 
 putColorfromXres2 regexp brightblue
-putColorfromXres2 string brightcyan
+putColorfromXres2 string yellow
 putColorfromXres2 function brightpurple
-putColorfromXres2 special cyan
+putColorfromXres2 special green
 putColorfromXres2 keyword yellow
 putColorfromXres2 error brightred
-putColorfromXres2 accent cyan
-putColorfromXres2 panel purple
-putColorfromXres2 guide cyan
-putColorfromXres2 line cyan
+putColorfromXres2 accent black  # current line number fg
+putColorfromXres2 panel black
+putColorfromXres2 guide blue  # line numbers
+putColorfromXres2 line blue   # current line number bg
 putColorfromXres2 selection grey  # visual bg
-putColorfromXres2 fg fg
+putColorfromXres2 fg blue
 putColorfromXres2 fg_idle blue
 mv $FILE_TEMP $FILE_COLORSCHEME2
 

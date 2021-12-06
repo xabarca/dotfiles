@@ -3,12 +3,20 @@
 opcio="$1"
 volume_quant="$2"
 default_volume_level=30
+volume_quant_default=5
+
+SOUND_DEVICE_SYSTEM="-D pulse"
 
 update_wm_bar() {
-	# Like Smith:  "add 34 to your typical signal number"
+	# Luke Smith:  "add 34 to your typical signal number"
 	if ps ax | grep -v grep | grep dwmblocks > /dev/null
 	then
 		kill -45 $(pidof dwmblocks)
+	fi
+	 	
+	if ps ax | grep -v grep | grep sbar > /dev/null
+	then
+		kill -34 $(cat /tmp/sbar_dwm_pid)
 	fi
 	
 	# calling to the custom hook module volumehook
@@ -25,22 +33,24 @@ update_wm_bar() {
 }
 
 _toggle_mute() {
-	amixer -D pulse set Master 1+ toggle
+	amixer $SOUND_DEVICE_SYSTEM set Master 1+ toggle
 	update_wm_bar
 }
 
 _up() {
-	amixer -D pulse sset Master "$volume_quant%+"
+	[ -z $volume_quant ] && volume_quant="$volume_quant_default"
+	amixer $SOUND_DEVICE_SYSTEM sset Master "$volume_quant%+"
 	update_wm_bar
 }
 
 _down() {
-	amixer -D pulse sset Master "$volume_quant%-"
+	[ -z $volume_quant ] && volume_quant="$volume_quant_default"
+	amixer $SOUND_DEVICE_SYSTEM sset Master "$volume_quant%-"
 	update_wm_bar
 }
 
 _default() {
-	amixer -D pulse sset Master "$default_volume_level%"
+	amixer $SOUND_DEVICE_SYSTEM sset Master "$default_volume_level%"
 }
 
 _getvalue() {
@@ -54,10 +64,4 @@ case $1 in
 	down) _down ;;
 	default) _default ;;
 	-g|getvalue) _getvalue ;;
-#   [+-]*|[0-9]*) _set_volume $1 ;;
-#   -V|get-volume) _get_volume && exit ;;
-#   -M|get-mute) _get_mute && exit ;;
-#   update) _update_pipe exit ;;
-#   subscribe) _subscribe ;;
-#   *) _get_state && exit ;; 
 esac

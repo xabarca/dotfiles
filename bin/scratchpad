@@ -7,15 +7,28 @@ SCRATCHPAD_NAME=$1
 [ -z $SCRATCHPAD_NAME ] && SCRATCHPAD_NAME="scratchpad"
 
 
-# if id=$(xdo id -N scratch); then
-# 	xdo "$(xprop -id "$id" | awk '/state:/ { if ($3 ~ "Normal") {print "hide"} else {print "show"} }')" -N scratch
-# else
-# 	st -c scratch -e bash > /dev/null 2>&1 &
-# fi
+# --- version for BSPWM (using bspc & xdo)
+#
+#ACTUAL_DESKTOP="$(xdotool get_desktop)"
+#
+#if id="$(xdo id -N floatterm)" then
+#    bspc node "$id" -g hidden -f #; bspc node -d "^$ACTUAL_DESKTOP"
+#else 
+#	st -f Hack-9 -c floatterm -e bash > /dev/null 2>&1 &
+#fi
+# bspc node -d '^{1-9,10}'
 
 
-if [ "$SCRATCHPAD_NAME" = "scratchpad" ]; then
-	# we decide that name "scratchpad" will be launched as an st
+#--- a version more WM-agnostic (using classname=scratch, remember urxvt doesn't allow to change classnames)
+#	if id=$(xdo id -N scratch); then
+#		xdo "$(xprop -id "$id" | awk '/state:/ { if ($3 ~ "Normal") {print "hide"} else {print "show"} }')" -N scratch
+#	else
+#		st -f Hack-9 -c scratch -e bash > /dev/null 2>&1 &
+#	fi
+
+
+if [ "$SCRATCHPAD_NAME" = "scratchpad" -o "$SCRATCHPAD_NAME" = "stmusic" ]; then
+    # we decide that names "scratchpad" and "stmusic" will be launched as an st
 	xdotool search --onlyvisible --classname $SCRATCHPAD_NAME windowunmap \
       || xdotool search --classname $SCRATCHPAD_NAME windowmap \
       || st -f JetBrainsMono-9 -n $SCRATCHPAD_NAME -g 110x30+220+305 &

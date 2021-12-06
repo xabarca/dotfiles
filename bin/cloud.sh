@@ -1,16 +1,9 @@
 #! /bin/sh
 
-
-# TODO :  verify if a PATH_FILE exist
-#         maybe delte and re-create the temp encryption lab folder
-#         store the password into an external file (not hardcoded here)
-#  [ -d $TMP_DIR ] && rm -r $TMP_DIR
-
 # format:  [rclone alias name]:[remote folder]
 CLOUD_RCLONE_ALIAS="gdrive:mycloud"
 
 FOLDER_TEMP_ENCRYPTIONS="/tmp/encryption_lab"
-PASSWORD="jfj33f33f3hi3hi3i"
 
 
 
@@ -20,6 +13,10 @@ usage() {
    exit 2
 }
 
+_get_password() {
+   . ~/bin/encpass.sh
+   echo "$( get_secret )"
+}
 
 _list_files() {
    rclone lsl "$CLOUD_RCLONE_ALIAS"
@@ -56,6 +53,7 @@ _get_file_from_cloud() {
 _encrypt_file() {
    input_file=$1
    encrypted=$2 
+   PASSWORD=$( _get_password )
    openssl enc -aes-256-cbc -salt -md sha256 -pbkdf2 -in $input_file -out $encrypted -k $PASSWORD
 }
 
@@ -63,6 +61,7 @@ _encrypt_file() {
 _decrypt_file() {
    encrypted=$1 
    output_file=$2
+   PASSWORD=$( _get_password )
    openssl enc -aes-256-cbc -d -md sha256 -pbkdf2 -in $encrypted -out $output_file -k $PASSWORD
 }
 
@@ -79,6 +78,7 @@ esac
 
 [ -z "$ACTION" ] && usage
 [ "$ACTION" = "list" ] && _list_files
+
 [ -z "$FILE_PATH" ] && usage
 
 if [ "$ACTION" = "get" ];

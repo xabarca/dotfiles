@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EXTRACT_DIR=/tmp/extract
+TERMCMD="st"
 
 function extract___ {
  if [ -z "$1" ]; then
@@ -107,7 +108,6 @@ if [[ "${1#*.}" = "m3u" || "${1#*.}" = "mp4" ]];then
 # text/*
 elif [[ "${mime%/*}" = "text" || "$mime" = "application/json"  ]];then
     # external script to open text files
-    TERMCMD="st"
     $TERMCMD -e nvim "$1" > /dev/null 2>&1 &
 # djvu documents
 elif [[ "$mime" = "image/vnd.djvu" ]];then 

@@ -65,7 +65,7 @@ packages_void () {
 	# --- libraries to complie bspwm / sxhkd / dk ---
 	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip jq unzip xsetroot ImageMagick i3lock
+	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip xsel jq unzip xsetroot ImageMagick i3lock
 	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
 	sudo ln -s /etc/sv/dbus /var/service
 

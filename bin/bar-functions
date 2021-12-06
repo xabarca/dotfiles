@@ -5,7 +5,7 @@
 
 usage() {
   echo " "	
-  echo "Usage:  dwm-bar-functions -[ OPTIONS ]"
+  echo "Usage:  bar-functions -[ OPTIONS ]"
   echo " "	
   echo "Options: "	
   echo "   -b : battery"

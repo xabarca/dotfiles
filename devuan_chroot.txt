@@ -1,0 +1,33 @@
+
+######  CREATE CHROOT JAIL ######
+
+mkdir /rescue
+mount /dev/sdc1 /rescue
+mount /dev/sdc15 /rescue/boot/efi
+cd /rescue
+
+mount -t proc proc proc
+mount -t sysfs sys sys/
+mount -o bind /dev dev/
+mount -o bind /dev/pts dev/pts/
+mount -o bind /run run/
+chroot /rescue
+
+
+######  WORK IN THE CHROOT ENV  #####
+
+apt update
+
+
+#####  EXIT CHROOT ENV  #####
+
+exit
+
+umount /rescue/proc/
+umount /rescue/sys/
+umount /rescue/dev/pts
+umount /rescue/dev/
+umount /rescue/run
+cd /
+umount /rescue/boot/efi
+umount /rescue

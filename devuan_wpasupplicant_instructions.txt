@@ -1,0 +1,31 @@
+######  INSTRUCCIONES WPA_SUPPLICANT ######
+
+1º sudo iw dev (encontrar adaptadores de wifi disponibles)
+
+2º sudo ip link show wlan0 (ver el estado del dispositivo. link/ether es la MAC address)
+
+3º sudo ip link set wlan0 up (activar la interfase wifi)
+
+4º sudo iw wlan0 link (ver el estado de la conexión)
+
+5º sudo iw wlan0 scan (buscar redes wifi y tomar el SSID y si es WPA/WPA2=RSN o WEP)
+
+6º sudo wpa_passphrase nombreDelSSID >> /etc/wpa_supplicant.conf (enter y luego poner password)
+   escribirPasswordDelWifi (y así se crea un archivo de configuración con el password)
+
+7º cat /etc/wpa_supplicant.conf (ver cómo quedó el archivo)
+
+8º sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf (conectarse al wifi WPA/WPA2)
+
+9º sudo iw wlan0 link (ver el estado de la conexión)
+
+10º sudo dhclient wlan0 (obtener una IP)
+
+11º sudo ip addr show wlan0 (ver la IP asignada en el dato 'inet')
+
+12º sudo ifconfig wlan0 (otra forma de ver la IP en 'inet addr')
+
+13º sudo ip route show (verificar misma IP en 'link src ...')
+
+14º ping -c 7 torproject.org (verificar conexión con 7 pings)
+

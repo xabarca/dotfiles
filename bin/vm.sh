@@ -20,7 +20,8 @@ usage()
   echo "   -s : name of the new snapshot to be created"
   echo "   -r : name of the snapshot to be restored"
   echo "   -i : hard disk info (size, snapshots...)"
-  echo "   -p : full path where VM disks are stored"
+  echo "   -p : full path where VM disks are stored (change default one)"
+  echo "   -l : list of all VMs currently available in default path"
   echo "   -e : examples of use"
   echo " "	
   exit 2
@@ -97,6 +98,38 @@ function internet_found_qemu-live {
 startWM() {
 	# TODO  explore the possibilities of shared folders:
 	#       https://wiki.archlinux.org/index.php/QEMU#QEMU's_built-in_SMB_server
+
+	
+	#  >> http://forums.debian.net/viewtopic.php?f=16&t=144775
+	#  >> by Head_on_a_Stick
+	#
+	#  #!/bin/sh
+	#  qemu-system-x86_64 -enable-kvm \
+    #                 -m 2G \
+    #                 -cpu host \
+    #                 -smp cores=4 \
+    #                 -drive file=/home/$user/qemu/disk.img,format=raw,cache=none,if=virtio \
+    #                 -soundhw hda \
+    #                 -vga qxl \
+    #                 -device virtio-serial-pci \
+    #                 -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+    #                 -chardev spicevmc,id=spicechannel0,name=vdagent \
+    #                 -spice unix,addr=/tmp/vm_spice.socket,disable-ticketing \
+    # -- basic options to here
+    #                 -device nec-usb-xhci,id=usb \
+    #                 -chardev spicevmc,name=usbredir,id=usbredirchardev1 \
+    #                 -device usb-redir,chardev=usbredirchardev1,id=usbredirdev1 \
+    #                 -chardev spicevmc,name=usbredir,id=usbredirchardev2 \
+    #                 -device usb-redir,chardev=usbredirchardev2,id=usbredirdev2 \
+    # -- usb passthrough
+    #                 -fsdev local,id=qemu_dev,path=/home/$user/Public,security_model=none \
+    #                 -device virtio-9p-pci,fsdev=qemu_dev,mount_tag=qemu_mount \
+    # -- shared folder
+    #                 &
+    #
+	#  remote-viewer "spice+unix:///tmp/vm_spice.socket"
+	
+	
 	
 	HD_VM="$FULL_PATH_VM/$VMNAME/$VMNAME.qcow2"
 	if [ ! -f "$HD_VM" ]; then
@@ -110,8 +143,8 @@ startWM() {
 			qemu-system-x86_64 \
 			   --enable-kvm \
 			   -m $MEM_VM \
-			   -cpu host,kvm=off \
 			   -M q35 \
+			   -cpu host,kvm=off \
 			   -smp cores=2,threads=2 \
 			   -rtc base=localtime \
 			   -hda $HD_VM \
@@ -161,7 +194,7 @@ craeteSnapshot() {
 	if [ "$DEVELOPMENT_MODE" == "0" ]; then
 		qemu-img snapshot  -c $SNAPSHOT_NEW_NAME  $HD_VM
 	fi
-	echo "$SNAP created."
+	echo "$SNAPSHOT_NEW_NAME snapshot created to $VMNAME.qcow2"
 }
 
 restoreSnapshot() {
@@ -177,7 +210,17 @@ restoreSnapshot() {
 	if [ "$DEVELOPMENT_MODE" == "0" ]; then
 		qemu-img snapshot  -a $SNAPSHOT_RESTORE_NAME  $HD_VM
 	fi
-	echo "$VMNAME.qcow2 restored from snap-$SNAPSHOT_RESTORE_NAME.qcow2."
+	echo "$VMNAME.qcow2 back to snapshot $SNAPSHOT_RESTORE_NAME"
+}
+
+listVMs() {
+    llista=$(find $FULL_PATH_VM -name *.qcow2)
+    #printf "%b\n" $llista
+    for f in $llista; do
+        fileinfo=$(ls -lh $f)
+        echo "$(echo  $fileinfo | awk '{print $5}') $f"
+    done
+    exit 0
 }
 
 
@@ -185,7 +228,7 @@ restoreSnapshot() {
 # ---------------------------------------------------------
 # ---------------------------------------------------------
 
-while getopts ':n:d:m:s:r:p:ie' c
+while getopts ':n:d:m:s:r:p:iel' c
 do
   case $c in
     n) VMNAME=$OPTARG ;;
@@ -196,6 +239,7 @@ do
     p) FULL_PATH_VM=$OPTARG ;;
     i) INFO_HD="y" ;;
     e) EXAMPLES="y" ;;
+    l) listVMs ;;
     :) usage ;;
     ?) usage ;;
   esac
