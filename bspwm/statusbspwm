@@ -1,0 +1,41 @@
+#! /bin/bash
+
+HERBE_MODE=1
+
+# 
+# 
+# 
+
+color_red=$( xrdb -query | grep color9 | awk '{print $2}' )
+color_blu=$( xrdb -query | grep color3 | awk '{print $2}' )
+color_gre=$( xrdb -query | grep color6  | awk '{print $2}' )
+color_empty="#666666"
+
+
+battery_capacity=$( cat /sys/class/power_supply/BAT0/capacity )
+# bspc query --desktops --names
+bspwm_status="$( bspc subscribe -c 1)"
+
+IFS=':'
+WORKSPACES=($bspwm_status)
+for i in  "${WORKSPACES[@]}"; do
+	color=""
+	name=${i#?}
+	case $i in
+		O*) color=$color_red name="{$name}" herbeIcon="" ;; 
+		o*) color=$color_blu herbeIcon="" ;; 
+		f*) color=$color_empty  herbeIcon="" ;; 
+	esac
+	if [ ! "$color" = "" ]; then
+		ws_dunst="$ws_dunst<span foreground='$color'>$name</span> "
+		ws_herbe="$ws_herbe""$herbeIcon "
+	fi
+done
+
+if [ "$HERBE_MODE" == "1" ]; then
+	pkill herbe
+	#herbe "$(date '+%H:%M') - bat $battery_capacity% - $ws_herbe"
+	herbe " $ws_herbe      $battery_capacity%     $(date '+%H:%M') "
+else
+	dunstify "$(date '+%H:%M') - bat $battery_capacity%"  "$ws_dunst"
+fi
