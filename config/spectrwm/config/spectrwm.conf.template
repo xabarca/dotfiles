@@ -1,0 +1,10 @@
+color_focus		= color12
+color_focus_maximized	= color12
+color_unfocus		= bg
+color_unfocus_maximized	= bg
+bar_border[1]		= bg
+bar_border_unfocus[1]	= bg
+bar_color[1]		= bg, color8, color9, color10, color11, color12, color13, color14
+bar_color_selected[1]	= color121212121212121212121212
+bar_font_color[1]     	= bg, color8, color9, color10, color11, color12, color13, color14
+bar_font_color_selected = bg

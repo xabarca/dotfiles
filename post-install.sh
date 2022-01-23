@@ -65,8 +65,8 @@ packages_void () {
 	# --- libraries to complie bspwm / sxhkd / dk ---
 	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip xsel jq unzip xsetroot ImageMagick i3lock
-	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc
+	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip xsel jq unzip xsetroot gnupg
+	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc i3lock ImageMagick
 	sudo ln -s /etc/sv/dbus /var/service
 
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
@@ -199,7 +199,7 @@ gitrepos () {
 	# git clone https://github.com/gonzalo-/termbar	
 	
 	if [ -z $1 ]; then
-		sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel imlib2-devel libXrandr
+		sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel imlib2-devel libXrandr libXpm-devel
 		# dmenu from suckless
 		git clone --depth 1  git://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return

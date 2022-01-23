@@ -1,0 +1,13 @@
+diff --git a/x.c b/x.c
+index 8a16faa..6f6020b 100644
+--- a/x.c
++++ b/x.c
+@@ -675,6 +675,8 @@ setsel(char *str, Time t)
+ 	XSetSelectionOwner(xw.dpy, XA_PRIMARY, xw.win, t);
+ 	if (XGetSelectionOwner(xw.dpy, XA_PRIMARY) != xw.win)
+ 		selclear();
++
++	xclipcopy();
+ }
+ 
+ void

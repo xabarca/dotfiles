@@ -30,7 +30,7 @@ usage()
 packages () {
 	sudo apt update 
 	sudo apt install --no-install-recommends -y git neovim doas
-	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool xautolock socat xsel xclip
+	sudo apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool xautolock socat xsel xclip gnupg
 	sudo apt install --no-install-recommends -y libtk8.6
 	sudo apt install --no-install-recommends -y xcompmgr curl zip unzip xwallpaper rclone iw rxvt-unicode
 	#sudo apt install --no-install-recommends -y pcmanfm lxappearance mpv cmus papirus-icon-theme imagemagick 
@@ -45,7 +45,7 @@ packages_compile () {
 	sudo apt install --no-install-recommends -y libx11-dev libxft-dev libharfbuzz-dev
 	sudo apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	sudo apt install --no-install-recommends -y libxinerama-dev libreadline-dev 
-	sudo apt install --no-install-recommends -y libxrandr-dev libimlib2-dev 
+	sudo apt install --no-install-recommends -y libxrandr-dev libimlib2-dev libxpm-dev
 	# next two lines are needed only for compile bspwm
 	sudo apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	sudo apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev

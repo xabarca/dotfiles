@@ -1,10 +1,10 @@
 #! /bin/sh
 
-BASE_DIR=/tmp/temp_dwm
-#BASE_DIR=/opt/git
-PROJECT="dwm"
-DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/patches
-#DIR_OFFICIAL_DIFFS=~/git/dotfiles/patches
+#BASE_DIR=/tmp/temp_st
+BASE_DIR=/opt/git_projects
+PROJECT="st"
+#DIR_OFFICIAL_DIFFS=/opt/git/dotfiles/patches
+DIR_OFFICIAL_DIFFS=~/git/dotfiles/patches
 DIR_GENERATED_DIFFS=~
 
 suckCleanMaster() {
@@ -30,7 +30,7 @@ cloneRepo() {
     [ ! -d $BASE_DIR ] && mkdir -p $BASE_DIR
     cd $BASE_DIR
     yes | rm -r $PROJECT
-    git clone --depth 1 git://git.suckless.org/dwm $BASE_DIR/$PROJECT
+    git clone --depth 1 git://git.suckless.org/st $BASE_DIR/$PROJECT
 }
 
 createBranchByPatch() {
@@ -47,16 +47,9 @@ makeBranches() {
     gotoDir    
 	generateLocalUserConfig
 	
-    createBranchByPatch config
-    createBranchByPatch status2dallmons 
-    createBranchByPatch pertag
-    createBranchByPatch noborder
-    createBranchByPatch scratchpad
-    createBranchByPatch dwmc
-    #createBranchByPatch statusallmons
-    createBranchByPatch xresources
-    createBranchByPatch attachtop
-    createBranchByPatch xrdb
+    createBranchByPatch scroll 
+    createBranchByPatch alpha-xresources
+    createBranchByPatch clipboard
 }
 
 mergeManually() {
@@ -69,22 +62,12 @@ mergeManually() {
     git branch allcustom
     git checkout allcustom
     
-    echo "[*] ------- merging config ..."
-    git merge config -m config
-    echo "[*] ------- merging pertag ..."
-    git merge pertag -m pertag
-    echo "[*] ------- merging noborder ..."
-    git merge noborder -m noborder
-    echo "[*] ------- merging dwmc ..."
-    git merge dwmc -m dwmc
-    echo "[*] ------- merging attachtop ..."
-    git merge attachtop -m attachtop
-    echo "[*] ------- merging xrdb ..."
-    git merge xrdb -m xrdb
-    echo "[*] ------- merging status2dallmons ..."
-    git merge status2dallmons -m status2dallmons
-    echo "[*] ------- merging colortagoccupied ..."
-    git merge colortagoccupied -m colortagoccupied
+    echo "[*] ------- merging scroll..."
+    git merge scroll -m scroll
+    echo "[*] ------- merging alpha-xresources..."
+    git merge alpha-xresources -m alpha-xresources 
+    echo "[*] ------- merging clipboard..."
+    git merge clipboard -m clipboard 
 }
 
 customRebase() {

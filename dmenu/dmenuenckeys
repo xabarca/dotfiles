@@ -1,0 +1,21 @@
+#! /bin/sh
+# @see	: man xsel
+#  xsel -ib  -> copy to clibboard
+#  xsel -cb  -> clear clibboard
+
+COLOR=$( $HOME/bin/getcolor color4 )
+COLOR_BG=$( $HOME/bin/getcolor bg )
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+msg1="Choose your key: "
+
+cd $HOME
+list=$(find .enckeys -type f -name *.enc | sed -e 's|.enckeys/||' -e 's/.enc//')
+
+target=$( printf "$list" | dmenu -i -c -l 8 -bw 2 -p "$msg1" $COLOR_OPTIONS)
+[ -z $target ] && exit 0
+verification=$(echo $list | grep $target | wc -l)
+[ $verification -eq 0 ] && exit 0
+
+~/bin/enckeys.sh --name "$target" --clip
+herbe "password copied to clipboard" &
+

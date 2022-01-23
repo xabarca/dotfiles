@@ -1,8 +1,6 @@
 #!/bin/bash
 
 
-# https://fontawesome.com/cheatsheet
-
 usage() {
   echo " "	
   echo "Usage:  bar-functions -[ OPTIONS ]"

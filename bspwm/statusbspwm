@@ -24,6 +24,7 @@ for i in  "${WORKSPACES[@]}"; do
 	case $i in
 		O*) color=$color_red name="{$name}" herbeIcon="" ;; 
 		o*) color=$color_blu herbeIcon="" ;; 
+		F*) color=$color_red name="{$name}" herbeIcon="" ;; 
 		f*) color=$color_empty  herbeIcon="" ;; 
 	esac
 	if [ ! "$color" = "" ]; then

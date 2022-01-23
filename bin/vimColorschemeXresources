@@ -6,7 +6,7 @@ FILE_TEMPLATE2=$DIR_CONFIGS/template2.vim
 FILE_TEMP=/tmp/template.vim
 FILE_COLORSCHEME=$DIR_CONFIGS/colors/xavi.vim
 FILE_COLORSCHEME2=$DIR_CONFIGS/colors/xavi2.vim
-DIR_COLORSCHEME_LIGHTLINE=$HOME/.vim/plugged/lightline.vim/autoload/lightline/colorscheme
+DIR_COLORSCHEME_LIGHTLINE=$DIR_CONFIGS/plugged/lightline.vim/autoload/lightline/colorscheme
 
 putColorfromXres() {
     COLOR=$( $HOME/bin/getcolor $2 | sed 's/#//' )

@@ -42,6 +42,7 @@ usage () {
     echo "monitors [ OPTIONS ]"
     echo "  OPTIONS:  setup        -- configures the monitors setup automatically"
     echo "            is1920x1080  -- returns if there is a 1920x1080 monitor connected"
+    echo "            is1280x1024  -- returns if there is a 1280x1024 monitor connected"
     exit 0
 }
 
