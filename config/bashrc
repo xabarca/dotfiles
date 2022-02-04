@@ -24,6 +24,10 @@ lynx() {
     ~/.config/lynx/lynx "$@"; 
 }
 
+httpd() {
+    python3 -m http.server "${1:-8001}"
+}
+
 
 # -----------------------------
 #   nnn file manager configs

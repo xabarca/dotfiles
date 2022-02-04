@@ -268,6 +268,16 @@ gitrepos () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
 }
 
+
+# ----- Enchive - archiver/extractor of encypted backups -------------------
+get_enchive() {
+	git clone --depth 1  https://github.com/skeeto/enchive /opt/git/enchive
+	cd /opt/git/enchive || return
+	sed -i 's/.enchive/.encx/' "/opt/git/enchive/config.h"
+	sudo make install
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] enchive installed" >> $LOG_FILE
+}
+
 # ----- Daemon-less notifications without D-Bus. Minimal and lightweight. -------------------
 get_herbe() {
 	git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
@@ -394,6 +404,7 @@ finalsetup () {
 	xresources
     conf_doas
     get_herbe
+    get_enchive
     neovim_config
 	cd $ACTUAL_DIR || return
 	cat $ACTUAL_DIR/bashrc >> "$HOME/.bashrc"

@@ -247,6 +247,15 @@ get_herbe() {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned, installed and patched with Xresources/critical support" >> $LOG_FILE
 }
 
+# ----- Enchive - archiver/extractor of encypted backups -------------------
+get_enchive() {
+	git clone --depth 1  https://github.com/skeeto/enchive /opt/git/enchive
+	cd /opt/git/enchive || return
+	sed -i 's/.enchive/.encx/' "/opt/git/enchive/config.h"
+	sudo make install
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] enchive installed" >> $LOG_FILE
+}
+
 # ----- configure default bspwm -------------------
 defaultbspwm () {
 	sudo xbps-install -y sxhkd lemonbar-xft bspwm 
@@ -412,6 +421,7 @@ finalsetup () {
 	youtube_downloader
 	# notify_dunst
 	get_herbe
+	get_enchive
     neovim_config
 	cd $ACTUAL_DIR || return
 	cat $ACTUAL_DIR/Xresources >> "$HOME/.Xresources"
