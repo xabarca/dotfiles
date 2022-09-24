@@ -49,25 +49,25 @@ packages_void () {
 	echo "ignorepkg=linux-firmware-amd" | sudo tee -a /etc/xbps.d/00-ignore.conf
 	# echo "ignorepkg=linux5.12" | sudo tee -a /etc/xbps.d/00-ignore.conf
 	
-	sudo xbps-install -Suy xbps
-	sudo xbps-install -Suy
-	sudo xbps-install -Suy xorg-minimal xinit neovim git bash-completion setxkbmap opendoas
-	sudo xbps-remove -y linux-firmware-amd linux-firmware-nvidia
+	doas xbps-install -Suy xbps
+	doas xbps-install -Suy
+	doas xbps-install -Suy xorg-minimal xinit neovim git bash-completion setxkbmap opendoas
+	doas xbps-remove -y linux-firmware-amd linux-firmware-nvidia
 	
 # <<<<<<< basesystem 
 
-	sudo xbps-install -y nnn rxvt-unicode dbus xterm
+	doas xbps-install -y nnn rxvt-unicode dbus xterm age enchive
 	
 	# --- libraries per compilar dmenu / dwm / wmname / st ---
-	# sudo xbps-install -y gcc make libX11-devel libXft-devel libXinerama-devel 
-	# sudo xbps-install -y pkg-config
+	# doas xbps-install -y gcc make libX11-devel libXft-devel libXinerama-devel 
+	# doas xbps-install -y pkg-config
 
 	# --- libraries to complie bspwm / sxhkd / dk ---
-	# sudo xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
+	# doas xbps-install -y xcb-util-devel xcb-util-wm-devel xcb-util-cursor-devel xcb-util-keysyms-devel 
 	
-	sudo xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip xsel jq unzip xsetroot gnupg
-	#sudo xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc i3lock ImageMagick
-	sudo ln -s /etc/sv/dbus /var/service
+	doas xbps-install -y xrandr xdo xdotool curl xwallpaper xrdb xclip xsel jq unzip xsetroot age wmname
+	#doas xbps-install -y picom pcmanfm lxappearance archlabs-themes papirus-icon-theme mpv rclone scid_vs_pc i3lock ImageMagick
+	doas ln -s /etc/sv/dbus /var/service
 
 	echo "[$(date '+%Y-%m-%d %H:%M.%s')] default packages done" >> $LOG_FILE
 }
@@ -79,8 +79,8 @@ basicfolders () {
 	done
 	
 	if [ ! -d /opt/git ]; then
-		sudo mkdir /opt/git
-		sudo chown "$USER:$USER" /opt/git
+		doas mkdir /opt/git
+		doas chown "$USER:$USER" /opt/git
 		cp -r "$ACTUAL_DIR" /opt/git
 	else
 		cp -r "$ACTUAL_DIR" /opt/git
@@ -96,8 +96,8 @@ basicfolders () {
 
 # ----- download and install youtube-dl from github ---------
 youtube_downloader () {
-	sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
-	sudo chmod a+rx /usr/local/bin/youtube-dl
+	doas curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+	doas chmod a+rx /usr/local/bin/youtube-dl
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] youtube-dl ready" >> $LOG_FILE
 }
 
@@ -106,29 +106,29 @@ browsers () {
 	# https://github.com/qutebrowser/qutebrowser/blob/master/doc/help/configuring.asciidoc
 	# https://github.com/Linuus/nord-qutebrowser/blob/master/nord-qutebrowser.py
 	
-	sudo xbps-install -Sy fuse qutebrowser python3-adblock
+	doas xbps-install -Sy fuse qutebrowser python3-adblock
 	mkdir -p "$HOME/.config/qutebrowser/themes"
 	cd $ACTUAL_DIR || return
 	cp qutebrowser/config.py  "$HOME/.config/qutebrowser/"
 	cp qutebrowser/xavi.py qutebrowser/nord.py  "$HOME/.config/qutebrowser/themes/"
 
-   	sudo mkdir /opt/LibreWolf
-	sudo chown $USER:$USER /opt/LibreWolf
+	doas mkdir /opt/LibreWolf
+	doas chown $USER:$USER /opt/LibreWolf
     curl -fLo /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage 'https://gitlab.com/librewolf-community/browser/appimage/-/jobs/1450294189/artifacts/raw/LibreWolf-90.0.2-1.x86_64.AppImage'
 	chmod +x /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage
-	sudo ln -fs /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage /usr/local/bin/LibreWolf
+	doas ln -fs /opt/LibreWolf/LibreWolf-90.0.2-1.x86_64.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] browsers" >> $LOG_FILE
 }
 
 # ---------  kmonad  -------------
 kmonad () {
-	sudo xbps-install -Sy kmonad
+	doas xbps-install -Sy kmonad
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] kmonad" >> $LOG_FILE
 }
 
 # ----- dunst  ----------------
 notify_dunst () {
-	sudo xbps-install -y dunst libnotify
+	doas xbps-install -y dunst libnotify
 	[ ! -d '$HOME/.config/dunst' ] && mkdir -p '$HOME/.config/dunst'
 	cp $ACTUAL_DIR/dunstrc '$HOME/.config/dunst'
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] dunst configured" >> $LOG_FILE
@@ -150,7 +150,7 @@ fonts() {
 	# curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
 	unzip "*.zip"
 	rm *Windows*
-	sudo mkdir -p /usr/share/fonts/truetype/newfonts
+	doas mkdir -p /usr/share/fonts/truetype/newfonts
 	#OLDIFS=$IFS
 	#IFS=$'\n'
 	#fileArray=($(find . -name '*.ttf*'))
@@ -158,14 +158,14 @@ fonts() {
 	#IFS=$OLDIFS
 	#for (( i=0; i<${tLen}; i++ ));
 	#do
-	#	sudo mv "${fileArray[$i]}" /usr/share/fonts/truetype/newfonts
+	#	doas mv "${fileArray[$i]}" /usr/share/fonts/truetype/newfonts
 	#done
 	find . -name '*.ttf' >tmp
 	while read file
 	do
-		sudo cp "$file" /usr/share/fonts/truetype/newfonts
+		doas cp "$file" /usr/share/fonts/truetype/newfonts
 	done<tmp
-	sudo fc-cache -f -v
+	doas fc-cache -f -v
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] fonts added" >> $LOG_FILE
 }
 
@@ -186,7 +186,7 @@ gitrepos () {
 	#git clone https://github.com/drscream/lemonbar-xft
 	#git clone https://github.com/xabarca/dotfiles
 	#git clone https://github.com/baskerville/bspwm
-	#git clone https://github.com/baskerville/sxhkd	sudo mkdir /opt/git
+	#git clone https://github.com/baskerville/sxhkd	doas mkdir /opt/git
 	#git clone https://git.suckless.org/wmname
 	#git clone https://git.suckless.org/dwm
 	#git clone https://bitbucket.org/natemaia/dk.git
@@ -199,7 +199,7 @@ gitrepos () {
 	# git clone https://github.com/gonzalo-/termbar	
 	
 	if [ -z $1 ]; then
-		sudo xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel imlib2-devel libXrandr libXpm-devel
+		doas xbps-install -y gcc make  libX11-devel libXft-devel libXinerama-devel imlib2-devel libXrandr libXpm-devel
 		# dmenu from suckless
 		git clone --depth 1  git://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return
@@ -207,17 +207,17 @@ gitrepos () {
 		git apply "$ACTUAL_DIR/patches/dmenu-center-20200111-8cd37e1.diff"
 		make && strip dmenu stest
 		for i in dmenu dmenu_* stest; do
-			sudo ln -sf "$PWD/$i" /usr/local/bin
+			doas ln -sf "$PWD/$i" /usr/local/bin
 		done
 		# Crear enlace de manuales de usuario
 		for i in *.1; do
-			sudo ln -sf "$PWD/$i" /usr/local/share/man/man1/
+			doas ln -sf "$PWD/$i" /usr/local/share/man/man1/
 		done
 		# wmname (to be able to start JDK swing applications)
-		git clone --depth 1  git://git.suckless.org/wmname /opt/git/wmname
-		cd /opt/git/wmname
-		make
-		sudo make install
+		# git clone --depth 1  git://git.suckless.org/wmname /opt/git/wmname
+		#cd /opt/git/wmname
+		# make
+		# doas make install
 	fi
 	if [ "$1" = "dwm" ]; then
 		git clone --depth 1  git://git.suckless.org/dwm  /opt/git/dwm
@@ -229,21 +229,21 @@ gitrepos () {
 		cp $ACTUAL_DIR/blocks.h /opt/git/dwmblocks
 		cd /opt/git/dwmblocks
 		make
-		sudo ln -fs /opt/git/dwm/dwm /usr/local/bin
-		sudo ln -fs /opt/git/dwmblocks/dwmblocks /usr/local/bin
-		sudo ln -fs /opt/git/dk/dkcmd /usr/local/bin
+		doas ln -fs /opt/git/dwm/dwm /usr/local/bin
+		doas ln -fs /opt/git/dwmblocks/dwmblocks /usr/local/bin
+		doas ln -fs /opt/git/dk/dkcmd /usr/local/bin
 	fi
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] git repos cloned, compiled and installed ($1)" >> $LOG_FILE
 }
 
 # ----- Daemon-less notifications without D-Bus. Minimal and lightweight. -------------------
 get_herbe() {
-	sudo xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
+	doas xbps-install -Suy gcc make libX11-devel libXft-devel libXinerama-devel 
 	git clone --depth 1  https://github.com/dudik/herbe /opt/git/herbe
 	cd /opt/git/herbe || return
 	git apply "$ACTUAL_DIR/patches/herbe-xresources-critical.diff"
 	make && strip herbe
-	sudo ln -fs "$PWD/herbe" /usr/local/bin
+	doas ln -fs "$PWD/herbe" /usr/local/bin
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] herbe repo cloned, installed and patched with Xresources/critical support" >> $LOG_FILE
 }
 
@@ -252,13 +252,13 @@ get_enchive() {
 	git clone --depth 1  https://github.com/skeeto/enchive /opt/git/enchive
 	cd /opt/git/enchive || return
 	sed -i 's/.enchive/.encx/' "/opt/git/enchive/config.h"
-	sudo make install
+	doas make install
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] enchive installed" >> $LOG_FILE
 }
 
 # ----- configure default bspwm -------------------
 defaultbspwm () {
-	sudo xbps-install -y sxhkd lemonbar-xft bspwm 
+	doas xbps-install -y sxhkd lemonbar-xft bspwm 
 	for dir in bspwm sxhkd; do
 		mkdir -p "$HOME/.config/$dir"
 	done
@@ -362,7 +362,7 @@ void_xbps_src() {
 	# by Jose Santos (AgarimOS)  from:  https://au.ytprivate.com/watch?v=q7Q9gecxSts
 	#
 	# 1) instalación de xtools:
-	#      sudo xbps-install -Syu xtools
+	#      doas xbps-install -Syu xtools
 	# 2) Clonar los repositorios:
 	#      git clone https://github.com/void-linux/void-packages
 	#      cd void-packages
@@ -376,7 +376,7 @@ void_xbps_src() {
 	#    En el caso de compilaciones más largas nos ahorraría bastante tiempo (compilando un kernel por ejemplo).
 	# 6) instalar el paquete:
 	#      xi ungoogled-chromium-marmaduke
-	sudo xbps-install -Suy xtools
+	doas xbps-install -Suy xtools
 	git clone --depth 1  https://github.com/void-linux/void-packages /opt/git/void-packages
 	cd /opt/git/void-packages  
 	./xbps-src binary-bootstrap
@@ -390,7 +390,7 @@ void_xbps_src() {
 
 # ----- void-mklive from github ----------------------------
 void_mklive() {
-	sudo xbps-install -Suy xtools
+	doas xbps-install -Suy xtools
 	git clone --depth 1  https://github.com/void-linux/void-mklive /opt/git/void-mklive
 	cd /opt/git/void-mklive
 	make

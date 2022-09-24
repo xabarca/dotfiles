@@ -9,9 +9,13 @@
 # sudo umount /mnt/secure
 # sudo cryptsetup luksClose secureLuks
 #
+#  to generate a plain text keyfile of 512 chars:
+#    gpg --gen-random --armor 1 512 > mykeyfile
+#    openssl rand -base64 512
+#
 
-CONTAINER_PATH=~/container
-KEYFILE_PATH=~/media/obama/usb/keyfile
+CONTAINER_PATH=/tmp/container
+KEYFILE_PATH=/media/obama/diskusb/key.file
 MOUNTING_POINT=/mnt/secure
 
 usage() {
@@ -79,6 +83,7 @@ doit_create() {
     VOLUME=$NEW_VOL_PATH/volume.img
     KEYFILE=$NEW_VOL_PATH/keyfile
     LUKS_OPTIONS="--type luks2 --pbkdf argon2id --cipher aes-xts-plain64 --key-size 512 --hash sha512"
+    VOL_SIZE="100M"
 
     [ ! -z "$vol" ] && VOLUME="$vol"
     if [ -f "$VOLUME" ]
@@ -95,7 +100,8 @@ doit_create() {
 
     # keyfile
     if [ -z "$key" ]; then
-        dd if=/dev/urandom  of=$KEYFILE  bs=1024  count=1
+        #dd if=/dev/urandom  of=$KEYFILE  bs=1024  count=1
+        openssl rand -base64 1024 > $KEYFILE
     else
        KEYFILE="$key" 
        if [ ! -f "$KEYFILE" ]
@@ -106,21 +112,20 @@ doit_create() {
     fi
 
     # create volume disk
-    dd if=/dev/zero  of=$VOLUME bs=1  count=0  seek=100M
+    dd if=/dev/zero  of=$VOLUME bs=1  count=0  seek=$VOL_SIZE
 
     # encrypt volume
     sudo cryptsetup  luksFormat $LUKS_OPTIONS $VOLUME $KEYFILE 
    
     # prepare volume (format and give permissions)
     sudo cryptsetup  luksOpen  $VOLUME myVol --key-file $KEYFILE
-    sudo mkfs.ext4  /dev/mapper/myVol
-    sudo mount /dev/mapper/myVol $MOUNTING_POINT
+    sudo mkfs.ext4   /dev/mapper/myVol
+    sudo mount  /dev/mapper/myVol  $MOUNTING_POINT
     sudo chown  -R  $USER  $MOUNTING_POINT
     sudo umount  $MOUNTING_POINT
     sudo cryptsetup luksClose myVol
-
     echo " "
-    echo "Volume created on $VOLUME"
+    echo "Volume :: $VOLUME"
     echo "Ḱeyfile :: $KEYFILE"
     echo "Please, secure them both!"
 }
@@ -129,7 +134,7 @@ doit_create() {
 while [ $# -gt 0 ]; do
    noArgsRelated=""
    case "$1" in
-      --vol|-v)
+      --vol|--volume|-v)
         vol="$2"
         ;;
       --key|-k)

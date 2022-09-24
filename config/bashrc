@@ -11,6 +11,13 @@ alias reboot='doas /sbin/reboot'
 alias xr='xrdb ~/.config/Xresources/Xresources'
 #alias shutdown='doas shutdown -h now'
 #alias reboot='doas shutdown -r now'
+alias hist="exec_fzf_hist"
+
+exec_fzf_hist() {
+  a=$( history | sed 's/.[ ]*.[0-9]*.[ ]*//' | perl -ne 'print if !$seen{$_}++' | fzf --tac -i --no-sort )
+  echo $a
+  eval $a
+}
 
 if [ $(id -u) -eq 0 ];
 then # you are root, set red colour prompt
@@ -52,5 +59,12 @@ export NNN_PLUG='v:_|vim $nnn*'
 export NNN_USE_EDITOR=1
 export NNN_OPENER=~/bin/nnnopen
 export NNN_COLORS="4356"
+
+
+export FZF_DEFAULT_OPTS="
+    --color=fg:$(~/bin/getcolor fg),bg:$(~/bin/getcolor bg),hl:$(~/bin/getcolor brightblue)
+    --color=fg+:$(~/bin/getcolor fg),bg+:$(~/bin/getcolor bg),hl+:$(~/bin/getcolor brightblue)
+    --color=info:$(~/bin/getcolor yellow),prompt:$(~/bin/getcolor red),pointer:$(~/bin/getcolor purple)
+    --color=marker:$(~/bin/getcolor brightgreen),spinner:$(~/bin/getcolor purple),header:$(~/bin/getcolor brightgreen)"
 
 ~/bin/colors.sh

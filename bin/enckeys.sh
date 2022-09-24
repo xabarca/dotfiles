@@ -32,14 +32,17 @@ _enc_file() {
    ssh-keygen -e -f "$KEY_PUBLIC" -m PKCS8 > /tmp/pubkey
    openssl rsautl -encrypt "$PADDING" -pubin -inkey /tmp/pubkey -in "$input_file" -out "$encrypted"
    rm /tmp/pubkey
+   #enchive archive "$input_file" "$encrypted"
 }
 
-# usage: _dec_file  encrypted_file  decrypted_file
+# usage: _dec_file  encrypted_file 
 _dec_file() {
    encrypted_file="$1" 
    decrypted_file="$2"
    # decrypt the keyfile using our private key
-   openssl rsautl -decrypt $PADDING -inkey "$KEY_PRIVATE" -in "$encrypted_file" -out "$decrypted_file"
+   decrypted=$( openssl rsautl -decrypt $PADDING -inkey "$KEY_PRIVATE" -in "$encrypted_file" )
+   #enchive --agent=36000 --pinentry=pinentry-gnome3 extract "$encrypted_file" "$decrypted_file"
+   echo "$decrypted"
 }
 
 # usage:  _encrypt  cadena  alias  scriptonly
@@ -68,6 +71,12 @@ _encrypt() {
 # usage:  _decrypt  alias
 _decrypt() {
     echo "decrypt $1" > /tmp/log
+    if [ ! -f "$KEY_PRIVATE" ]; then
+        herbe -c "no private key available" &
+        echo "no private key available"
+        exit 0
+    fi
+    
     alias="$1"
     #  xsel -ib  -> copy to clibboard
     #  xsel -cb  -> clear clibboard
@@ -76,7 +85,7 @@ _decrypt() {
     [ ! -f "$enc_key_file" ] && enc_key_file="$enc_key_file""$APPENDIX_SCRIPT_KEYS"
     [ ! -f "$enc_key_file" ] && echo "no key" && exit 0
 
-    _dec_file "$enc_key_file" /tmp/key
+    decrypted="$( _dec_file "$enc_key_file" )"
 
     # block to erase our key from clipboard
     if [ ! -z $clip ]; then
@@ -87,9 +96,8 @@ _decrypt() {
     fi
 
     [ ! -z $clip ] \
-        && cat /tmp/key | $CLIPBOARD_CMD \
-        || cat /tmp/key
-    rm /tmp/key
+        && echo "$decrypted" | $CLIPBOARD_CMD \
+        || echo "$decrypted" 
     exit 0
 }
 
@@ -171,7 +179,7 @@ while [ $# -gt 0 ]; do
         ;;
     esac
     shift
-    [ -z $doShift ] && shift  # only make a second shift if not --clip/generate/script-only
+    [ -z $doShift ] && shift  # only make a second shift if we are not in --clip / generate / script-only
 done
 
 [ -z $name ] && usage

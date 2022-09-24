@@ -1,0 +1,99 @@
+#!/bin/sh
+
+#dir="$HOME/wallpapers/Screenshots" 
+dir=$HOME/Imatges/screenshots
+file="$(date '+%Y-%m-%d__%Hh-%Mm-%Ss').png"
+tfile="/tmp/capture.png"
+dm="dmenu -l 8 -p ScreenShots"
+#dm=$HOME/bin/fzfmenu
+
+
+menu() {
+#ch=$( printf "WindowFocus\nArea\nMultiArea\nMonitor1\nMonitor2\nClipboardArea\nClipboardDesk" | $dm -p "ScreenShots ")
+ch=$( printf "WindowFocus\nArea\nMultiArea\nMonitor1\nMonitor2\nClipboardArea\nClipboardDesk" | $dm )
+case "$ch" in
+	WindowFocus)dsk ;;
+	Area) rg ;;
+	MultiArea) mr ;;
+	Monitor1) fm ;;
+	Monitor2) sm  ;;
+	ClipboardArea) cla ;;
+	ClipboardDesktop) cld ;;
+esac
+}
+
+sign() {
+	convert $tfile -gravity South -font UbuntuMonoNerdFont  -weight Bold -background transparent -fill 'srgb(169,169,169)' -pointsize 30 -annotate +750+4 '@xabarca' $dir/$file
+}
+
+not() {
+	herbe "A New ScreenShoot Has Been Taken " " "$file" "
+}
+
+
+cla() {
+	import png:- | xclip -selection clipboard -t image/png
+	sign
+	not
+}
+
+
+cld() {
+	import -window root png:- | xclip -selection clipboard -t image/png
+	sign
+	not
+}
+
+
+dsk() {
+	sleep 2
+	import -window $(xdotool getwindowfocus) $tfile	
+	sign
+	not
+}
+
+rg() {
+	#import $tfile 
+	#sign
+	#not
+	mr
+}
+
+mr() {
+    scrot -s  scrot.png -e 'mv $f ~/Imatges/screenshots/`date '+%Y-%m-%d__%Hh-%Mm-%Ss'`__$wx$h.png'
+	herbe "Screenshot area taken"
+	#import -snaps 3 $tfile 
+	#sign
+	#not
+}
+
+fm() {
+	sleep 2 
+	import -window root -crop 1920x1080+0+0 $tfile
+	#sign
+	mv $tfile $dir/$file
+	not
+}
+
+sm() {
+	sleep 2 
+	import -window root -crop 1920x1080+1920+0 $tfile 
+	#sign
+	mv $tfile $dir/$file
+	not
+}
+
+
+screen() {
+	sleep 2 
+	import -window root $tfile
+	sign
+	not
+}
+
+case $1 in
+	-s) screen ;;
+	-m) menu ;;
+	*) menu ;;
+esac
+

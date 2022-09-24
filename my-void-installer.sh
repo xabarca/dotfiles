@@ -13,7 +13,7 @@ HARDWARECLOCK='UTC' # Set RTC (Real Time Clock) to UTC or localtime
 TIMEZONE='Europe/Andorra' # Set which region on Earth the user is
 KEYMAP='es' # Define keyboard layout: us or br-abnt2 (include more options)
 FONT='Lat2-Terminus16' # Set type face for terminal before X server starts
-TTYS=2 # Amount of ttys which should be setup. VARIABLE NOT USED !
+TTYS=2 # Amount of ttys which should be setup.
 # LANG='en_US.UTF-8' # I guess this one only necessary in glibc install
 
 # packages to install
@@ -73,7 +73,7 @@ _get_packages_to_install() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
 _filetype_selection() {
-	# Option to select the file system type to format paritions
+	# Option to select the file system type to format partitions
 	clear
 	echo ''
 	echo 'FILE SYSTEM TYPE SELECTION'
@@ -369,7 +369,7 @@ HARDWARECLOCK="${HARDWARECLOCK}"
 TIMEZONE="${TIMEZONE}"
 KEYMAP="${KEYMAP}"
 FONT="${FONT}"
-TTYS=2
+TTYS=${TTYS}
 EOF
 
 if [ "$ARCH" = "x86_64" ]; then

@@ -1,0 +1,84 @@
+#! /bin/sh
+
+# dmenu script to open certain scripts or config files
+# The files to choose from are hardcoded in the script.
+BASEDIR=$(dirname $0)
+BASEDIR=$HOME/bin/dmenu
+TEMP_DIR=/tmp/myconfigs
+TEMP_FILE="$TEMP_DIR/allmydmenus"
+TEMP_FILE2="$TEMP_DIR/mymenurun"
+TEMP_FILE3="$TEMP_DIR/allinone"
+[ ! -d "$TEMP_DIR" ] && mkdir -p $TEMP_DIR 
+
+#COLOR=$($HOME/bin/getcolor brightyellow )
+COLOR=$($HOME/bin/getcolor cyan)
+COLOR_BG=$($HOME/bin/getcolor bg)
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR  -sf $COLOR_BG -nf $COLOR"
+#DMENU="dmenu -i -l 8 -c -bw 2  -p Choose: $COLOR_OPTIONS"
+DMENU="$HOME/bin/fzfmenu"
+
+#--- dmenu scripts ----------
+if [ ! -f "$TEMP_FILE" ]; then
+	echo "1:chooseputty:ssh" > $TEMP_FILE
+	echo "2:enckeys:pass" >> $TEMP_FILE
+	echo "3:choosevpn:vpn" >> $TEMP_FILE
+	echo "4:ivooxtracker:ivoox tracker" >> $TEMP_FILE
+	echo "5:chooseQemuVM:qemu vm manager" >> $TEMP_FILE
+	echo "6:choosemusic:music albums" >> $TEMP_FILE
+	echo "7:invidioustracker:youtube videos" >> $TEMP_FILE
+	echo "8:openConfig:open config files" >> $TEMP_FILE
+	echo "9:choosechesspdf:chess pdf" >> $TEMP_FILE
+	echo "10:out:get me out of here!" >> $TEMP_FILE
+	echo "11:choosewifi:wifi" >> $TEMP_FILE
+	echo "12:screenshot:screennshot" >> $TEMP_FILE
+fi
+
+#-- system binaries --------
+if [ ! -f "$TEMP_FILE2" ]; then
+	binaries="putty pluma filezilla google-chrome palemoon datastudio sqldeveloper eclipse eclipse_aragon firefox st urxvt scid libreoffice meld caja pcmanfm telegram teams xterm geany mate-terminal"
+	for i in $binaries;
+	do
+		echo "$i" >> $TEMP_FILE2
+	done
+fi
+
+cat $TEMP_FILE | awk -F: '{print $3}' > $TEMP_FILE3
+cat $TEMP_FILE2 | sort >> $TEMP_FILE3
+
+chosen=$( cat $TEMP_FILE3 | $DMENU )
+echo $chosen
+
+[ -z "$chosen" ] && echo "nothing chosen" && exit 0
+
+
+# -----
+#  1 : check if there is a direct command
+#------
+
+# check if there is a direct command
+command=$( cat $TEMP_FILE2 | grep "^$chosen" )
+if [ '$command' != '' ]; then
+	$command
+fi
+
+
+# -----
+#  2 : check if there is a dmenu own script
+#------
+
+chosenText=$( echo ":""$chosen" )
+echo "chosen text: $chosenText" 
+lineFile=$( cat $TEMP_FILE | grep "$chosenText" )
+
+chosenScript=$( echo $lineFile | awk -F':' '{print $2}')
+
+if [ "$chosenScript" = "enckeys" ]; then
+	#$HOME/bin/enckeys.sh --dmenu
+	$HOME/bin/pashenchive m
+	exit 0
+fi
+
+chosenScript=$BASEDIR/$chosenScript
+[ ! -f $chosenScript ] && exit 0
+$chosenScript
+
