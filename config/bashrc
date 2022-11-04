@@ -1,3 +1,4 @@
+
 alias grep='grep --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -l'
@@ -5,6 +6,8 @@ alias myip='curl ipinfo.io/ip'
 alias q="exit"
 alias nnn="nnn -de"
 #alias mpv='devour mpv'
+alias vim='nvim'
+alias v='nvim'
 alias mem='ps -u $USER -o pid,%mem,comm | sort -b -k2'
 alias poweroff='doas /sbin/poweroff'
 alias reboot='doas /sbin/reboot'
@@ -12,6 +15,9 @@ alias xr='xrdb ~/.config/Xresources/Xresources'
 #alias shutdown='doas shutdown -h now'
 #alias reboot='doas shutdown -r now'
 alias hist="exec_fzf_hist"
+alias w='v $HOME/.working.txt'
+alias ya='yt-dlp --audio-format best -x'
+
 
 exec_fzf_hist() {
   a=$( history | sed 's/.[ ]*.[0-9]*.[ ]*//' | perl -ne 'print if !$seen{$_}++' | fzf --tac -i --no-sort )
@@ -34,6 +40,12 @@ lynx() {
 httpd() {
     python3 -m http.server "${1:-8001}"
 }
+
+se() {
+ #du -a "$HOME/bin/" | awk '!/Original-Scripts/ {print $2}' | fzf --prompt="Select Script to edit: " --preview='head -$LINES {}' --height=60% --margin=0%,39%,0%,0%  | xargs -r $EDITOR ; clear ;
+ du -a "$HOME/bin/" | awk '!/Original-Scripts/ {print $2}' | fzf --prompt="Select Script to edit: " --preview='head -$LINES {}'  | xargs -r $EDITOR ; clear ;
+}
+
 
 
 # -----------------------------
@@ -66,5 +78,46 @@ export FZF_DEFAULT_OPTS="
     --color=fg+:$(~/bin/getcolor fg),bg+:$(~/bin/getcolor bg),hl+:$(~/bin/getcolor brightblue)
     --color=info:$(~/bin/getcolor yellow),prompt:$(~/bin/getcolor red),pointer:$(~/bin/getcolor purple)
     --color=marker:$(~/bin/getcolor brightgreen),spinner:$(~/bin/getcolor purple),header:$(~/bin/getcolor brightgreen)"
+
+
+
+# Another CTRL-R script to insert the selected command from history into the command line/region
+__fzf_history ()
+{
+    builtin history -a;
+    builtin history -c;
+    builtin history -r;
+    builtin typeset \
+        READLINE_LINE_NEW="$(
+            HISTTIMEFORMAT= builtin history |
+            command fzf +s --tac +m -n2..,.. --tiebreak=index --toggle-sort=ctrl-r |
+            command sed '
+                /^ *[0-9]/ {
+                    s/ *\([0-9]*\) .*/!\1/;
+                    b end;
+                };
+                d;
+                : end
+            '
+        )";
+
+        if
+                [[ -n $READLINE_LINE_NEW ]]
+        then
+                builtin bind '"\er": redraw-current-line'
+                builtin bind '"\e^": magic-space'
+                READLINE_LINE=${READLINE_LINE:+${READLINE_LINE:0:READLINE_POINT}}${READLINE_LINE_NEW}${READLINE_LINE:+${READLINE_LINE:READLINE_POINT}}
+                READLINE_POINT=$(( READLINE_POINT + ${#READLINE_LINE_NEW} ))
+        else
+                builtin bind '"\er":'
+                builtin bind '"\e^":'
+        fi
+}
+
+builtin set -o histexpand;
+builtin bind -x '"\C-x1": __fzf_history';
+builtin bind '"\C-r": "\C-x1\e^\er"'
+
+
 
 ~/bin/colors.sh

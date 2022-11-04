@@ -1,0 +1,84 @@
+#!/bin/sh
+
+_create() {
+    if [ -f $VAULT_PATH ]; then
+        echo "Vault '$VAULT_PATH' already exists. Cannot overwrite it."
+        exit 1
+    fi
+
+    _genKeyfile   
+    $HOME/bin/secureluks.sh \
+        --create \
+        --vol $VAULT_PATH \
+        --key $KEYFILE \
+        --mountpoint $VAULT_MOUNTPOINT \
+        --size 300M
+    
+    rm $KEYFILE
+}
+
+
+_open() {
+    if [ ! -f $VAULT_PATH ]; then
+        echo "Vault '$VAULT_PATH' does not exist."
+        exit 1
+    fi
+
+     _genKeyfile   
+    $HOME/bin/secureluks.sh \
+        --open \
+        --vol $VAULT_PATH \
+        --key $KEYFILE \
+        --mountpoint $VAULT_MOUNTPOINT
+    
+    rm $KEYFILE
+}
+
+
+_close() {
+    $HOME/bin/secureluks.sh \
+        --close \
+        --mountpoint $VAULT_MOUNTPOINT
+}
+
+
+_genKeyfile() {
+    echo "$( ~/bin/pashenchive s script/myvault )" > $KEYFILE
+    if [ "$( cat $KEYFILE)" = "" ]; then
+        echo "Error getting password/keyfile for vault."
+        exit 1
+    fi
+}
+
+
+usage() { printf %s "\
+
+myvault --create  :  create a new personal LUKS container/vault
+myvault --open    :  open it
+myvault --close   :  close t
+
+Vault path:   export VAULT_PATH=~/myvault
+Mount point:  export VAULT_MOUNTPOINT=/dev/tempdisk
+
+"
+exit 0
+}
+
+
+main() {
+    : "${VAULT_PATH:=$HOME/myvault}"
+    : "${VAULT_MOUNTPOINT:=/mnt/tempdisk}"
+
+	KEYFILE=/dev/shm/key.file
+
+    case $1 in
+        --create) _create ;;
+        --open)   _open ;;
+        --close)  _close ;;
+        *)  usage
+    esac
+}
+
+set +x
+set -f
+[ "$1" ] || usage && main "$@"

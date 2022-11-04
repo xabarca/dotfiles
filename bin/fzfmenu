@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+#xterm -name 'fzfmenu' -e "fzf $* < /proc/$$/fd/0 > /proc/$$/fd/1"
+#st -g "60x14" -f JetBrainsMono-10 -n 'fzfmenu' sh -c "fzf --reverse $* < /proc/$$/fd/0 > /proc/$$/fd/1"
+st -g "60x14" -f JetBrainsMono-10 -n 'fzfmenu' sh -c "fzf  --color=bg+:'$($HOME/bin/getcolor bg)' --reverse $* < /proc/$$/fd/0 > /proc/$$/fd/1"
+
