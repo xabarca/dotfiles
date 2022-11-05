@@ -16,7 +16,8 @@ update_wm_bar() {
 	 	
 	if ps ax | grep -v grep | grep sbar > /dev/null
 	then
-		kill -34 $(cat /tmp/sbar_dwm_pid)
+		#kill -34 $(cat /tmp/myconfigs/sbar_dwm_pid)
+		kill -34 $(pgrep sbar)
 	fi
 	
 	# calling to the custom hook module volumehook
@@ -29,6 +30,12 @@ update_wm_bar() {
     if ps ax | grep -v grep | grep lemonbar > /dev/null
     then
 		~/bin/bspwm/panel/panel update volume
+	fi
+    
+	# lemonbar pipe fifo
+    if ps ax | grep -v grep | grep dk-bar > /dev/null
+    then
+		~/bin/dk/dk-bar.sh update volume
 	fi
 }
 

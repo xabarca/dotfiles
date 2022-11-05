@@ -1,0 +1,14 @@
+#!/bin/bash
+ 
+# Delete any previous screenshots
+rm -f /tmp/screenshot.png
+rm -f /tmp/screenshotblur.png
+ 
+# Takes screenshot of desktop then saves it to tmp folder
+scrot /tmp/screenshot.png
+ 
+# Blurs screenshot and saves it
+convert /tmp/screenshot.png -blur 0x5 /tmp/screenshotblur.png
+ 
+# Make i3lock use that image
+i3lock -i /tmp/screenshotblur.png
