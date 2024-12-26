@@ -1,7 +1,7 @@
 #!/bin/sh
 
-PYTHON_CMD=~/Baixades/python/venv/bin/python
-#PYTHON_CMD=" python3"
+#PYTHON_CMD=~/Baixades/python/venv/bin/python
+PYTHON_CMD=" python3"
 
 BASEDIR=$(dirname $0)
 KEEPASS_CLI=$BASEDIR/keepass_cli.py
@@ -45,6 +45,14 @@ ask_for_password() {
     [ "$MASTERPWD" = "$RETYPEWD" ] || printf "Passwords do not match\n" && exit 1
 }
 
+backup_from_keepass() {
+    ss="$( $PYTHON_CMD $KEEPASS_CLI --listentries --database "$DATABASE" --password "$MASTERPWD" )"
+    ss="$( echo $ss | tr -d \' | tr -d '[],' )"
+    # echo "$(echo $ss | tr ' ' '\n' )"
+    echo "$(echo $ss | tr ' ' '\n' )" > /tmp/fff.txt
+    cat /tmp/fff.txt
+}
+
 #------------------------
 #--- [1] ASK PASSWORD ---
 #------------------------
@@ -62,7 +70,7 @@ if [ $USE_KEYFILE -eq 1 ]; then
 fi
 
 [ $USE_BLANK_TEMPLATE_DB -eq 1 ] && cp "$BLANK_TEMPLATE_DB" "$DATABASE"
-
+	
 if [ $USE_KEYFILE -eq 1 ]; then
 	if [ $USE_BLANK_TEMPLATE_DB -eq 0 ]; then
 		$PYTHON_CMD $KEEPASS_CLI --create --database "$DATABASE" --password "$MASTERPWD" --keyfile $KEYFILE
@@ -81,7 +89,6 @@ fi
 #-----------------------
 #--- [3] ADD ENTRIES ---
 #-----------------------
-#list=$($HOME/bin/pashenchive l)
 list=$($HOME/bin/pashage l)
 for key in $list;do
 	echo " add key: $key"
@@ -93,30 +100,5 @@ for key in $list;do
 	fi
 done
 
-#
-#list=$(find $HOME/.enckeys -type f | sed -e 's|.enckeys/||' -e 's/.enc//' -e 's/_scr//' -e "s|$HOME/||")
-#for key in $list;do
-#	echo "add key: $key"
-#	passwd="$( $HOME/bin/enckeys.sh --name "$key" )"
-#	if [ $USE_KEYFILE -eq 1 ]; then
-#		$PYTHON_CMD $KEEPASS_CLI --database "$DATABASE" --password "$MASTERPWD" --entry "$key" --entrypwd "$passwd" --keyfile "$KEYFILE"
-#	else
-#		$PYTHON_CMD $KEEPASS_CLI --database "$DATABASE" --password "$MASTERPWD" --entry "$key" --entrypwd "$passwd"
-#	fi
-#done
-#
-#list=$(find $HOME/.ecckeys -type f | sed -e 's|.ecckeys/||' -e 's/.enc//' -e 's/_scr//' -e "s|$HOME/||")
-#for key in $list;do
-#	echo "add key: $key"
-#	passwd="$( $HOME/bin/enckeys.sh --ecc --name "$key" )"
-#	if [ $USE_KEYFILE -eq 1 ]; then
-#		$PYTHON_CMD $KEEPASS_CLI --database "$DATABASE" --password "$MASTERPWD" --entry "$key" --entrypwd "$passwd" --keyfile "$KEYFILE"
-#	else
-#		$PYTHON_CMD $KEEPASS_CLI --database "$DATABASE" --password "$MASTERPWD" --entry "$key" --entrypwd "$passwd"
-#	fi
-#done
-#
-
-
-
 echo "done!"
+echo "Maybe you sould:  scp $DATABASE termux-redmi:/sdcard/Documents"

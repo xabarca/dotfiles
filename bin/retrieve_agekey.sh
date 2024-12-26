@@ -1,4 +1,5 @@
 #!/bin/sh
+# Retrieves AGE private key from a base64 encrypted AGE private key
 
 #
 #  https://github.com/FiloSottile/age
@@ -7,49 +8,32 @@
 #        age key-gen -o "/tmp/age.key"
 #
 
+. $HOME/bin/encrypt.sh
 
-AGE_KEY_ENC=/tmp/agekey.enc
+AGE_KEY_ENC_BASE64=/tmp/agekey64.enc
 AGE_KEY=/tmp/.agekey
-
-
-# usage:  _encrypt_file  file  file.enc
-_encrypt_file() {
-   input_file=$1
-   encrypted=$2 
-   PASSWORD=$( _get_password )
-   openssl enc -aes-256-cbc -salt -md sha256 -pbkdf2 -in $input_file -out $encrypted -k $PASSWORD
-}
-
-# usage:  _decrypt_file  file.enc  file
-_decrypt_file() {
-   encrypted=$1 
-   output_file=$2
-   PASSWORD=$( _get_password )
-   openssl enc -aes-256-cbc -d -md sha256 -pbkdf2 -in $encrypted -out $output_file -k $PASSWORD
-}
-
-_get_password() {
-   pass=$( dmenu -P -p "enter master password :  " -c )
-   echo "$pass"
-}
 
 _test() {
    KEYFILE=/tmp/key
+   KEYFILE_PRIVATE_KEY=/tmp/key.priv
    KEYFILE_ENC=/tmp/key.enc
-   KEYFILE_DEC=/tmp/key.new
-
+   KEYFILE_ENC_BASE64=/tmp/key.enc_base64
+   
    [ -f "$KEYFILE" ] && rm $KEYFILE 
    age-keygen -o $KEYFILE
-   cat $KEYFILE
+   cat $KEYFILE | grep 'AGE-SECRET' > $KEYFILE_PRIVATE_KEY
+   rm $KEYFILE
+   echo " "
 
-   _encrypt_file "$KEYFILE" "$KEYFILE_ENC" 
-   echo "encrypted: "
-   cat $KEYFILE_ENC
+   _encrypt_file_base64 "$KEYFILE_PRIVATE_KEY" "$KEYFILE_ENC_BASE64"
+   rm "$KEYFILE_PRIVATE_KEY"
+   echo "encrypted base64: "
+   cat "$KEYFILE_ENC_BASE64"
    echo " "
    
-   _decrypt_file "$KEYFILE_ENC" "$KEYFILE_DEC" 
-   echo "decrypted: "
-   cat $KEYFILE_DEC
+   _decrypt_file_base64 "$KEYFILE_ENC_BASE64" "$KEYFILE_PRIVATE_KEY"
+   echo "===== decrypted AGE public key ====="
+   echo "Public key: $(age-keygen -y $KEYFILE_PRIVATE_KEY)"
    echo " "
 }  
 
@@ -57,11 +41,11 @@ _main() {
    if [ -f "$AGE_KEY" ]; then
       herbe "age key already exists"
       exit 0
-   elif [ ! -f "$AGE_KEY_ENC" ]; then
+   elif [ ! -f "$AGE_KEY_ENC_BASE64" ]; then
       herbe "no encrypted age key"
       exit 0 
    else
-      _decrypt_file "$AGE_KEY_ENC" "$AGE_KEY"  && herbe "age key file retrieved !" &
+      _decrypt_file_base64 "$AGE_KEY_ENC_BASE64" "$AGE_KEY"  && herbe "age key file retrieved !" &
    fi
 }
 
