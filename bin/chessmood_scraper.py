@@ -21,7 +21,7 @@ def main():
     # Get password for chessmood.com
     whoami = getStringCallBash(["whoami"])
     homedir = "/home/" + whoami
-    PASSWORD = getStringCallBash([homedir + "/bin/pashenchive", "s", "chessmood"])
+    PASSWORD = getStringCallBash([homedir + "/bin/pashage", "s", "chessmood"])
 
     # Get home page token
     result = session_requests.get(HOME_URL)

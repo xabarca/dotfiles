@@ -139,9 +139,10 @@ pw_list() {
 }
 
 pw_dmenu() {
-    list="$(pw_list | grep -v script)"
-    selected=$(printf "$list" | dmenu -p 'Choose your pash: ')
-    [ ! -f $PASH_DIR/$selected.age ] && exit 1
+    list="$(pw_list | grep -v script)" 
+    #selected=$(printf "$list" | dmenu -p 'Choose your pash: ')
+    selected=$(printf "$list" | $HOME/bin/fzfmenu --reverse)
+    [ ! -f $selected.$PASH_EXT ] && exit 1
     pw_copy $selected
 }
 

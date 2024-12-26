@@ -85,7 +85,7 @@ extract() {
 	   testExtractDir	
            7z -y x "$1" -o$EXTRACT_DIR
 	   showNotification "$1" ;;
-        *.jar|*.war)
+        *.jar|*.ear|*.war)
 	   testExtractDir	
            7z -y x "$1" -o$EXTRACT_DIR
 	   showNotification "$1" ;;

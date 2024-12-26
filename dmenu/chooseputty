@@ -6,12 +6,27 @@ COLOR_OPTIONS="-nb $COLOR_BG -sb $GREEN -sf $COLOR_BG -nf $GREEN"
 DMENU="dmenu -i -l 7 -c -bw 2 -p Connect: $COLOR_OPTIONS"
 
 cd $HOME/.putty/sessions
+listvalors="$( ls )\\nhvi2x0447\\npacbcn01\\nweblogiclinuxprebcn01\\nweblogiclinuxprebcn02\\nweblogiclinuxprobcn01\\nweblogiclinuxprobcn02\\ntermux-meizu\\ntermux-redmi"
 
-target=$( ls | grep -v Default | $DMENU ) 
+#target=$( ls | grep -v Default | $DMENU ) 
+target=$( echo "$listvalors" | grep -v Default | $DMENU ) 
 echo "$target"
+[ -z $target ] && exit 0
+
+#[ "$target" = "vHera" ] && xterm -class xtermssh -e ssh appsdr@vhera || putty -load "$target"
+
+#if [[ "$target" != "Default%20Settings" && "$target" != "" ]]; then
+#putty -load "$target"
+#fi
+
+if [ "$target" = "termux-meizu"  ]; then
+	xterm -fg "$(~/bin/getcolor brightyellow)" -e "sshpass -p u0_a197 ssh -p 8022 u0_a197@192.168.1.13"
+
+elif [ "$target" = "termux-redmi"  ]; then
+	xterm -bg "#030114" -fg "#678fe5" -e "sshpass -p u0_a315 ssh -p 8022 u0_a315@192.168.1.72"
 
 
-if [[ "$target" != "Default%20Settings" && "$target" != "" ]]; then
-putty -load "$target"
+else
+	putty -load "$target"
 fi
 

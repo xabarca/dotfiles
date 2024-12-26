@@ -22,20 +22,22 @@ if [ ! -f "$TEMP_FILE" ]; then
 	echo "1:chooseputty:ssh" > $TEMP_FILE
 	echo "2:enckeys:pass" >> $TEMP_FILE
 	echo "3:choosevpn:vpn" >> $TEMP_FILE
-	echo "4:ivooxtracker:ivoox tracker" >> $TEMP_FILE
+	echo "4:turbo3:turbo3" >> $TEMP_FILE
 	echo "5:chooseQemuVM:qemu vm manager" >> $TEMP_FILE
 	echo "6:choosemusic:music albums" >> $TEMP_FILE
 	echo "7:invidioustracker:youtube videos" >> $TEMP_FILE
 	echo "8:openConfig:open config files" >> $TEMP_FILE
 	echo "9:choosechesspdf:chess pdf" >> $TEMP_FILE
 	echo "10:out:get me out of here!" >> $TEMP_FILE
-	echo "11:choosewifi:wifi" >> $TEMP_FILE
-	echo "12:screenshot:screennshot" >> $TEMP_FILE
+	echo "11:dmenukill:kill process" >> $TEMP_FILE
+	echo "12:choosewifi:wifi" >> $TEMP_FILE
+	echo "13:screenshot:screenshot" >> $TEMP_FILE
+	echo "14:reloads.sh:reloads" >> $TEMP_FILE
 fi
 
 #-- system binaries --------
 if [ ! -f "$TEMP_FILE2" ]; then
-	binaries="putty pluma filezilla google-chrome palemoon datastudio sqldeveloper eclipse eclipse_aragon firefox st urxvt scid libreoffice meld caja pcmanfm telegram teams xterm geany mate-terminal"
+	binaries="putty pluma filezilla google-chrome incognito palemoon dbeaver datastudio sqldeveloper eclipse eclipse_aragon firefox st urxvt scid libreoffice meld caja pcmanfm telegram teams xterm geany mate-terminal codium arandr"
 	for i in $binaries;
 	do
 		echo "$i" >> $TEMP_FILE2
@@ -57,6 +59,10 @@ echo $chosen
 
 # check if there is a direct command
 command=$( cat $TEMP_FILE2 | grep "^$chosen" )
+if [ "$command" = "incognito" ]; then
+	#google-chrome -incognito "https://preaplicaciones2.aragon.es/pdr/pdr_priv/residuos/identificacion/acceso"
+	google-chrome -incognito "http://localhost:4200/residuos/identificacion/acceso"
+fi
 if [ '$command' != '' ]; then
 	$command
 fi
@@ -72,9 +78,14 @@ lineFile=$( cat $TEMP_FILE | grep "$chosenText" )
 
 chosenScript=$( echo $lineFile | awk -F':' '{print $2}')
 
+if [ "$chosenScript" = "reloads.sh" ]; then
+	$HOME/bin/reloads.sh
+	exit 0
+fi
 if [ "$chosenScript" = "enckeys" ]; then
 	#$HOME/bin/enckeys.sh --dmenu
-	$HOME/bin/pashenchive m
+	#$HOME/bin/pashenchive m
+	$HOME/bin/pashage m
 	exit 0
 fi
 

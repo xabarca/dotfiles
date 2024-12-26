@@ -189,7 +189,6 @@ gitrepos () {
 	#git clone https://gitlab.com/dwt1/st-distrotube.git
 	
 	#git clone https://github.com/drscream/lemonbar-xft
-	#git clone https://github.com/xabarca/dotfiles
 	#git clone https://github.com/baskerville/bspwm
 	#git clone https://github.com/baskerville/sxhkd	sudo mkdir /opt/git
 	#git clone https://git.suckless.org/wmname

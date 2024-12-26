@@ -43,7 +43,8 @@ _close() {
 
 
 _genKeyfile() {
-    echo "$( ~/bin/pashenchive s script/myvault )" > $KEYFILE
+    #echo "$( ~/bin/pashenchive s script/myvault )" > $KEYFILE
+    echo "$( ~/bin/pashage s script/myvault )" > $KEYFILE
     if [ "$( cat $KEYFILE)" = "" ]; then
         echo "Error getting password/keyfile for vault."
         exit 1

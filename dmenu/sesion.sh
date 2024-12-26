@@ -1,6 +1,6 @@
 #! /bin/sh
 
-COLOR=$( $HOME/bin/getcolor grey   )
+COLOR=$( $HOME/bin/getcolor grey )
 COLOR_ACCENT=$( $HOME/bin/getcolor white )
 COLOR_BG=$( $HOME/bin/getcolor bg )
 # SALIR=$(printf " Apagar\\n Reiniciar\\n Bloquear\\n Salir" | dmenu -i -c -l 4 -fn "mononoki:size=9:style=Bold" -nb "#1e1e1e" -nf "#777777" -sb "#1e1e1e" -sf "#ffffff" -p " Sesión:")

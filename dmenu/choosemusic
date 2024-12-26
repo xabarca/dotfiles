@@ -18,6 +18,7 @@ playWithCmus() {
 
 playWithMpv() {
 	tempfile=/tmp/mpvtempfile
+	fileM3U=/tmp/mpv.m3u
 	# https://github.com/lwilletts/mpvc	
 	# ~/Música/Editors$ find "$(pwd)" -iname "*.mp3"
 	cd "$1"
@@ -26,9 +27,12 @@ playWithMpv() {
 	find "$(pwd)" -iname "*opus" >> $tempfile
 	find "$(pwd)" -iname "*m4a"  >> $tempfile
 	# suffle tracks...
-	shuf $tempfile > /tmp/mpv.m3u
+	shuf $tempfile > $fileM3U
 	# start mpv with our playlist just created
-	mpvc add /tmp/mpv.m3u
+	mpvc add $fileM3U
+	sleep 0.4 && mpvc -V 70
+	# start printing song+artist in the bspwm bar
+	# $HOME/bin/bspwm/mpv_bar.sh &
 }
 
  
@@ -58,7 +62,7 @@ target="$(ls */ -d | $DMENU)"
 
 killPlayers
 
-echo $target
+#echo $target
 if [ $USE_MPV -eq 1 ]; then
 	playWithMpv "$target"
 else

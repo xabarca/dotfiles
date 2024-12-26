@@ -13,7 +13,7 @@ usage() {
   echo "   -l : cpu load"
   echo "   -a : volume"
   echo "   -d : date"
-  echo "   -d : time"
+  echo "   -t : time"
   echo "   -c : cmus/mpv info"
   echo "   -w : weather"
   echo "   -h : help"
@@ -77,7 +77,7 @@ getVpnActive() {
 	vpn=" vpn"
 	if [[ "$command" == "1" ]]
 	then
-		whichvpn="$(tail -n 1 /tmp/vpn_log)"
+		whichvpn="$(tail -n 1 /tmp/myconfigs/vpn_log)"
 		[[ "$whichvpn" == "arc" || "$whichvpn" == "oesia" ]] && vpn=" $whichvpn"
 	fi
 	echo "$vpn"
@@ -134,7 +134,7 @@ getMpvInfo() {
 	# echo mpvc --format '%name% == %title% - %artist%'
 	if pgrep mpv > /dev/null; then
 		info="$( mpvc -J́ | head -n 1 )"
-		if [ "$info" = "*Ǹo files added*" ]; then
+		if [ "$info" = "*No files added*" ]; then
 			echo ""
 		else
 			echo " $info"

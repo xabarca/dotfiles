@@ -9,6 +9,7 @@ doStuff() {
     case "$1" in
         lock)
             ~/bin/lock
+            #slock
             ;;
         logout)
             window_manager=$( xprop -id $(xprop -root _NET_SUPPORTING_WM_CHECK | cut -d\# -f2) | grep WM_NAME | awk '{print $3}' | tr -d '"' )

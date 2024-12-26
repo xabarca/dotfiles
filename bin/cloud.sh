@@ -44,7 +44,8 @@ _get_password() {
    #echo "$( get_secret )"
    # to retrieve:  bin/encpass.sh show cloud.sh password
    #echo "$( $HOME/bin/enckeys.sh --name cloud.sh )"
-   echo "$( $HOME/bin/pashenchive s script/cloud.sh )"
+   #echo "$( $HOME/bin/pashenchive s script/cloud.sh )"
+   echo "$( $HOME/bin/pashage s script/cloud.sh )"
 }
 
 _list_files() {

@@ -1,0 +1,8 @@
+#! /bin/sh
+
+COLOR=$( $HOME/bin/getcolor color4 )
+COLOR_BG=$( $HOME/bin/getcolor bg )
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR -sf $COLOR_BG -nf $COLOR"
+
+ps --user "$USER" -F | dmenu -l 20 -p "which process to kill? " $COLOR_OPTIONS | awk '{print $2}' | xargs kill -9
+

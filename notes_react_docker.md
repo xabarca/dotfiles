@@ -1,3 +1,8 @@
+## References
+
+ - https://willschenk.com/articles/2020/developing_react_inside_docker/
+ - https://www.pluralsight.com/guides/using-react.js-with-docker
+
 
 ## create-react-app using temp image/container
 

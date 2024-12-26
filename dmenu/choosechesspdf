@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 COLOR=$( $HOME/bin/getcolor  color12 )
 COLOR_BG=$( $HOME/bin/getcolor bg )
@@ -11,4 +11,9 @@ target=$(ls -R -p | grep -v / | $DMENU)
 #echo "$target"
 ruta=$(find $PWD -type f -name "*$target*")
 echo "$ruta"
-zathura "$ruta"
+[ ! -f "$ruta" ] && exit 0
+case $ruta in
+	*pdf|*PDF|*djvu) zathura "$ruta" ;;
+	*pgn) st -e nvim "$ruta" ;;
+	*) herbe "no pdf/no pgn : impossible to load" ;;
+esac

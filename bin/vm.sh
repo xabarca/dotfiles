@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+#  -bios /path/to/ovmf/ovmf/OVMF.fd
+#
 
 FULL_PATH_VM=~/qemuVMs
 MEM_VM=2048

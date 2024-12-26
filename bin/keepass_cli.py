@@ -46,9 +46,9 @@ def create(dbpath, password, keyfile=None):
 def add_entry(dbpath, dbpwd, keyfile, entryname, entrypwd):
     kp = open_database(dbpath, dbpwd, keyfile)
     if '/' in entryname:
-        data = entryname.split('/')
+        data = entryname.split('/', maxsplit=1)
         groupname = data[0]
-        name = data[1]
+        name = data[1].replace("/", "_")
         group = kp.find_groups(name=groupname, first=True)
         if not group:
             group = kp.add_group(kp.root_group, groupname)

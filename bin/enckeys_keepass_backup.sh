@@ -81,10 +81,11 @@ fi
 #-----------------------
 #--- [3] ADD ENTRIES ---
 #-----------------------
-list=$($HOME/bin/pashenchive l)
+#list=$($HOME/bin/pashenchive l)
+list=$($HOME/bin/pashage l)
 for key in $list;do
 	echo " add key: $key"
-	passwd="$( $HOME/bin/pashenchive s $key )"
+	passwd="$( $HOME/bin/pashage s $key )"
 	if [ $USE_KEYFILE -eq 1 ]; then
 		$PYTHON_CMD $KEEPASS_CLI --database "$DATABASE" --password "$MASTERPWD" --entry "$key" --entrypwd "$passwd" --keyfile "$KEYFILE"
 	else

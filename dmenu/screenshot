@@ -23,7 +23,7 @@ esac
 }
 
 sign() {
-	convert $tfile -gravity South -font UbuntuMonoNerdFont  -weight Bold -background transparent -fill 'srgb(169,169,169)' -pointsize 30 -annotate +750+4 '@xabarca' $dir/$file
+	convert $tfile -gravity South -font UbuntuMonoNerdFont  -weight Bold -background transparent -fill 'srgb(169,169,169)' -pointsize 30 -annotate +750+4 '@xavi' $dir/$file
 }
 
 not() {

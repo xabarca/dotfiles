@@ -6,6 +6,6 @@ PKGS="base-files>=0.77 ncurses-devel coreutils findutils diffutils libgcc bash m
 # doas ./mklive.sh -o myvoid.iso -p "$PKGS" -v linux5.10 -b base-minimal
 sudo ./mklive.sh -o myvoid.iso -p "$PKGS" -v linux5.10 -b base-minimal
 
-scp myvoid.iso xabarca@10.0.2.2:/tmp
+scp myvoid.iso xavi@10.0.2.2:/tmp
 
 

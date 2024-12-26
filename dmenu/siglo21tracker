@@ -4,14 +4,34 @@
 #    https://www.rtve.es/alacarta/audios/siglo-21/" 
 #    https://www.rtve.es/alacarta/audios/turbo-3/
 #
-# 20/01/2021 - xabarca
+# 20/01/2021 - xavi
 #
 # curl -s https://www.rtve.es/alacarta/audios/siglo-21/ | grep titulo-tooltip
 # curl -s https://www.rtve.es/alacarta/audios/siglo-21/ | grep mp3 | grep resources | grep mediavod
+#
+# echo "seek -20" > /tmp/mpv.fifo
+# echo "seek 20" > /tmp/mpv.fifo
+# echo "stop" > /tmp/mpv.fifo
+# echo '{"command": ["cycle", "pause"]}' > /tmp/mpv.fifo
+#
 
 PROGRAM="siglo-21"
-FOLDER_TEMP=/tmp
-FOLDER_MUSIC=~/music/radio3-programs
+FOLDER_TEMP=/tmp/musicpodcasts
+FOLDER_MUSIC=~/Música/radio3-programs
+FIFO_FILE=~/.config/mpv/mpv.fifo
+
+openMediaFile() {
+	#mpv --no-audio-display  $selectedMP3
+	
+	st -n stmusic -g 85x13 -e cmus & disown
+	#urxvtc -name floatterm -title floatterm -e cmus & disown
+	sleep 1
+	cmus-remote --clear -l &
+	sleep 1
+	cmus-remote -l "$1" &
+	sleep 0.5
+	cmus-remote --play &
+}
 
 
 # 
@@ -43,6 +63,9 @@ if [ ! -f $TMP_HTML ]; then
          | awk -F\" '{print $1}' \
          | awk -F'-' '{print $(NF-2)"-"$(NF-1)"-20"$(NF)}' \
          | awk -F'_' '{print $(NF-2)}' > $DATA_DAYS
+
+#         | awk -F'-' '{print "20"$(NF)"-"$(NF-1)"-"$(NF-2)}' \
+
     # text
     cat $TMP_HTML | grep 'titulo-tooltip' | awk -F\" '{print $(NF-1)}' | sed 's/Ver //g' > $DATA_NAMES
     # mp3 urls
@@ -66,9 +89,9 @@ fi
 # choose episode with dmenu
 #
 selection=$( cat $FULL_DATA | awk -F ' - http' '{print $1}' | dmenu -p "$PROGRAM progams to select: " -l 20 )
-[ -z $selection ] && exit 0
+[ -z "$selection" ] && exit 0
 selected=$( cat $FULL_DATA | grep "`echo $selection | awk '{print $1}'`" )
-[ -z $selected ] && exit 0
+[ -z "$selected" ] && exit 0
 
 
 # 
@@ -77,5 +100,5 @@ selected=$( cat $FULL_DATA | grep "`echo $selection | awk '{print $1}'`" )
 selectedMP3=$(echo $selected | awk -F ' - ' '{print $3}' )
 mp3_to_download="$FOLDER_MUSIC/""$PROGRAM""__$(echo $selected | awk -F ' - ' '{print $1,"_",$2,".mp3"}' | sed 's/ /_/g' )"
 [ ! -f $FOLDER_MUSIC ] && mkdir -p $FOLDER_MUSIC
-[ ! -f $mp3_to_download ] && curl -L -o $mp3_to_download $selectedMP3
-mpv --no-audio-display  $selectedMP3
+[ ! -f $mp3_to_download ] && curl -L -o "$mp3_to_download" "$selectedMP3"
+openMediaFile "$mp3_to_download"

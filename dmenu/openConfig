@@ -5,18 +5,27 @@
 
 CONSOLE=st
 EDITOR=nvim
-TEMP_FILE=/tmp/configs
 
-GREEN=$($HOME/bin/getcolor white    )
+TEMP_DIR=/tmp/myconfigs
+TEMP_FILE="$TEMP_DIR/myconfigs"
+[ ! -d "$TEMP_DIR" ] && mkdir -p $TEMP_DIR 
+
+COLOR=$($HOME/bin/getcolor brightyellow )
 COLOR_BG=$($HOME/bin/getcolor bg)
-COLOR_OPTIONS="-nb $COLOR_BG -sb $GREEN -sf $COLOR_BG -nf $GREEN"
-DMENU="dmenu -i -l 8 -p Choose: $COLOR_OPTIONS"
+COLOR_OPTIONS="-nb $COLOR_BG -sb $COLOR  -sf $COLOR_BG -nf $COLOR"
+DMENU="dmenu -i -l 8 -c -bw 2  -p Choose: $COLOR_OPTIONS"
 
-#if [ ! -f "$TEMP_FILE" ]; then
+if [ ! -f "$TEMP_FILE" ]; then
 	echo "/opt/sdr/config/sdr.properties" > $TEMP_FILE
 	echo "/opt/sdr/sdr_respostes_basiques_suport.txt" >> $TEMP_FILE
-	echo "/home/xabarca/Baixades/working.txt" >> $TEMP_FILE
-#fi
+	echo "$HOME/.config/sxhkd/sxhkdrc" >> $TEMP_FILE
+	echo "/opt/sdr/working.txt" >> $TEMP_FILE
+	echo "$HOME/bin/dmenu/master" >> $TEMP_FILE
+	echo "$HOME/bin/dmenu/openConfig" >> $TEMP_FILE
+	echo "$HOME/.config/nvim/init.vim" >> $TEMP_FILE
+    echo "$HOME/.vim/plugged/lightline.vim/autoload/lightline/colorscheme/xavi2.vim" >> $TEMP_FILE
+    echo "/opt/git_projects/qmk_firmware/keyboards/crkbd/keymaps/xavi/keymap.c" >> $TEMP_FILE
+fi
 
 chosen=$( cat $TEMP_FILE | awk -F'/' '{print $NF}' | $DMENU )
 [ -z $chosen ] && exit 0

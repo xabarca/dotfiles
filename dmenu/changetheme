@@ -1,0 +1,15 @@
+#! /bin/sh
+
+FILE_XRES="$HOME/.Xresources"
+COMMAND="ls $HOME/.config/Xresources/themes"
+
+target=$( $COMMAND | dmenu )
+[ -z $target ] && exit 0
+
+oldtheme=$( cat $FILE_XRES | grep themes  | sed 's|.*/||' | sed 's/"//')
+sed  -i "s/$oldtheme/$target/g" $FILE_XRES
+xrdb $FILE_XRES
+$HOME/bin/vimColorschemeXresources
+$HOME/bin/bspwm/launch-bar.sh  &
+
+herbe "$target Xresources theme applied" &

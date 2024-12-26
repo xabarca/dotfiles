@@ -1,5 +1,8 @@
 #! /bin/sh
 
+[ -x "$(command -v sudo)" ] && ld="sudo" 
+[ -x "$(command -v doas)" ] && [ -e /etc/doas.conf ] && ld="doas"
+
 # ----- nerd fonts ---------
 fonts() {
 	mkdir /tmp/nerdfonts
@@ -15,13 +18,13 @@ fonts() {
 	# curl -L -o jetbrains.zip https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip?fromGitHub
 	unzip "*.zip"
 	rm *Windows*
-	sudo mkdir -p /usr/share/fonts/truetype/newfonts
+	$ld mkdir -p /usr/share/fonts/truetype/newfonts
 	find . -name '*.ttf' >tmp
 	while read file
 	do
-		sudo cp "$file" /usr/share/fonts/truetype/newfonts
+		$ld cp "$file" /usr/share/fonts/truetype/newfonts
 	done<tmp
-	sudo fc-cache -f -v
+	$ld fc-cache -f -v
 }
 
 fonts

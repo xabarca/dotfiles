@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# 25/01/2021 - xabarca
+# 25/01/2021 - xavi
 #
 # echo "seek -20" > /tmp/mpv.fifo
 # echo "seek 20" > /tmp/mpv.fifo
@@ -14,7 +14,9 @@
 #cat qtile.html | grep channel
 #cat qtile.html | grep Shared
 
-INVIDIOUS_URL_BASE='https://invidious.kavin.rocks'
+#INVIDIOUS_URL_BASE='https://invidious.kavin.rocks'
+INVIDIOUS_URL_BASE='https://invidious.snopyta.org'
+INVIDIOUS_URL_BASE='https://vid.puffyan.us'
 
 FIFO_FILE=~/.config/mpv/mpv.fifo
 FOLDER_TEMP=/tmp/yt
@@ -47,15 +49,15 @@ getDataFromInvidious "$selection"
 #
 
 # name of video
-cat $TMP_HTML | grep watch | grep -v title | grep -v style | awk -F'>' {'print $3'} | sed 's/<\/a//g' > $DATA_NAMES
+cat $TMP_HTML | grep auto | grep -v channel | grep -v video | awk -F'>' {'print $2'} | sed 's/<\/p//g' > $DATA_NAMES
 # video ID
-cat $TMP_HTML | grep watch | grep -v title | grep -v style | awk -F'v=' {'print $2'} | awk -F'\"' {'print $1'} > $DATA_ID
+cat $TMP_HTML | grep watch | grep -v title | grep  style | awk -F'v=' {'print $2'} | awk -F'\"' {'print $1'} > $DATA_ID
 # name of the channel
-cat $TMP_HTML | grep channel | grep -v 'page=1' | awk -F'>' {'print $2'} | sed 's/<\/a//g' > $DATA_CHANNEL
+cat $TMP_HTML | grep channel | grep -v flex | grep -v page |awk -F'>' {'print $2'} | sed 's/<\/p//g' > $DATA_CHANNEL
 # time duration
 cat $TMP_HTML | grep length | awk -F'>' {'print $2'} | sed 's/<\/p//g' > $DATA_TIME
 # how old is the video
-cat $TMP_HTML | grep Shared | awk -F'>' {'print $2'} | sed 's/Shared //' | sed 's/<\/div//g' > $DATA_OLD
+cat $TMP_HTML | grep Shared | awk -F'>' {'print $2'} | sed 's/Shared //' | sed 's/<\/p//g' > $DATA_OLD
 
 readarray -t arrayI < $DATA_ID
 readarray -t arrayN < $DATA_NAMES

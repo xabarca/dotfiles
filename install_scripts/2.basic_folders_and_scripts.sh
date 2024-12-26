@@ -2,6 +2,8 @@
 
 ACTUAL_DIR="$(dirname $(readlink -f $0))"
 
+[ -x "$(command -v sudo)" ] && ld="sudo" 
+[ -x "$(command -v doas)" ] && [ -e /etc/doas.conf ] && ld="doas"
 
 # ----- wallpaper ----------------------------------
 walls () {
@@ -27,15 +29,15 @@ basicfolders () {
 	done
 	
 	if [ ! -d /opt/git ]; then
-		sudo mkdir /opt/git
-		sudo chown "$USER:$USER" /opt/git
+		$ld mkdir /opt/git
+		$ld chown "$USER:$USER" /opt/git
 		cp -r "$ACTUAL_DIR" /opt/git
 	else
 		cp -r "$ACTUAL_DIR" /opt/git
 	fi
 	
 	cd $ACTUAL_DIR || return
-	cp bin/* $HOME/bin"
+	cp bin/* $HOME/bin
 	cp -r dmenu "$HOME/bin"
 	chmod u+x "$HOME/bin/*" "$HOME/bin/dmenu/*"
 }

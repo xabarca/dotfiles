@@ -8,10 +8,14 @@
 #               sed -i --follow-symlinks "/SEARCH/c\REPLACE\" "$FILE"
 # 
 
-[[ -z $1 ]] && exit 0
+[[ -z $1 ]] && echo "no file theme passed as argument" && exit 1
+[ ! -f $1 ] && echo "$1 file does not exist" && exit 1
+themefile=$(basename $1)
 
-dest_theme_file="$HOME/.config/Xresources/themes/$1"
-cp "$HOME/.xfiles/themes/gruvbox" "$dest_theme_file"
+
+THEMES_FOLDER="$HOME/.config/Xresources/themes"
+dest_theme_file="$THEMES_FOLDER/$themefile"
+cp "$THEMES_FOLDER/gruvbox" "$dest_theme_file"
 
 colors=( foreground  background color0  color8 color1 color9 
     color2 color10 color3 color11 color4 color12 

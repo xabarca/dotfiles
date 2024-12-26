@@ -64,6 +64,7 @@ done < $FILE
 #done
 
 
+echo "---- downloaded videos - now format mp4 -----"
 REDUCE_50percent_expression=" -vf scale=trunc(iw/4)*2:trunc(ih/4)*2 "
 for i in *.mp4; do
     newname="new_$i"
