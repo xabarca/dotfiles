@@ -5,6 +5,7 @@ ACTUAL_DIR="$(dirname $(readlink -f $0))"
 [ -x "$(command -v sudo)" ] && ld="sudo" 
 [ -x "$(command -v doas)" ] && [ -e /etc/doas.conf ] && ld="doas"
 
+
 # ----- Enchive - archiver/extractor of encypted backups -------------------
 get_enchive() {
 	git clone --depth 1  https://github.com/skeeto/enchive /opt/git/enchive
@@ -47,6 +48,6 @@ youtube_downloader () {
 
 get_herbe
 install_nvim
-#get_enchive
+get_enchive
 youtube_downloader
 

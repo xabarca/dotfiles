@@ -4,16 +4,30 @@
 [ -x "$(command -v doas)" ] && [ -e /etc/doas.conf ] && ld="doas"
 
 # ----- default packages ---------
-packages () {
+_packages () {
 	$ld apt update 
 	$ld apt install --no-install-recommends -y git neovim doas
-	$ld apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool xautolock socat xsel xclip age
+	$ld apt install --no-install-recommends -y xorg xserver-xorg xdo xdotool xautolock socat xsel xclip age xterm
 	$ld apt install --no-install-recommends -y libtk8.6
 	$ld apt install --no-install-recommends -y pcmanfm lxappearance imagemagick mpv sxhkd aria2
 	$ld apt install --no-install-recommends -y xcompmgr curl zip unzip xwallpaper rclone iw iwd rxvt-unicode wget
 	#$ld apt install --no-install-recommends -y cmus papirus-icon-theme 
-	$ld apt install -y elogind
+	#$ld apt install -y elogind
+}
+
+_packages_compile () {
+	$ld apt update 
+	$ld apt install --no-install-recommends -y gcc make
+	$ld apt install --no-install-recommends -y libx11-dev libxft-dev libharfbuzz-dev
+	$ld apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
+	$ld apt install --no-install-recommends -y libxinerama-dev libreadline-dev 
+	$ld apt install --no-install-recommends -y libxrandr-dev libimlib2-dev libxpm-dev
+	# next two/three lines are needed only for compile bspwm
+	# $ld apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
+	# $ld apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
+	# $ld apt install --no-install-recommends -y libxcb-res0-dev
 }
 
 
-packages
+_packages
+_packages_compile

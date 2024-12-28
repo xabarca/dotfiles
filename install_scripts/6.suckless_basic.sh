@@ -6,19 +6,6 @@ ACTUAL_DIR="$(dirname $(readlink -f $0))"
 [ -x "$(command -v doas)" ] && [ -e /etc/doas.conf ] && ld="doas"
 
 
-_packages_compile () {
-	$ld apt update 
-	$ld apt install --no-install-recommends -y gcc make
-	$ld apt install --no-install-recommends -y libx11-dev libxft-dev libharfbuzz-dev
-	$ld apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
-	$ld apt install --no-install-recommends -y libxinerama-dev libreadline-dev 
-	$ld apt install --no-install-recommends -y libxrandr-dev libimlib2-dev libxpm-dev
-	# next two lines are needed only for compile bspwm
-	# $ld apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
-	# $ld apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev
-	# $ld apt install --no-install-recommends -y libxcb-res0-dev
-}
-
 _st() {
 	# st from suckless
 	git clone --depth 1  git://git.suckless.org/st /opt/git/st
@@ -69,7 +56,6 @@ _dwm() {
 	echo "~/bin/dwm/dwm-start" >> "$HOME/.xinitrc"
 }
 
-_packages_compile
 _dmenu
 _wmname
 _dwm
