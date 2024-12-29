@@ -7,8 +7,28 @@ ACTUAL_DIR="$(dirname $(readlink -f $0))"
 
 # xinitrc
 xinit() {
-	echo "exec dwm" >> "$HOME/.xinitrc"
-	echo "[[ $(ps -e | grep startx) = '' ]] && [[ $(ps -e | grep tmux) = '' ]] && startx" >> ~/.bash_profile
+	cat <<EOF > $HOME/.xinitrc
+if [ -f \$HOME/.wm ]; then
+   wm="\$( cat \$HOME/.wm )"
+   case \$wm in
+      dwm)
+        exec dwm 
+        ;;
+      bspwm)
+        exec bspwm
+        ;;
+      *)
+        echo 'dwm' > \$HOME/.wm
+        exec dwm
+        ;;
+   esac
+fi
+    
+echo 'sowm' > \$HOME/.wm
+exec sowm
+EOF
+	
+	echo "[[ \$(ps -e | grep startx) = '' ]] && [[ \$(ps -e | grep tmux) = '' ]] && startx" >> ~/.bash_profile
 }
 
 

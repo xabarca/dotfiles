@@ -16,7 +16,7 @@ _fonts() {
         curl -L -O "$BASE/v${VERSION}/$font"".zip"
     done
     
-	unzip "*.zip"
+	yes | unzip "*.zip"
 	rm *Windows*
 	$ld mkdir -p /usr/share/fonts/truetype/newfonts
 	find . -name '*.ttf' >tmp

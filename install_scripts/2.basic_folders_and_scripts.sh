@@ -37,6 +37,7 @@ basicfolders () {
 	#fi
 	
 	cd $ACTUAL_DIR || return
+	cd ..
 	cp bin/* $HOME/bin
 	cp -r dmenu "$HOME/bin"
 	chmod u+x "$HOME/bin/*" "$HOME/bin/dmenu/*"

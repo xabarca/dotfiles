@@ -6,7 +6,7 @@ HOME_URL = "https://chessmood.com/?login"
 LOGIN_URL = "https://chessmood.com/login"
 URL = "https://chessmood.com/course/whitemood-openings"
 
-USERNAME = "canadianclubxxx@gmail.com"
+USERNAME = "canadian@gmail.com"
 
 def getStringCallBash(bashInstruction):
     processed = subprocess.check_output(bashInstruction)

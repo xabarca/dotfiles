@@ -10,9 +10,10 @@ _st() {
 	# st from suckless
 	git clone --depth 1  git://git.suckless.org/st /opt/git/st
 	cd /opt/git/st || return
-	git apply "$ACTUAL_DIR/../patches/my-own-st-alpha-xresources_20220111.diff"
+	#git apply "$ACTUAL_DIR/../patches/my-own-st-alpha-xresources_20220111.diff"
+	git apply "$ACTUAL_DIR/../patches/my-own-st-xresources_20220107.diff"
 	git apply "$ACTUAL_DIR/../patches/my-own-st-clipboard_20220107.diff"
-	git apply "$ACTUAL_DIR/../patches/my-own-st-scroll_20220107.diff"
+	#git apply "$ACTUAL_DIR/../patches/my-own-st-scroll_20220107.diff"
 	make 
 	$ld ln -sf "$PWD/st" /usr/local/bin
 }
@@ -56,8 +57,18 @@ _dwm() {
 	echo "~/bin/dwm/dwm-start" >> "$HOME/.xinitrc"
 }
 
+_sowm() {
+	# wmname (to be able to start JDK swing applications)
+	git clone --depth 1  https://github.com/dylanaraps/sowm /opt/git/sowm
+	cd /opt/git/sowm
+	make
+	$ld ln -fs /opt/git/sowm/sowm /usr/local/bin
+}
+
+
 _dmenu
 _wmname
 _dwm
 _st
+_sowm
 
