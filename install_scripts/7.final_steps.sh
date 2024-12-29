@@ -17,6 +17,9 @@ if [ -f \$HOME/.wm ]; then
       bspwm)
         exec bspwm
         ;;
+      sowm)
+        exec sowm
+        ;;
       *)
         echo 'dwm' > \$HOME/.wm
         exec dwm
@@ -24,8 +27,8 @@ if [ -f \$HOME/.wm ]; then
    esac
 fi
     
-echo 'sowm' > \$HOME/.wm
-exec sowm
+echo 'dwm' > \$HOME/.wm
+exec dwm
 EOF
 	
 	echo "[[ \$(ps -e | grep startx) = '' ]] && [[ \$(ps -e | grep tmux) = '' ]] && startx" >> ~/.bash_profile

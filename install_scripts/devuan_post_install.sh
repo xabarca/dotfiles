@@ -55,7 +55,7 @@ packages_compile () {
 # ---- configure no password actions - sudoers -------
 conf_doas() {
     echo "permit persist keepenv $USER as root" >> /tmp/doas
-   #  username ALL=(ALL) NOPASSWD: /usr/bin/reboot, /usr/bin/poweroff, /usr/bin/shutdown, /usr/bin/halt
+    # username ALL=(ALL) NOPASSWD: /usr/bin/reboot, /usr/bin/poweroff, /usr/bin/shutdown, /usr/bin/halt
 
     echo "permit nopass $USER as root cmd apt" >> /tmp/doas
     echo "permit nopass $USER as root cmd poweroff" >> /tmp/doas
