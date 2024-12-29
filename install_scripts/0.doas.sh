@@ -3,7 +3,7 @@
 # ---- configure no password actions - sudoers -------
 install_doas() {
     apt update
-	apt install --no-install-recommends -y doas
+    apt install --no-install-recommends -y doas
     
 	#echo "permit nopass keepenv $USER" | sudo tee -a /etc/doas.conf
 	
@@ -28,7 +28,7 @@ install_doas() {
     sudo chmod -c 0400 /etc/doas.conf
 }
 
-if [ "$EUID" -ne 0 ]; then
+if [ $(id -u) -ne 0 ]; then
    echo "Please run as root"
    exit
 fi
