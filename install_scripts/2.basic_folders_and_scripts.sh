@@ -28,14 +28,15 @@ basicfolders () {
 		mkdir -p "$HOME/$dir"
 	done
 	
-	#if [ ! -d /opt/git ]; then
-	#	$ld mkdir /opt/git
-	#	$ld chown "$USER:$USER" /opt/git
-	#	cp -r "$ACTUAL_DIR" /opt/git
-	#else
-	#	cp -r "$ACTUAL_DIR" /opt/git
-	#fi
+	$ld mkdir /opt/AppImage
+	$ld chown "$USER:$USER" /opt/AppImage
+	if [ ! -d /opt/git ]; then
+		$ld mkdir /opt/git
+		$ld chown "$USER:$USER" /opt/git
+	fi
 	
+	#cp -r "$ACTUAL_DIR" /opt/git
+
 	cd $ACTUAL_DIR || return
 	cd ..
 	cp bin/* $HOME/bin

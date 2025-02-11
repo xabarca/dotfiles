@@ -58,7 +58,6 @@ _dwm() {
 }
 
 _sowm() {
-	# wmname (to be able to start JDK swing applications)
 	git clone --depth 1  https://github.com/dylanaraps/sowm /opt/git/sowm
 	cd /opt/git/sowm
 	make

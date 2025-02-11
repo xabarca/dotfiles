@@ -23,6 +23,8 @@ _packages_compile () {
 	$ld apt install --no-install-recommends -y libpango1.0-dev libx11-xcb-dev libxcb-xinerama0-dev 
 	$ld apt install --no-install-recommends -y libxinerama-dev libreadline-dev 
 	$ld apt install --no-install-recommends -y libxrandr-dev libimlib2-dev libxpm-dev
+	# next ones needed fot compile spectrwm
+	$ld apt install --no-install-recommends -y libxcursor-dev
 	# next two/three lines are needed only for compile bspwm
 	# $ld apt install --no-install-recommends -y libxcb-util0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-cursor-dev
 	# $ld apt install --no-install-recommends -y libxcb-icccm4-dev libxcb-ewmh-dev libxcb-shape0-dev

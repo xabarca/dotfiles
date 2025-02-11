@@ -120,6 +120,8 @@ browsers () {
 	# https://github.com/qutebrowser/qutebrowser/blob/master/doc/help/configuring.asciidoc
 	# https://github.com/Linuus/nord-qutebrowser/blob/master/nord-qutebrowser.py
 	
+	# https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases/download/131.0.6778.139-1/ungoogled-chromium_131.0.6778.139-1.AppImage
+	
 	sudo apt install -y qutebrowser
 	mkdir -p "$HOME/.config/qutebrowser/themes"
 	cp $ACTUAL_DIR/qutebrowser/config.py  "$HOME/.config/qutebrowser/"
