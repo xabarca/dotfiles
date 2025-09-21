@@ -11,7 +11,8 @@ _packages () {
 	$ld apt install --no-install-recommends -y libtk8.6
 	$ld apt install --no-install-recommends -y pcmanfm lxappearance imagemagick mpv sxhkd aria2 nnn
 	$ld apt install --no-install-recommends -y xcompmgr curl zip unzip xwallpaper rclone iw iwd rxvt-unicode wget
-	#$ld apt install --no-install-recommends -y cmus papirus-icon-theme 
+	$ld apt install --no-install-recommends -y arc-theme papirus-icon-theme
+ 	#$ld apt install --no-install-recommends -y cmus
 	#$ld apt install -y elogind
 }
 

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<JWM>
+	<StartupCommand>nitrogen --restore</StartupCommand>
+	<StartupCommand>mate-volume-control-status-icon</StartupCommand>
+	<StartupCommand>nm-applet</StartupCommand>
+	<StartupCommand>cbatticon</StartupCommand>
+	<StartupCommand>lxpolkit</StartupCommand>
+	
+    <!-- Startup for program. 
+    
+    <StartupCommand>volumeicon</StartupCommand>
+    <StartupCommand>nm-tray</StartupCommand>
+    <StartupCommand>xscreensaver --no-splash</StartupCommand>
+    <StartupCommand>xdg-user-dirs-update</StartupCommand>
+    -->
+</JWM>

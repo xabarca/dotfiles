@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<JWM>   
+   
+    <!-- XAG tray 
+    <Tray x="0" y="-1" autohide="off" height="25" delay="1000" halign="center"> -->
+	<Tray x="0" y="-1" height="25" autohide="off">
+		
+	    <TrayButton label="" icon="new_22_white_4grid.svg">root:1</TrayButton>
+        <TrayButton label="" icon="new_22_white_terminal.svg">exec:st</TrayButton>
+        <TrayButton label="" icon="new_22_white_globe.svg">exec:/opt/appimages/ungoogled-chromium_112.0.5615.121-1.1.AppImage</TrayButton>
+        <TrayButton label="" icon="new_22_white_folder.svg">exec:~/bin/openbox_launchy_apps.sh 3</TrayButton> <!-- pcmanfm -->
+	    
+		<!--
+        <TrayButton label=" ">showdesktop</TrayButton>
+		-->
+        <Pager labeled="true"/>
+        <Spacer width="5"/>
+        
+        <TaskList maxwidth="256"/>
+        
+        <Dock/>
+        <Clock format="%k:%M"></Clock>
+        <Spacer width="5"/>
+    </Tray>
+    
+    
+   <!-- OFFICIAL tray 
+    <Tray x="0" y="-1" height="25" autohide="off">
+
+        <TrayButton icon="/usr/share/jwm/jwm-red.svg">root:1</TrayButton>
+        <Spacer width="2"/>
+        <TrayButton label="_">showdesktop</TrayButton>
+        <Spacer width="2"/>
+
+        <Pager labeled="true"/>
+
+        <TaskList maxwidth="256"/>
+
+        <Dock/>
+        <Clock format="%H:%M"><Button mask="123">exec:xclock</Button></Clock>
+
+    </Tray>
+-->
+
+    
+</JWM>

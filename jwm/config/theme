@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='utf-8'?>
+<JWM>   
+    
+
+    <!-- Visual Styles -->
+    <WindowStyle decorations="motif">
+        <Font>VictorMono Nerd Font-9:bold</Font>
+        <Width>1</Width>
+        <Corner>1</Corner>
+        <Foreground>#DDDDDD</Foreground>
+        <Background>#555555</Background>
+        <Opacity>1.0</Opacity>
+        <Active>
+            <Foreground>#DDDDDD</Foreground>
+            <Background>#111111</Background>
+            <Opacity>1.0</Opacity>
+        </Active>
+    </WindowStyle>
+    
+    <TrayStyle decorations="motif">
+        <Font>Ubuntu Nerd Font-10</Font>
+        <Background>#333333</Background>
+        <Foreground>#DDDDDD</Foreground>
+        <Opacity>1.0</Opacity>
+    </TrayStyle>
+    
+    <TaskListStyle list="all" group="true">
+      <Font>Ubuntu Nerd Font-9</Font>
+      <Active>
+        <Foreground>#AAAAAA</Foreground>
+        <Background>#555555</Background>
+      </Active>
+      <Minimized>
+        <Foreground>#AAAAAA</Foreground>
+        <Background>#111111</Background>
+      </Minimized>
+      <Foreground>#AAAAAA</Foreground>
+      <Background>#333333</Background>
+    </TaskListStyle>
+    
+    <PagerStyle>
+	<Font>Ubuntu Nerd Font-8</Font>
+        <Foreground>#555555</Foreground>
+        <Background>#333333</Background>
+        <Text>#999999</Text>
+        <Active>
+	    <Foreground>#0077CC</Foreground>
+            <Background>#004488</Background>
+        </Active>
+    </PagerStyle>
+    
+    <MenuStyle decorations="motif">
+        <Font>Ubuntu Nerd Font-10</Font>
+        <Foreground>#999999</Foreground>
+        <Background>#333333</Background>
+        <Active>
+		<!--<Foreground>#0077CC</Foreground>-->
+            <Foreground>#FFFFFF</Foreground>
+            <Background>#333333</Background>
+        </Active>
+        <Opacity>1.0</Opacity>
+    </MenuStyle>
+    
+    <PopupStyle>
+        <Font>UbuntuMono Nerd Font-11</Font>
+        <Foreground>#DDDDDD</Foreground>
+        <Background>#111111</Background>
+    </PopupStyle>
+    
+    
+    <!-- Options for program groups. -->
+    <Group>
+        <Option>tiled</Option>
+        <Option>aerosnap</Option>
+    </Group>
+    <Group>
+        <Class>Pidgin</Class>
+        <Option>sticky</Option>
+    </Group>
+    <Group>
+        <Name>xterm</Name>
+        <Option>vmax</Option>
+    </Group>
+    <Group>
+        <Name>xclock</Name>
+        <Option>drag</Option>
+        <Option>notitle</Option>
+    </Group>
+
+    
+</JWM>

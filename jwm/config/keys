@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<JWM>
+    <!-- Key bindings -->
+    <Key key="Up">up</Key>
+    <Key key="Down">down</Key>
+    <Key key="Right">right</Key>
+    <Key key="Left">left</Key>
+    <Key key="h">left</Key>
+    <Key key="j">down</Key>
+    <Key key="k">up</Key>
+    <Key key="l">right</Key>
+    <Key key="Return">select</Key>
+    <Key key="Escape">escape</Key>
+
+
+    <Key mask="A" key="Tab">nextstacked</Key>
+    <Key mask="4" key="q">close</Key>
+    <Key mask="A" key="F1">root:1</Key>
+    
+    <Key mask="4" key="Return">exec:st</Key>
+    
+    <Key mask="4" key="#">desktop#</Key>
+    <Key mask="4S" key="1">exec:xdotool getactivewindow set_desktop_for_window 0</Key>
+    <Key mask="4S" key="2">exec:xdotool getactivewindow set_desktop_for_window 1</Key>
+    <Key mask="4S" key="3">exec:xdotool getactivewindow set_desktop_for_window 2</Key>
+    <Key mask="4S" key="4">exec:xdotool getactivewindow set_desktop_for_window 3</Key>
+    <Key mask="4S" key="5">exec:xdotool getactivewindow set_desktop_for_window 4</Key>
+    
+    <Key mask="4" key="m">maximize</Key>
+    <Key mask="4" key="Left">exec:$HOME/bin/openbox_moves.sh pos_layout 5</Key>
+    <Key mask="4" key="Right">exec:$HOME/bin/openbox_moves.sh pos_layout 6</Key>
+    <Key mask="4" key="c">exec:$HOME/bin/openbox_moves.sh pos_layout 9</Key>
+
+    <!-- G: geany :  F: fileManager  :  ñ: st-scratchpad  :  p: dmenu-->
+    <Key mask="4" key="g">exec:$HOME/bin/openbox_launchy_apps.sh 1</Key> 
+    <Key mask="4" key="f">exec:$HOME/bin/openbox_launchy_apps.sh 3</Key>
+    <Key mask="4" key="semicolon">exec:$HOME/bin/scratchpad</Key> <!-- semicolon or ntilde -->
+    <Key mask="4" key="p">exec:master2</Key>
+
+
+    <!-- Mouse bindings -->
+    <Mouse context="root" button="4">ldesktop</Mouse>
+    <Mouse context="root" button="5">rdesktop</Mouse>
+
+    <Mouse context="title" button="1">move</Mouse>
+    <Mouse context="title" button="2">move</Mouse>
+    <Mouse context="title" button="3">window</Mouse>
+    <Mouse context="title" button="4">shade</Mouse>
+    <Mouse context="title" button="5">shade</Mouse>
+    <Mouse context="title" button="11">maximize</Mouse>!
+
+    <Mouse context="icon" button="1">window</Mouse>
+    <Mouse context="icon" button="2">move</Mouse>
+    <Mouse context="icon" button="3">window</Mouse>
+    <Mouse context="icon" button="4">shade</Mouse>
+    <Mouse context="icon" button="5">shade</Mouse>
+
+    <Mouse context="border" button="1">resize</Mouse>
+    <Mouse context="border" button="2">move</Mouse>
+    <Mouse context="border" button="3">window</Mouse>
+
+    <Mouse context="close" button="-1">close</Mouse>
+    <Mouse context="close" button="2">move</Mouse>
+    <Mouse context="close" button="-3">close</Mouse>
+
+    <Mouse context="maximize" button="-1">maximize</Mouse>
+    <Mouse context="maximize" button="-2">maxv</Mouse>
+    <Mouse context="maximize" button="-3">maxh</Mouse>
+
+    <Mouse context="minimize" button="-1">minimize</Mouse>
+    <Mouse context="minimize" button="2">move</Mouse>
+    <Mouse context="minimize" button="-3">shade</Mouse>
+</JWM>

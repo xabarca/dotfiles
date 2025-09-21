@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<JWM>
+
+   <!-- The root menu -->
+    <RootMenu onroot="12">
+        <Program label="search...">dmenu_run</Program>
+	<Separator/>
+	    <!--
+        <Program icon="new_24_terminal.svg" label="Terminal">st</Program>
+		-->
+	<Program  label="terminal">st</Program>
+        <Program  label="file manager">~/bin/openbox_launchy_apps.sh 3</Program>
+        <Program  label="text editor">geany</Program>
+        <Program  label="firefox">firefox</Program>
+        <Program  label="ungoogled-chromium">/opt/appimages/ungoogled-chromium_112.0.5615.121-1.1.AppImage</Program>
+	    <Program  label="telegram">/opt/Telegram/Telegram</Program>
+	<Separator/>
+        <Menu  label="Applications">
+            <Program icon="calc" label="Calculator">xcalc</Program>
+            <Program icon="web-browser" label="Firefox">firefox</Program>
+            <Program icon="image" label="Gimp">gimp</Program>
+            <Program icon="image" label="Nitrogen">nitrogen</Program>
+        </Menu>
+        <Menu icon="folder" label="Utilities">
+            <Program icon="font" label="Fonts">xfontsel</Program>
+            <Program icon="info" label="Window Properties">
+                xprop | xmessage -file -
+            </Program>
+            <Program icon="info" label="Window Information">
+                xwininfo | xmessage -file -
+            </Program>
+        </Menu>
+        <Separator/>
+        <Program  label="lock">
+           xscreensaver-command -lock
+        </Program>
+        <Separator/>
+        
+        <Restart label="restart" />
+        <Separator/>
+         
+        <!--
+        <Exit label="exit" confirm="true" />
+        <Program  label="exit2">cbpp-exit</Program>
+        -->
+        <Program  label="exit">~/bin/yad-out.sh</Program>
+    </RootMenu>
+
+</JWM>

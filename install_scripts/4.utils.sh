@@ -67,6 +67,9 @@ browsers () {
 	chmod +x /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage
 	$ld ln -fs /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage /usr/local/bin/ungoogled-chromium
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] Ungoogled-chromium" >> $LOG_FILE
+
+	# TOR BROSWSER
+	url='https://www.torproject.org/dist/torbrowser/14.5.1/tor-browser-linux-x86_64-14.5.1.tar.xz'
 }
 
 get_herbe
