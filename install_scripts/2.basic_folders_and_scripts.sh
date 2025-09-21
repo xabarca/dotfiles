@@ -9,16 +9,17 @@ ACTUAL_DIR="$(dirname $(readlink -f $0))"
 walls () {
 	cd "$HOME/pictures/walls" || return
 	wget https://wallpapercave.com/wp/xREMNH6.jpg
-	curl -O http://static.simpledesktops.com/uploads/desktops/2013/01/25/enso3.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2018/03/29/ESTRES.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2016/07/19/Path.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2013/02/22/Desktop_Squares.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2014/10/15/tetons-at-night.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixels.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
-	curl -O http://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
+	wget https://wallpapercave.com/wp/wp12666467.jpg
+	curl -O https://static.simpledesktops.com/uploads/desktops/2017/06/02/bg-wallpaper.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2018/07/29/night.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2018/03/29/ESTRES.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2016/07/19/Path.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2013/02/22/Desktop_Squares.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2014/10/15/tetons-at-night.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2015/03/21/coffee-pixels.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2015/03/02/mountains-on-mars.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2015/02/20/zentree_1.png
+	curl -O https://static.simpledesktops.com/uploads/desktops/2013/09/18/wallpaper.png
 }
 
 
