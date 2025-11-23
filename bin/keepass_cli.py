@@ -43,6 +43,19 @@ def create(dbpath, password, keyfile=None):
     kp2.save()
 
 # ---------------------
+def list_entries(dbpath, dbpwd, keyfile):
+    kp = open_database(dbpath, dbpwd, keyfile)
+    paths = []
+    for entry in kp.entries:
+        # print(entry.path)
+        mypath = ''
+        for p in entry.path:
+            mypath += '/' + p
+        paths.append(mypath[1:])
+    # print(paths)
+    return paths
+
+# ---------------------
 def add_entry(dbpath, dbpwd, keyfile, entryname, entrypwd):
     kp = open_database(dbpath, dbpwd, keyfile)
     if '/' in entryname:
@@ -104,6 +117,7 @@ parser.add_argument('--entrypwd',
 parser.add_argument('--newpwd',
                     action="store",
                     dest='newpwd')
+parser.add_argument('--listentries', action='store_true')
 parser.add_argument('--getsecret', action='store_true')
 parser.add_argument('--create', action='store_true')
 parser.add_argument('--changepwd', action='store_true')
@@ -128,6 +142,11 @@ if args.create:
         print('database and password must be specified')
         exit()
     create( args.database, args.password, keyfile )
+elif args.listentries:
+    if not args.database or not args.password:
+        print('database and password must be specified')
+        exit()
+    print(list_entries( args.database, args.password, keyfile ))
 elif args.changepwd:
     if not args.database or not args.password:
         print('database and password must be specified')

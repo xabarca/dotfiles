@@ -58,14 +58,14 @@ browsers () {
 	# cp $ACTUAL_DIR/qutebrowser/config.py  "$HOME/.config/qutebrowser/"
 	# cp $ACTUAL_DIR/qutebrowser/xavi.py $ACTUAL_DIR/qutebrowser/nord.py  "$HOME/.config/qutebrowser/themes/"
 
-    curl -fLo /opt/AppImage/LibreWolf.x86_64.AppImage 'https://gitlab.com/api/v4/projects/24386000/packages/generic/librewolf/135.0-1/LibreWolf.x86_64.AppImage'
+    curl -fLo /opt/AppImage/LibreWolf.x86_64.AppImage 'https://gitlab.com/api/v4/projects/24386000/packages/generic/librewolf/145.0.1-2/LibreWolf.x86_64.AppImage'
 	chmod +x /opt/AppImage/LibreWolf.x86_64.AppImage
 	$ld ln -fs /opt/AppImage/LibreWolf.x86_64.AppImage /usr/local/bin/LibreWolf
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] LibreWolf" >> $LOG_FILE	
 
-    curl -fLo /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage 'https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases/download/133.0.6943.53-1/ungoogled-chromium_133.0.6943.53-1.AppImage'
-	chmod +x /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage
-	$ld ln -fs /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage /usr/local/bin/ungoogled-chromium
+    curl -fLo /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage 'https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases/download/142.0.7444.175-1/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage'
+	chmod +x /opt/AppImage/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage
+	$ld ln -fs /opt/AppImage/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage /usr/local/bin/ungoogled-chromium
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] Ungoogled-chromium" >> $LOG_FILE
 
 	# TOR BROSWSER
@@ -74,7 +74,7 @@ browsers () {
 
 get_herbe
 install_nvim
-get_enchive
+#get_enchive
 youtube_downloader
 browsers
 
