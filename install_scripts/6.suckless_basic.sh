@@ -22,9 +22,9 @@ _dmenu() {
 		# dmenu from suckless
 		git clone --depth 1  git://git.suckless.org/dmenu /opt/git/dmenu 
 		cd /opt/git/dmenu || return
-		git apply "$ACTUAL_DIR/../patches/dmenu-border-20201112-1a13d04.diff"
-		git apply "$ACTUAL_DIR/../patches/dmenu-center.diff"
-		git apply "$ACTUAL_DIR/../patches/dmenu-password.diff"
+		#git apply "$ACTUAL_DIR/../patches/dmenu-border-20201112-1a13d04.diff"
+		#git apply "$ACTUAL_DIR/../patches/dmenu-center.diff"
+		git apply "$ACTUAL_DIR/../patches/my-own-dmenu-password.diff"
 		make && strip dmenu stest
 		for i in dmenu dmenu_* stest; do
 			$ld ln -sf "$PWD/$i" /usr/local/bin
