@@ -4,7 +4,8 @@
 #    age --encrypt -r "$(age-keygen -y /tmp/age-key)" "$file" > "$file"".age"
 #    age --decrypt -i /tmp/age-key -o "$file"".decrypted" "$file"".age"
 
-
+# sets WSL_MODE. By default = 1
+WSL_MODE="${WSL:-1}"
 
 # usage:  _encrypt_file  file  file.enc
 _encrypt_file() {
@@ -42,14 +43,18 @@ _get_password() {
 	if [ "$ARG_PASSWORD" = "script/cloud.sh"  ]; then
 		pass="$( $HOME/bin/pashage s script/cloud.sh )"
 	else
-        GREEN=$($HOME/bin/getcolor green)
-        COLOR_BG=$($HOME/bin/getcolor bg)
-        DMENU_COLOR_OPTIONS="-nb $COLOR_BG -sb $GREEN -sf $COLOR_BG -nf $GREEN"
-		
-        pass=$( echo '' | dmenu -P -p "enter encryption/decryption passphrase:  " )
-        #pass=$( echo '' | dmenu -P -p "enter passphrase:  " $DMENU_COLOR_OPTIONS  -c -bw 2 )
+		if [ $WSL_MODE -eq 1 ]; then
+			read -s -p "enter passphrase:  " pass
+		else
+			GREEN=$($HOME/bin/getcolor green)
+			COLOR_BG=$($HOME/bin/getcolor bg)
+			DMENU_COLOR_OPTIONS="-nb $COLOR_BG -sb $GREEN -sf $COLOR_BG -nf $GREEN"
+
+			pass=$( echo '' | dmenu -P -p "enter encryption/decryption passphrase:  " )
+			#pass=$( echo '' | dmenu -P -p "enter passphrase:  " $DMENU_COLOR_OPTIONS  -c -bw 2 )
+		fi
 	fi
-   echo "$pass"
+	echo "$pass"
 }
 
 
