@@ -1,6 +1,8 @@
 #!/bin/sh
 # pash - simple password manager (using age)
 
+. $HOME/bin/encrypt.sh
+
 # sets WSL_MODE. By default = 1
 WSL_MODE="${WSL:-1}"
 
@@ -12,34 +14,11 @@ if [ $WSL_MODE -eq 1 ]; then
 	AGE_KEY_ENC_BASE64=$HOME/.config/age/agewsl.key.enc.base64
 fi
 
-decrypt_file_base64() {
-   encrypted=$1 
-   output_file=$2
-   cat $encrypted | base64 -d > "/tmp/debased"
-   decrypt_file "/tmp/debased" "$output_file" 
-   rm /tmp/debased
-}
-
-decrypt_file() {
-   encrypted=$1 
-   output_file=$2
-   PASSWORD=$( get_password )
-   openssl enc -aes-256-cbc -d -md sha256 -pbkdf2 -in $encrypted -out $output_file -k $PASSWORD
-}
-
-encrypt_file() {
-   input_file=$1
-   encrypted=$2 
-   PASSWORD=$( get_password )
-   openssl enc -aes-256-cbc -salt -md sha256 -pbkdf2 -in $input_file -out $encrypted -k $PASSWORD
-}
-
 get_agekey() {
    if [ ! -f "$AGE_KEY_ENC_BASE64" ]; then
       herbe "no encrypted age key" &
       die "no encrypted age key"
    else
-      #decrypt_file "$AGE_KEY_ENC" "$AGE_KEY"  && herbe "AGE key retrieved. Try again !" &
       decrypt_file_base64 "$AGE_KEY_ENC_BASE64" "$AGE_KEY"
       if [ "$(cat $AGE_KEY | grep SECRET)" ]; then
           herbe "AGE key retrieved !"
