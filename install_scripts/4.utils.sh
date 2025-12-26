@@ -64,11 +64,16 @@ browsers () {
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] LibreWolf" >> $LOG_FILE	
 
     curl -fLo /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage 'https://github.com/ungoogled-software/ungoogled-chromium-portablelinux/releases/download/142.0.7444.175-1/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage'
-	chmod +x /opt/AppImage/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage
-	$ld ln -fs /opt/AppImage/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage /usr/local/bin/ungoogled-chromium
+	chmod +x /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage
+	$ld ln -fs /opt/AppImage/ungoogled-chromium_131.0.6778.139-1.AppImage /usr/local/bin/ungoogled-chromium
 	echo "[$(date '+%Y-%m-%d %H:%M.%S')] Ungoogled-chromium" >> $LOG_FILE
 
-	# TOR BROSWSER
+    curl -fLo /opt/AppImage/helium.AppImage 'https://github.com/imputnet/helium-linux/releases/download/0.7.7.1/helium-0.7.7.1-x86_64.AppImage'
+	chmod +x /opt/AppImage/helium.AppImage
+	$ld ln -fs /opt/AppImage/helium.AppImage /usr/local/bin/ungoogled-chromium
+	echo "[$(date '+%Y-%m-%d %H:%M.%S')] Helium browser" >> $LOG_FILE
+	
+	# TOR BROWSER
 	url='https://www.torproject.org/dist/torbrowser/14.5.1/tor-browser-linux-x86_64-14.5.1.tar.xz'
 }
 

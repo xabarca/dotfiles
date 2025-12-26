@@ -84,7 +84,7 @@ done < /tmp/fff.txt
 #------------------------------------
 #--- [5] ENCRYPT AGE KEY (base64)  --
 #------------------------------------
-_encrypt_file_base64 "$NEW_AGE_KEY" "$NEW_AGE_KEY_base64"
+_encrypt_file_base64 "$NEW_AGE_KEY" "$NEW_AGE_KEY_BASE64"
 
 
 echo "done!"
